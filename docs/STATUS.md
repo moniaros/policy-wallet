@@ -1,9 +1,10 @@
 # Status
 
 ## Current phase
-Mobile public-menu duplicate correction — 23 October 2026. Isolated from production `2dc151c0`; local verification passed, protected preview and production promotion pending. Prior homepage release: PR #408, application `95c8670a`.
+Mobile public-menu duplicate correction — 23 October 2026. Shipped via PR #411 as `91579018`; dev, protected preview and live verification passed. Prior homepage release: PR #408, application `95c8670a`.
 
 ## Done
+- Menu release: CI `39981645626`, deploy `39983054320`, Vercel `dpl_HKWEuSk7XJyDE33p7sRUF3fxqsQU` READY. Ten preview and ten live menu journeys passed; existing browser tab refreshed.
 - Mobile menu: “Για ασφαλιστές” appears once under Products in both languages; desktop direct access remains. Ten local browser cases passed (320/390/430/600/1280px, Greek/English), including Escape/focus restoration and menu-close navigation. All 7,874 unit tests and the required local guardrails passed.
 - Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
 - Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
@@ -12,7 +13,7 @@ Mobile public-menu duplicate correction — 23 October 2026. Isolated from produ
 - Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
 
 ## In progress
-- Publish the isolated menu correction after protected-preview verification. The separate `pw-customer` / PR #410 content work is not included.
+- No remaining menu-fix work. The separate `pw-customer` / PR #410 content work is not included.
 
 ## Blocked
 - No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
