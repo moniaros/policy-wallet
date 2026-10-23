@@ -100,7 +100,11 @@ ds-bundle/
 # fails on, so a `git add -A` here both commits another tool's source tree and
 # takes CI red on lint. Ignored rather than linted around.
 .agents/
-.claude/skills/
+.claude/skills/*
+# Exception: the founder pack (github.com/Jakeschincariol/founder-skill @ fd9385b,
+# MIT) is Markdown plus stdlib Python, so nothing for ESLint, and it is committed
+# so cloud sessions have it. Re-review the upstream diff before refreshing it.
+!.claude/skills/founder-*/
 .codex/
 .github/agents/
 .github/hooks/
