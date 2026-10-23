@@ -251,7 +251,8 @@ export function PublicHeader({ locale, audience = "policyholder", ctaSource, onP
 
                 <div className="mx-auto flex w-full max-w-page-wide flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
                     <nav aria-label={t("Πλοήγηση", "Navigation")} className="mb-12 flex flex-col gap-6 text-h1 font-medium leading-tight tracking-tight sm:text-display">
-                        {PUBLIC_NAV_ITEMS.map((item) =>
+                        {/* Agents already appear in the expanded Products group. */}
+                        {PUBLIC_NAV_ITEMS.filter((item) => item.key !== "agents").map((item) =>
                             item.kind === "dropdown" ? (
                                 <SolutionsMobileGroup key={item.key} language={locale} onNavigate={closeMenu} className="text-title" />
                             ) : (

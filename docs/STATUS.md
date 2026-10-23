@@ -1,9 +1,10 @@
 # Status
 
 ## Current phase
-Five homepage presentation extensions shipped — 21 October 2026. PR #408; production application `95c8670a`.
+Mobile public-menu duplicate correction — 23 October 2026. Isolated from production `2dc151c0`; local verification passed, protected preview and production promotion pending. Prior homepage release: PR #408, application `95c8670a`.
 
 ## Done
+- Mobile menu: “Για ασφαλιστές” appears once under Products in both languages; desktop direct access remains. Ten local browser cases passed (320/390/430/600/1280px, Greek/English), including Escape/focus restoration and menu-close navigation. All 7,874 unit tests and the required local guardrails passed.
 - Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
 - Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
 - API auth, lint, i18n/UTF-8, types, 7,874 tests and build passed. Dev/prod: 88 migrations, none pending; no DB/catalogue changes.
@@ -11,7 +12,7 @@ Five homepage presentation extensions shipped — 21 October 2026. PR #408; prod
 - Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
 
 ## In progress
-- No remaining implementation work in this homepage release.
+- Publish the isolated menu correction after protected-preview verification. The separate `pw-customer` / PR #410 content work is not included.
 
 ## Blocked
 - No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
@@ -27,3 +28,5 @@ Five homepage presentation extensions shipped — 21 October 2026. PR #408; prod
 3. Address production pool configuration and provision payment-journey test infrastructure.
 
 Evidence: [five homepage extensions](audits/homepage-five-panels-2026-10-21.md), [four steps](audits/homepage-steps-2026-10-21.md).
+
+Menu evidence: [duplicate correction](audits/mobile-menu-duplicate-2026-10-23.md).
