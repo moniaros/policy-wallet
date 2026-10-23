@@ -18,7 +18,7 @@ import type { AgentTier } from '@/types/subscription-entitlements'
  * production budgets as N × 151,200 + ~10 % (151,200 = R for an 8-rule branch).
  *
  * Round 6 (owner, 2026-10-22) — INTERIM budgets, to be replaced by measured ones (QUEUE BUDGET-MEASURE, a GA
- * blocker): production runs AGENT_INDEPENDENT_VERIFICATION=1, so an agent run also reserves a SECOND
+ * blocker): the owner sizes for AGENT_INDEPENDENT_VERIFICATION=1 (the Vercel production env names listed no such variable on 2026-10-23, so budgets are an upper bound until it is set), so an agent run also reserves a SECOND
  * extraction (independent-verification.ts: 102,000), i.e. R_agent = R + 102,000; and Family's budget is
  * analyses for a full wallet (25 policies × R) PLUS an allowance for interactive Q&A (100 questions × the
  * 15,000 headroom the Q&A gate asks for, wallet/actions.ts:1778).
@@ -30,7 +30,7 @@ import type { AgentTier } from '@/types/subscription-entitlements'
  * Round 7 (owner, 2026-10-23) — FINAL interim budgets; budget sizing ends here (further findings go to BUDGET-MEASURE).
  * The scan/upload extraction is now INSIDE the rule, as the cache-miss path: an agent analysis costs
  *     R_max + the scan/upload extraction (102,000) + the verification reservation (102,000) = 355,200
- * and the Family batch path (a full wallet of 25 policies, each verified) costs 25 × (R_max + 102,000) = 25 × 253,200,
+ * and the Family batch path (a full wallet of 25 policies, each uploaded then analysed) costs 25 × (R_max + 102,000) = 25 × 253,200,
  * both with 10 % headroom:
  *     agent:   budget >= N × 355,200 × 1.1
  *     Family:  budget >= (policies × 253,200 + 100 × 15,000) × 1.1
@@ -38,7 +38,7 @@ import type { AgentTier } from '@/types/subscription-entitlements'
  * the verification actuals.
  */
 const TIERS = Object.keys(DEFAULT_AGENT_ENTITLEMENT_LIMITS) as AgentTier[]
-// The second extraction an agent run reserves when AGENT_INDEPENDENT_VERIFICATION=1 (production). The constant is
+// The second extraction an agent run reserves when AGENT_INDEPENDENT_VERIFICATION=1. The constant is
 // local to independent-verification.ts, so the test pins it to the source.
 const VERIFICATION_RESERVATION = 102_000
 // Questions per month the Family budget must leave room for, and the headroom the Q&A gate checks per question.
@@ -48,6 +48,8 @@ const QA_UNIT = 15_000
 // same size as the verification extraction; and the owner's headroom.
 const SCAN_UPLOAD_EXTRACTION = 102_000
 const HEADROOM = 1.1
+// Family: a full wallet uploaded through the batch route (about 102,000 per document, ungated), then deep-analysed. Policyholder runs are NOT independently verified.
+const UPLOAD_EXTRACTION_FAMILY = 102_000
 
 function maxReservation(): number {
     const counts = new Map<string, number>()
@@ -56,8 +58,9 @@ function maxReservation(): number {
     return estimatePolicyAnalysisTokenBudget({ hasDocument: true, gapDefinitionsCount: rules, checklistPillarsCount: 8 }).totalEstimatedTokens
 }
 
-const agentNeed = (n: number) => Math.round(n * (151_200 + SCAN_UPLOAD_EXTRACTION + VERIFICATION_RESERVATION) * HEADROOM)
-const familyNeed = (policies: number) => Math.round((policies * (151_200 + VERIFICATION_RESERVATION) + QA_QUESTIONS * QA_UNIT) * HEADROOM)
+// R is the estimator's own largest reservation (maxReservation), never a literal: a grown catalogue raises the need.
+const agentNeed = (n: number, r = maxReservation()) => Math.round(n * (r + SCAN_UPLOAD_EXTRACTION + VERIFICATION_RESERVATION) * HEADROOM)
+const familyNeed = (policies: number, r = maxReservation()) => Math.round((policies * (r + UPLOAD_EXTRACTION_FAMILY) + QA_QUESTIONS * QA_UNIT) * HEADROOM)
 
 describe('an agent plan\'s token budget never binds before its published analysis count (H-027)', () => {
     const R = maxReservation()
@@ -78,11 +81,11 @@ describe('an agent plan\'s token budget never binds before its published analysi
         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth} × (${R} + ${SCAN_UPLOAD_EXTRACTION} + ${VERIFICATION_RESERVATION}) × ${HEADROOM} = ${need}`).toBeGreaterThanOrEqual(need)
     })
 
-    it('pro (Family): budget >= (policy cap × (R_max + verification) + the Q&A allowance) × 1.1', () => {
+    it('pro (Family): budget >= (policy cap × (R_max + upload extraction) + the Q&A allowance) × 1.1', () => {
         const l = DEFAULT_ENTITLEMENT_LIMITS.pro
         expect(l.policies, 'Family must have a finite policy cap').toBeTypeOf('number')
         const need = familyNeed(l.policies as number)
-        expect(l.monthlyTokenBudget, `pro: (${l.policies} × (${R} + ${VERIFICATION_RESERVATION}) + ${QA_QUESTIONS} × ${QA_UNIT}) × ${HEADROOM} = ${need}`).toBeGreaterThanOrEqual(need)
+        expect(l.monthlyTokenBudget, `pro: (${l.policies} × (${R} + ${UPLOAD_EXTRACTION_FAMILY}) + ${QA_QUESTIONS} × ${QA_UNIT}) × ${HEADROOM} = ${need}`).toBeGreaterThanOrEqual(need)
     })
 
     it('Free and Plus keep their own rail: nothing in this rule raises them (they never reach the gate)', () => {

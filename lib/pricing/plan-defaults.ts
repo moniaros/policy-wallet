@@ -130,8 +130,8 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         aiAnalysisPerMonth: null,
         questionsPerDay: null,
         gapAnalysisPerDay: null,
-        // INTERIM (round 7, FINAL until BUDGET-MEASURE): (25 policies × 253,200 batch path (R_max 151,200 + a
-        // verification extraction 102,000) + ~100 questions × the 15,000-token headroom the Q&A gate asks for,
+        // INTERIM (round 7, FINAL until BUDGET-MEASURE): (25 policies × 253,200 batch path (R_max 151,200 + the
+        // ungated upload extraction 102,000; policyholder runs are not independently verified) + ~100 questions × the 15,000-token headroom the Q&A gate asks for,
         // app/(protected)/wallet/actions.ts:1778) × 1.1 = 8,613,000 → 8,700,000. Replace with a measured budget
         // (QUEUE BUDGET-MEASURE: its A_p95 must include the ungated scan/upload extraction and the verification
         // actuals); Q&A can starve analyses until QA-BUDGET-SPLIT ships.

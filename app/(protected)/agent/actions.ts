@@ -1306,7 +1306,7 @@ export async function addPolicyForCustomer(data: {
         // στο παρασκήνιο» when createRun refused — and on the free agent
         // tier it refused every time (a document run estimates at 141,600 + 1,200 per
         // active rule, up to ~151k tokens, against what was then a 150k monthly budget; agent_free is 2.0M since
-        // the round-6 interim budgets, see plan-defaults.ts), leaving the policy stuck in
+        // the round-7 interim budgets, see plan-defaults.ts), leaving the policy stuck in
         // `analyzing`. A refused run is now stamped the way the pipeline
         // stamps one (`action_needed` + processingError TOKEN_LIMIT_BLOCKED,
         // retryable) and the modal says the policy was saved and what it

@@ -8,12 +8,12 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 - Annual saving computed from prices; Family trial disclosed from the plan row on every selling surface and the Stripe hosted checkout; no token/credits copy; no unbounded-Q&A copy; cancel claims always carry "access continues to the end of the paid period" (one source); reminder offsets composed from the scheduler's constants. Each guard shown red first (`docs/series/PW-CONTENT-02/evidence/`).
 - **Round 7:** FINAL interim token budgets in code, fixture and guard — Family 8,700,000; agents 2.0M / 19.6M / 58.7M / 156.3M (cache-miss path, verification on); all seven raw production blobs parse (flag R). Budget sizing is closed: BUDGET-MEASURE replaces every interim value before GA.
 - **Round 6:** **Terms §5 applied** (agents cancel by email to info@policywallet.gr) with all five legal versions bumped to `GR-GA-2026.10.22`; Terms §12 EN/GR mismatch opened as GA blocker H-035 with a drafted fix.
-- Reviews of every unreviewed delta ended `CRITICAL: 0` (history in `docs/series/PW-CONTENT-02/RESULT.md` §8–§12); commits after the last review changed docs/tests/comments only. 710 test files / ~7,960 tests, every CI guardrail green locally.
+- Reviews of every unreviewed delta ended `CRITICAL: 0` (history in `docs/series/PW-CONTENT-02/RESULT.md` §8–§13); the commit after the round-7 review changed docs/tests/comments only. 710 test files / ~7,960 tests, every CI guardrail green locally.
 
 ## In progress / Blocked (merge blockers, owner)
 - **H-025**: confirm the public no-commission claims (C-37's commission sentence is held with it).
 - **COPY.md**: re-approvals (re-approval table at the end of `COPY.md`).
-- Owner manual items on `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`: interim budgets saved in /admin/plans, `AGENT_INDEPENDENT_VERIFICATION`, `PREVENTION_PERSONALIZATION_ENABLED=0`, Stripe live portal + webhook + trial reminder, Brevo + renewal cron run history.
+- Owner manual items on `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`: final budgets saved in /admin/plans, `PREVENTION_PERSONALIZATION_ENABLED=0`, Stripe live portal + webhook + trial reminder, Brevo + renewal cron run history.
 
 ## Top risks ranked
 1. **Broken / insecure (gates launch, GA):** BUDGET-MEASURE (token budgets are estimate-based; the scan/upload extraction and verification draw on the same row); H-035 Terms §12; `/api/v1/policies/share` skips the Family entitlement (PW-ENTITLE-01 item 2, security-reviewer); the live checkout grants the trial to every checkout (PW-ENTITLE-01 item 1); no subscription-start or trial-ending email (H-032); dead token top-up route still sells packs.
