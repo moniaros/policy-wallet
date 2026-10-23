@@ -26,6 +26,16 @@ import type { AgentTier } from '@/types/subscription-entitlements'
  * extraction (agent/actions.ts:1501, api/policies/extract/route.ts:293) is RECORDED against the same monthly row
  * (not budget-gated), about 102,000 per document when the run cannot reuse the scan cache; MEDIC, the review
  * workspace, agent Q&A and batch translation likewise. The rule sizes the analyses; measurement sizes the month.
+ *
+ * Round 7 (owner, 2026-10-23) — FINAL interim budgets; budget sizing ends here (further findings go to BUDGET-MEASURE).
+ * The scan/upload extraction is now INSIDE the rule, as the cache-miss path: an agent analysis costs
+ *     R_max + the scan/upload extraction (102,000) + the verification reservation (102,000) = 355,200
+ * and the Family batch path (a full wallet of 25 policies, each verified) costs 25 × (R_max + 102,000) = 25 × 253,200,
+ * both with 10 % headroom:
+ *     agent:   budget >= N × 355,200 × 1.1
+ *     Family:  budget >= (policies × 253,200 + 100 × 15,000) × 1.1
+ * BUDGET-MEASURE replaces every interim value before GA; its A_p95 must include the ungated scan/upload extraction and
+ * the verification actuals.
  */
 const TIERS = Object.keys(DEFAULT_AGENT_ENTITLEMENT_LIMITS) as AgentTier[]
 // The second extraction an agent run reserves when AGENT_INDEPENDENT_VERIFICATION=1 (production). The constant is
@@ -34,6 +44,10 @@ const VERIFICATION_RESERVATION = 102_000
 // Questions per month the Family budget must leave room for, and the headroom the Q&A gate checks per question.
 const QA_QUESTIONS = 100
 const QA_UNIT = 15_000
+// The ungated scan/upload extraction (agent/actions.ts, api/policies/extract/route.ts) recorded on the same row, taken at the
+// same size as the verification extraction; and the owner's headroom.
+const SCAN_UPLOAD_EXTRACTION = 102_000
+const HEADROOM = 1.1
 
 function maxReservation(): number {
     const counts = new Map<string, number>()
@@ -41,6 +55,9 @@ function maxReservation(): number {
     const rules = Math.max(...counts.values(), 0)
     return estimatePolicyAnalysisTokenBudget({ hasDocument: true, gapDefinitionsCount: rules, checklistPillarsCount: 8 }).totalEstimatedTokens
 }
+
+const agentNeed = (n: number) => Math.round(n * (151_200 + SCAN_UPLOAD_EXTRACTION + VERIFICATION_RESERVATION) * HEADROOM)
+const familyNeed = (policies: number) => Math.round((policies * (151_200 + VERIFICATION_RESERVATION) + QA_QUESTIONS * QA_UNIT) * HEADROOM)
 
 describe('an agent plan\'s token budget never binds before its published analysis count (H-027)', () => {
     const R = maxReservation()
@@ -54,18 +71,18 @@ describe('an agent plan\'s token budget never binds before its published analysi
         expect(readFileSync('app/(protected)/wallet/actions.ts', 'utf-8')).toContain('canUserUseTokens(authResult.dbUser.id, 15000)')
     })
 
-    it.each(TIERS)('%s: budget >= published count × (R_max + the verification reservation)', (tier) => {
+    it.each(TIERS)('%s: budget >= published count × (R_max + scan/upload + verification) × 1.1 (cache-miss path)', (tier) => {
         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite count`).toBeTypeOf('number')
-        const need = (l.aiAnalysesPerMonth as number) * (R + VERIFICATION_RESERVATION)
-        expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth} × (${R} + ${VERIFICATION_RESERVATION}) = ${need}`).toBeGreaterThanOrEqual(need)
+        const need = agentNeed(l.aiAnalysesPerMonth as number)
+        expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth} × (${R} + ${SCAN_UPLOAD_EXTRACTION} + ${VERIFICATION_RESERVATION}) × ${HEADROOM} = ${need}`).toBeGreaterThanOrEqual(need)
     })
 
-    it('pro (Family): budget >= policy cap × R_max + the Q&A allowance', () => {
+    it('pro (Family): budget >= (policy cap × (R_max + verification) + the Q&A allowance) × 1.1', () => {
         const l = DEFAULT_ENTITLEMENT_LIMITS.pro
         expect(l.policies, 'Family must have a finite policy cap').toBeTypeOf('number')
-        const need = (l.policies as number) * R + QA_QUESTIONS * QA_UNIT
-        expect(l.monthlyTokenBudget, `pro: ${l.policies} × ${R} + ${QA_QUESTIONS} × ${QA_UNIT} = ${need}`).toBeGreaterThanOrEqual(need)
+        const need = familyNeed(l.policies as number)
+        expect(l.monthlyTokenBudget, `pro: (${l.policies} × (${R} + ${VERIFICATION_RESERVATION}) + ${QA_QUESTIONS} × ${QA_UNIT}) × ${HEADROOM} = ${need}`).toBeGreaterThanOrEqual(need)
     })
 
     it('Free and Plus keep their own rail: nothing in this rule raises them (they never reach the gate)', () => {
@@ -80,12 +97,17 @@ describe('an agent plan\'s token budget never binds before its published analysi
         expect(DEFAULT_ENTITLEMENT_LIMITS.pro.monthlyTokenBudget).toBe(pro.monthlyTokenBudget)
     })
 
-    it('probe: the round-5 agent budgets (850,000 / 8.4M / 25M / 67M) and Family 1.5M fail the round-6 rule', () => {
-        const old: Record<string, number> = { agent_free: 850_000, agent_starter: 8_400_000, agent_pro: 25_000_000, agency: 67_000_000 }
+    it('probe: the round-6 budgets (1.7M / 16.8M / 50M / 134M) and Family 5.7M fail the round-7 rule', () => {
+        const old: Record<string, number> = { agent_free: 1_700_000, agent_starter: 16_800_000, agent_pro: 50_000_000, agency: 134_000_000 }
         for (const tier of TIERS) {
-            const need = (DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier].aiAnalysesPerMonth as number) * (R + VERIFICATION_RESERVATION)
-            expect(old[tier] >= need, `${tier} round-5 budget ${old[tier]} vs ${need}`).toBe(false)
+            const need = agentNeed(DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier].aiAnalysesPerMonth as number)
+            expect(old[tier] >= need, `${tier} round-6 budget ${old[tier]} vs ${need}`).toBe(false)
         }
-        expect(1_500_000 >= (DEFAULT_ENTITLEMENT_LIMITS.pro.policies as number) * R + QA_QUESTIONS * QA_UNIT).toBe(false)
+        expect(5_700_000 >= familyNeed(DEFAULT_ENTITLEMENT_LIMITS.pro.policies as number)).toBe(false)
+    })
+
+    it('the rule yields the owner\'s figures before rounding up (round 7): 1,953,600 / 19,536,000 / 58,608,000 / 156,288,000; Family 8,613,000', () => {
+        expect(TIERS.map((t) => agentNeed(DEFAULT_AGENT_ENTITLEMENT_LIMITS[t].aiAnalysesPerMonth as number))).toEqual([1_953_600, 19_536_000, 58_608_000, 156_288_000])
+        expect(familyNeed(25)).toBe(8_613_000)
     })
 })

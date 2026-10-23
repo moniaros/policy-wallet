@@ -1,5 +1,165 @@
 {
-  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 brief. Authoritative EXCEPT the INTERIM monthlyTokenBudget values for pro (Family) and the four agent plans, which the owner set in /admin/plans in round 6 (AGENT_INDEPENDENT_VERIFICATION=1; Family = analyses + Q&A) and which were typed here to match the code defaults (see _budgets_note): re-read production and confirm. null = unlimited.",
+  "_source": "Production plans table, read by the owner (Eli) on 2026-10-22 and pasted into the PW-CONTENT-02 round-3 and round-7 briefs. `rawEntitlements` holds the raw plans.entitlements blobs VERBATIM as read on 2026-10-22, BEFORE the owner's budget edits (their monthlyTokenBudget values are superseded). The `policyholder` / `agent` rows carry the same fields plus price/trial facts, with monthlyTokenBudget set to the FINAL interim budgets the owner sets in /admin/plans in round 7 (2026-10-23); re-read production and confirm. null = unlimited.",
+  "rawEntitlements": {
+    "ph-free": {
+      "policies": 3,
+      "interactiveQA": false,
+      "notifications": false,
+      "priorityQueue": false,
+      "questionsPerDay": 0,
+      "portfolioGapView": false,
+      "advancedAnalytics": false,
+      "gapAnalysisPerDay": 0,
+      "agentCollaboration": false,
+      "aiAnalysisPerMonth": null,
+      "analysisComparison": false,
+      "monthlyTokenBudget": 150000,
+      "savingsReportExport": false
+    },
+    "ph-plus": {
+      "policies": 10,
+      "interactiveQA": false,
+      "notifications": true,
+      "priorityQueue": false,
+      "questionsPerDay": 0,
+      "portfolioGapView": false,
+      "advancedAnalytics": false,
+      "gapAnalysisPerDay": 0,
+      "agentCollaboration": false,
+      "aiAnalysisPerMonth": null,
+      "analysisComparison": false,
+      "monthlyTokenBudget": 600000,
+      "savingsReportExport": false
+    },
+    "ph-pro": {
+      "policies": 25,
+      "interactiveQA": true,
+      "notifications": true,
+      "priorityQueue": true,
+      "questionsPerDay": null,
+      "portfolioGapView": true,
+      "advancedAnalytics": true,
+      "gapAnalysisPerDay": null,
+      "agentCollaboration": true,
+      "aiAnalysisPerMonth": null,
+      "analysisComparison": true,
+      "monthlyTokenBudget": 1500000,
+      "savingsReportExport": true
+    },
+    "agent-free": {
+      "apiAccess": false,
+      "teamMembers": 1,
+      "maxCustomers": 10,
+      "privateNotes": false,
+      "proposalFlow": false,
+      "brandedPortal": false,
+      "brandedReport": false,
+      "priorityQueue": false,
+      "asyncMessaging": true,
+      "bulkImportLimit": 10,
+      "portfolioGapView": false,
+      "sharedPolicyRoom": false,
+      "pipelineAnalytics": false,
+      "renewalAutomation": false,
+      "aiAnalysesPerMonth": 5,
+      "analysisComparison": false,
+      "commissionTracking": false,
+      "monthlyTokenBudget": 150000,
+      "documentRequestFlow": false,
+      "savingsReportExport": false,
+      "collaborationThreads": true,
+      "crossSellIntelligence": false,
+      "maxPoliciesPerCustomer": 5,
+      "questionnaireTemplates": 0
+    },
+    "agent-starter": {
+      "apiAccess": false,
+      "teamMembers": 1,
+      "maxCustomers": 100,
+      "privateNotes": false,
+      "proposalFlow": true,
+      "brandedPortal": true,
+      "brandedReport": false,
+      "priorityQueue": false,
+      "asyncMessaging": true,
+      "bulkImportLimit": 100,
+      "portfolioGapView": true,
+      "sharedPolicyRoom": true,
+      "pipelineAnalytics": true,
+      "renewalAutomation": false,
+      "aiAnalysesPerMonth": 50,
+      "analysisComparison": true,
+      "commissionTracking": false,
+      "monthlyTokenBudget": 1600000,
+      "documentRequestFlow": true,
+      "savingsReportExport": false,
+      "collaborationThreads": true,
+      "crossSellIntelligence": false,
+      "maxPoliciesPerCustomer": 20,
+      "questionnaireTemplates": 5
+    },
+    "agent-pro": {
+      "apiAccess": false,
+      "teamMembers": 3,
+      "maxCustomers": 500,
+      "privateNotes": true,
+      "proposalFlow": true,
+      "brandedPortal": true,
+      "brandedReport": true,
+      "priorityQueue": true,
+      "asyncMessaging": true,
+      "bulkImportLimit": 500,
+      "portfolioGapView": true,
+      "sharedPolicyRoom": true,
+      "pipelineAnalytics": true,
+      "renewalAutomation": true,
+      "aiAnalysesPerMonth": 150,
+      "analysisComparison": true,
+      "commissionTracking": true,
+      "monthlyTokenBudget": 4500000,
+      "documentRequestFlow": true,
+      "savingsReportExport": true,
+      "collaborationThreads": true,
+      "crossSellIntelligence": true,
+      "maxPoliciesPerCustomer": null,
+      "questionnaireTemplates": null
+    },
+    "agency": {
+      "apiAccess": false,
+      "teamMembers": null,
+      "maxCustomers": null,
+      "privateNotes": true,
+      "proposalFlow": true,
+      "brandedPortal": true,
+      "brandedReport": true,
+      "priorityQueue": true,
+      "asyncMessaging": true,
+      "bulkImportLimit": null,
+      "portfolioGapView": true,
+      "sharedPolicyRoom": true,
+      "pipelineAnalytics": true,
+      "renewalAutomation": true,
+      "aiAnalysesPerMonth": 400,
+      "analysisComparison": true,
+      "commissionTracking": true,
+      "monthlyTokenBudget": 12000000,
+      "documentRequestFlow": true,
+      "savingsReportExport": true,
+      "collaborationThreads": true,
+      "crossSellIntelligence": true,
+      "maxPoliciesPerCustomer": null,
+      "questionnaireTemplates": null
+    }
+  },
+  "rawEntitlementsText": {
+    "ph-free": "{\"policies\":3,\"interactiveQA\":false,\"notifications\":false,\"priorityQueue\":false,\"questionsPerDay\":0,\"portfolioGapView\":false,\"advancedAnalytics\":false,\"gapAnalysisPerDay\":0,\"agentCollaboration\":false,\"aiAnalysisPerMonth\":null,\"analysisComparison\":false,\"monthlyTokenBudget\":150000,\"savingsReportExport\":false}",
+    "ph-plus": "{\"policies\":10,\"interactiveQA\":false,\"notifications\":true,\"priorityQueue\":false,\"questionsPerDay\":0,\"portfolioGapView\":false,\"advancedAnalytics\":false,\"gapAnalysisPerDay\":0,\"agentCollaboration\":false,\"aiAnalysisPerMonth\":null,\"analysisComparison\":false,\"monthlyTokenBudget\":600000,\"savingsReportExport\":false}",
+    "ph-pro": "{\"policies\":25,\"interactiveQA\":true,\"notifications\":true,\"priorityQueue\":true,\"questionsPerDay\":null,\"portfolioGapView\":true,\"advancedAnalytics\":true,\"gapAnalysisPerDay\":null,\"agentCollaboration\":true,\"aiAnalysisPerMonth\":null,\"analysisComparison\":true,\"monthlyTokenBudget\":1500000,\"savingsReportExport\":true}",
+    "agent-free": "{\"apiAccess\":false,\"teamMembers\":1,\"maxCustomers\":10,\"privateNotes\":false,\"proposalFlow\":false,\"brandedPortal\":false,\"brandedReport\":false,\"priorityQueue\":false,\"asyncMessaging\":true,\"bulkImportLimit\":10,\"portfolioGapView\":false,\"sharedPolicyRoom\":false,\"pipelineAnalytics\":false,\"renewalAutomation\":false,\"aiAnalysesPerMonth\":5,\"analysisComparison\":false,\"commissionTracking\":false,\"monthlyTokenBudget\":150000,\"documentRequestFlow\":false,\"savingsReportExport\":false,\"collaborationThreads\":true,\"crossSellIntelligence\":false,\"maxPoliciesPerCustomer\":5,\"questionnaireTemplates\":0}",
+    "agent-starter": "{\"apiAccess\":false,\"teamMembers\":1,\"maxCustomers\":100,\"privateNotes\":false,\"proposalFlow\":true,\"brandedPortal\":true,\"brandedReport\":false,\"priorityQueue\":false,\"asyncMessaging\":true,\"bulkImportLimit\":100,\"portfolioGapView\":true,\"sharedPolicyRoom\":true,\"pipelineAnalytics\":true,\"renewalAutomation\":false,\"aiAnalysesPerMonth\":50,\"analysisComparison\":true,\"commissionTracking\":false,\"monthlyTokenBudget\":1600000,\"documentRequestFlow\":true,\"savingsReportExport\":false,\"collaborationThreads\":true,\"crossSellIntelligence\":false,\"maxPoliciesPerCustomer\":20,\"questionnaireTemplates\":5}",
+    "agent-pro": "{\"apiAccess\":false,\"teamMembers\":3,\"maxCustomers\":500,\"privateNotes\":true,\"proposalFlow\":true,\"brandedPortal\":true,\"brandedReport\":true,\"priorityQueue\":true,\"asyncMessaging\":true,\"bulkImportLimit\":500,\"portfolioGapView\":true,\"sharedPolicyRoom\":true,\"pipelineAnalytics\":true,\"renewalAutomation\":true,\"aiAnalysesPerMonth\":150,\"analysisComparison\":true,\"commissionTracking\":true,\"monthlyTokenBudget\":4500000,\"documentRequestFlow\":true,\"savingsReportExport\":true,\"collaborationThreads\":true,\"crossSellIntelligence\":true,\"maxPoliciesPerCustomer\":null,\"questionnaireTemplates\":null}",
+    "agency": "{\"apiAccess\":false,\"teamMembers\":null,\"maxCustomers\":null,\"privateNotes\":true,\"proposalFlow\":true,\"brandedPortal\":true,\"brandedReport\":true,\"priorityQueue\":true,\"asyncMessaging\":true,\"bulkImportLimit\":null,\"portfolioGapView\":true,\"sharedPolicyRoom\":true,\"pipelineAnalytics\":true,\"renewalAutomation\":true,\"aiAnalysesPerMonth\":400,\"analysisComparison\":true,\"commissionTracking\":true,\"monthlyTokenBudget\":12000000,\"documentRequestFlow\":true,\"savingsReportExport\":true,\"collaborationThreads\":true,\"crossSellIntelligence\":true,\"maxPoliciesPerCustomer\":null,\"questionnaireTemplates\":null}"
+  },
   "policyholder": {
     "free": {
       "display": "Free",
@@ -46,7 +206,7 @@
       "agentCollaboration": true,
       "savingsReportExport": true,
       "aiAnalysisPerMonth": null,
-      "monthlyTokenBudget": 5700000,
+      "monthlyTokenBudget": 8700000,
       "trialDays": 14
     }
   },
@@ -62,7 +222,7 @@
       "brandedReport": false,
       "brandedPortal": false,
       "maxPoliciesPerCustomer": 5,
-      "monthlyTokenBudget": 1700000
+      "monthlyTokenBudget": 2000000
     },
     "agent_starter": {
       "display": "Agent Starter",
@@ -75,7 +235,7 @@
       "brandedReport": false,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": 20,
-      "monthlyTokenBudget": 16800000
+      "monthlyTokenBudget": 19600000
     },
     "agent_pro": {
       "display": "Agent Pro",
@@ -88,7 +248,7 @@
       "brandedReport": true,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": null,
-      "monthlyTokenBudget": 50000000
+      "monthlyTokenBudget": 58700000
     },
     "agency": {
       "display": "Agency",
@@ -101,8 +261,8 @@
       "brandedReport": true,
       "brandedPortal": true,
       "maxPoliciesPerCustomer": null,
-      "monthlyTokenBudget": 134000000
+      "monthlyTokenBudget": 156300000
     }
   },
-  "_budgets_note": "INTERIM budgets (owner, round 6): pro 5,700,000; agent_free 1,700,000; agent_starter 16,800,000; agent_pro 50,000,000; agency 134,000,000. To be replaced by measured budgets before GA (QUEUE BUDGET-MEASURE)."
+  "_budgets_note": "FINAL interim budgets (owner, round 7, 2026-10-23): pro 8,700,000 = (25 × 253,200 + 100 × 15,000) × 1.1; agent_free 2,000,000; agent_starter 19,600,000; agent_pro 58,700,000; agency 156,300,000 = N × 355,200 × 1.1. BUDGET-MEASURE replaces every interim value before GA."
 }

@@ -1,12 +1,13 @@
 # Status
 
 ## Current phase
-PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 22 October 2026, round 6. **NO-GO, not merged:** merging deploys to production. Last non-production preview (of `24e8fd43`, round 5): https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION). It predates round 6 (Terms §5, interim budgets); redeploy before the journey check.
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 23 October 2026, round 7. **NO-GO, not merged:** merging deploys to production. Last non-production preview (of `24e8fd43`, round 5): https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION). The round-7 preview URL is in the round-7 report.
 
 ## Done
 - Public claims equal enforced code and the **production plan rows** (H-021 closed: the defaults equal them and they parse — `plan-defaults-match-production-rows`, `production-rows-parse-as-entitlements`). Agent caps published 5 / 50 / 150 / 400.
 - Annual saving computed from prices; Family trial disclosed from the plan row on every selling surface and the Stripe hosted checkout; no token/credits copy; no unbounded-Q&A copy; cancel claims always carry "access continues to the end of the paid period" (one source); reminder offsets composed from the scheduler's constants. Each guard shown red first (`docs/series/PW-CONTENT-02/evidence/`).
-- **Round 6:** interim token budgets in code and fixture — Family 5,700,000; agents 1.7M / 16.8M / 50M / 134M (sized for `AGENT_INDEPENDENT_VERIFICATION=1`); **Terms §5 applied** (agents cancel by email to info@policywallet.gr) with all five legal versions bumped to `GR-GA-2026.10.22`; Terms §12 EN/GR mismatch opened as GA blocker H-035 with a drafted fix.
+- **Round 7:** FINAL interim token budgets in code, fixture and guard — Family 8,700,000; agents 2.0M / 19.6M / 58.7M / 156.3M (cache-miss path, verification on); all seven raw production blobs parse (flag R). Budget sizing is closed: BUDGET-MEASURE replaces every interim value before GA.
+- **Round 6:** **Terms §5 applied** (agents cancel by email to info@policywallet.gr) with all five legal versions bumped to `GR-GA-2026.10.22`; Terms §12 EN/GR mismatch opened as GA blocker H-035 with a drafted fix.
 - Reviews of every unreviewed delta ended `CRITICAL: 0` (history in `docs/series/PW-CONTENT-02/RESULT.md` §8–§12); commits after the last review changed docs/tests/comments only. 710 test files / ~7,960 tests, every CI guardrail green locally.
 
 ## In progress / Blocked (merge blockers, owner)
