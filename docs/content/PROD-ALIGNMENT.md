@@ -73,30 +73,3 @@ Production is not reachable by connection string from this machine (`vercel env 
 ## Rollback
 
 Run the archived file (it restores the 29 rows as they were, and the alignment's 21 new rows stay inactive-but-present only if you also `UPDATE gap_definitions SET is_active=false WHERE slug IN (...the 21...)`); then redeploy the previous NEW-UI commit. `gap_instances` are never touched by either direction.
-
-## Verified fingerprints and alignment history
-
-Moved verbatim from CLAUDE.md on 2026-10-11 (the rule itself stays there).
-
-Verified 2026-08-23:
-both databases 29 active / 0 inactive on fingerprint `2df9d0fd4b581caa`, the
-minted rows gone. **Verified 2026-09-08 (PW-CONTENT-01 Goals 5–6): both are now
-50 active / 0 inactive on `15fa2758cebeaecc`**, 14 branches. It shipped in two
-halves because GitHub Actions went down mid-window: the 21 new rows were
-written, then PARKED `is_active = false` so the database kept matching the code
-that was actually live, then re-activated the moment the deploy landed
-(`docs/content/PROD-ALIGNMENT.md`). **A catalogue ahead of its deployed code is
-the failure this table's rule exists to prevent — parking is how you undo it
-without deleting anything, and a content md5 taken BEFORE the write is what
-proves the undo was exact.**
-**Verified 2026-09-23 (spec v2
-Phase 2): both 55 active on `33a0731577205d72`** — the five new rows were inserted on prod
-PARKED, activated only after #366 deployed, and fingerprinted from rows handed across as JSON. Keep the content-not-counts
-rule anyway; the pipeline can mint again. This is the third table to drift
-after migrations and plan rows.
-**A fingerprint written in a document is a claim, not a measurement.** The
-alignment runbook carried `d6f515a1d400f9d5` for two days as the expected
-value of the 50-rule set; it matched nothing on either side. Print it with
-the repo's own function before trusting it — `npm run verify:gap-catalogue`
-against a database it can reach, or `scripts/fingerprint-gap-rows.ts` over
-rows handed across as JSON when it cannot.
