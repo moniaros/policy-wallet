@@ -17,7 +17,7 @@ import { DEFAULT_AGENT_ENTITLEMENT_LIMITS, DEFAULT_ENTITLEMENT_LIMITS } from '@/
  * Limits of the proof: (a) a blob is parsed as the owner transcribed it, not read from the database by this test;
  * (b) every call passes `tierKey`, so name routing (normalizeTier(plan.name)) is not exercised; (c) it proves the
  * resolver, not resolveUserEntitlements' live-subscription query (a parsing Family row still resolves to free if the
- * subscription row is not live); (d) the budgets saved in production after 2026-10-22 are the owner's, not checked here.
+ * subscription row is not live); (d) the five round-7 budgets were written to production on 2026-10-24 and the fixture re-read from them (ph-free and ph-plus unchanged).
  */
 const prod = JSON.parse(readFileSync('tests/fixtures/production-plan-rows-2026-10-22.json', 'utf-8'))
 const SENTINEL = 123_456_789
