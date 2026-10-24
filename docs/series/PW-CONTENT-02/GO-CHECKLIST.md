@@ -1,8 +1,8 @@
 # Deploy checklist: PW-CONTENT-02 (`pw-customer` → `NEW-UI` = PRODUCTION)
 
 **Rewritten as one list 2026-10-23 (round 7), with the FINAL interim budgets** · **Deployer:** Eli · **Status: NO-GO until every box under "Gate" is ticked.**
-Merging into `NEW-UI` runs CI, then `.github/workflows/deploy.yml` ships to Vercel **production** (`www.policywallet.gr`) with `--force`. There is no automatic preview of this branch (`preview.yml` only runs for PRs into `main`/`develop`). The release has **no database migration and no plan-row write by me**; it changes copy, pricing-surface rendering, one Stripe Checkout field (`custom_text`), removes one account card, and applies Terms §5 (version `GR-GA-2026.10.22`).
-A box is ticked by the owner, with today's date, after doing exactly the check written in it. "Owner-attested" means Eli's statement, not repo evidence. Read-only everywhere: no sign-up, no checkout, no plan edit other than item 1.
+Merging into `NEW-UI` runs CI, then `.github/workflows/deploy.yml` ships to Vercel **production** (`www.policywallet.gr`) with `--force`. There is no automatic preview of this branch (`preview.yml` only runs for PRs into `main`/`develop`). The release has **no database migration**; the five budget rows were written to production on 2026-10-24 by the Supabase MCP on the owner's approved tool call (DECISIONS D30), not by the release; it changes copy, pricing-surface rendering, one Stripe Checkout field (`custom_text`), removes one account card, and applies Terms §5 (version `GR-GA-2026.10.22`).
+A box is ticked with today's date and its evidence class: **owner-attested**, **MCP-verified** (read or written by the agent through an MCP on the owner's instruction), or owner-ticked. The owner ticks items 8, 9 and 11; items 1–4 were ticked on the owner's 2026-10-24 instruction. "Owner-attested" means Eli's statement, not repo evidence. Read-only everywhere: no sign-up, no checkout, no plan edit other than the item-1 write already made.
 
 ## Gate — must be closed before the merge button  [Eli does all of these]
 
@@ -13,7 +13,7 @@ A box is ticked by the owner, with today's date, after doing exactly the check w
 - [x] **H-021** closed: production rows read 2026-10-22; code defaults equal them and the raw blobs parse (`plan-defaults-match-production-rows.test.ts`, `production-rows-parse-as-entitlements.test.ts`).
 
 ### Copy
-- [x] **4. COPY re-approvals** — the re-approval table at the end of `docs/content/COPY.md` (C-10, C-20, C-21, R3-1, R3-4, R4-3, R5-1..R5-12, the payment-method help article). Reply "approved all" or "except: <keys>". Rows that depend only on flags P and W (payment-method article, R5-7, the cancel claims) are approved on that basis (owner, 2026-10-23) and re-verified at the live-Stripe gate below. A row whose PROD flag is a "no" in items 8–9 is rewritten, not approved. **Verified 2026-10-24 — owner-attested: approved in full; rows tied to Brevo (owner-attested) stay conditional, cron (MCP-verified, item 9) and PREVENTION (item 2) hold.**
+- [x] **4. COPY re-approvals** — the re-approval table at the end of `docs/series/PW-CONTENT-02/COPY.md` (C-10, C-20, C-21, R3-1, R3-4, R4-3, R5-1..R5-12, the payment-method help article). Reply "approved all" or "except: <keys>". Rows that depend only on flags P and W (payment-method article, R5-7, the cancel claims) are approved on that basis (owner, 2026-10-23) and re-verified at the live-Stripe gate below. A row whose PROD flag is a "no" in items 8–9 is rewritten, not approved. **Verified 2026-10-24 — owner-attested: approved in full; rows tied to Brevo (owner-attested) stay conditional, cron run history is MCP-read (item 9, not yet ticked; `automation.paused` unread) and PREVENTION is `0` (item 2).**
 
 ### Email and scheduler (not verifiable from the repo)
 - [ ] **8. Brevo** — Brevo → Senders, domains & dedicated IPs → `policywallet.gr` shows Authenticated (SPF + DKIM); Vercel Production env has `BREVO_API_KEY` (I saw the name on 2026-10-23; not the value); Brevo → Security → Authorised IPs does not block Vercel (the 401 in Sentry POLICYWALLET-3 is gone). *Owner-verified 2026-10-24 (owner-attested; box left for the owner). MCP evidence: DKIM CNAMEs brevo1/brevo2 and DMARC present; **the apex SPF lists only Zoho (`include:zohomail.com`), not Brevo**; no Brevo line in the 24h production runtime logs.*
@@ -27,7 +27,7 @@ A box is ticked by the owner, with today's date, after doing exactly the check w
 
 ## Pre-deploy
 - [ ] CI green on PR #410 (`audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, unit tests, production build). Local: all pass.
-- [ ] No migration and no plan-row SQL in this release: `git diff NEW-UI --stat -- prisma/` is empty.
+- [ ] No migration in this release: `git diff NEW-UI --stat -- prisma/` is empty. (The one-off budget SQL lives under `docs/series/PW-CONTENT-02/evidence/` and has already run.)
 - [ ] Rollback plan: Vercel instant rollback to the previous production deployment (read 2026-10-24: `dpl_HKWEuSk7…`, PR #411 `91579018`; re-read before deploying), or `git revert` the merge commit on `NEW-UI` (deploy re-runs). Copy and config defaults only; the Terms version bump is recorded on new sign-ups.
 - [ ] Check the live deploy's sha before deploying (parallel sessions have deployed divergent branches to the prod alias before).
 

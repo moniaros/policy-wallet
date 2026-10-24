@@ -1,3 +1,4 @@
+-- NOTE (review 2026-10-24): the snapshot written here is to_jsonb(row) = DATABASE column names, not the Prisma-field-name JSON that updatePlan stores; see b3-budgets-verification.md.
 -- B3 forward: round-7 budgets, owner decision 2026-10-24
 -- One statement = one transaction. Touches ONLY entitlements.monthlyTokenBudget on the listed rows, guarded by the
 -- value read on 2026-10-24 (a row that no longer holds that value is skipped and shows in the final count).

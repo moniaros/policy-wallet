@@ -1,4 +1,6 @@
--- B3 ROLLBACK: restores the values read on 2026-10-24 (forward write with from/to swapped; history is append-only, so it creates new versions, it does not delete the forward ones)
+-- Companion commit: after running this, also revert plan-defaults.ts, the fixture and budget-reaches-published-count.test.ts, or the guards assert budgets production no longer holds.
+-- NOTE (review 2026-10-24): the snapshot written here is to_jsonb(row) = DATABASE column names, not the Prisma-field-name JSON that updatePlan stores; see b3-budgets-verification.md.
+-- B3 ROLLBACK: restores the PRE-WRITE values (the B2 read of 2026-10-24, before the forward write) (forward write with from/to swapped; history is append-only, so it creates new versions, it does not delete the forward ones)
 -- One statement = one transaction. Touches ONLY entitlements.monthlyTokenBudget on the listed rows, guarded by the
 -- value read on 2026-10-24 (a row that no longer holds that value is skipped and shows in the final count).
 -- Reproduces /admin/plans updatePlan (app/(protected)/admin/plans/actions.ts): plans.version+1, plans.updated_at,

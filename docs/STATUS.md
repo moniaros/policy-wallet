@@ -1,7 +1,7 @@
 # Status
 
 ## Current phase
-PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 23 October 2026, round 7. **NO-GO, not merged:** merging deploys to production. Last non-production preview (of `24e8fd43`, round 5): https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION). The round-7 preview URL is in the round-7 report.
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (draft) into `NEW-UI` — 24 October 2026, owner decisions applied. **NO-GO, not merged:** merging deploys to production. Last non-production preview (of `24e8fd43`, round 5): https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION). Round-7 preview (of `d8fa8f58`, journey-checked read-only 2026-10-24): https://policy-wallet-4u22f4abk-moniaros-projects.vercel.app
 
 ## Done
 - Public claims equal enforced code and the **production plan rows** (H-021 closed: the defaults equal them and they parse — `plan-defaults-match-production-rows`, `production-rows-parse-as-entitlements`). Agent caps published 5 / 50 / 150 / 400.
@@ -11,18 +11,17 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 - Reviews of every unreviewed delta ended `CRITICAL: 0` (history in `docs/series/PW-CONTENT-02/RESULT.md` §8–§13); the commit after the round-7 review changed docs/tests/comments only. 710 test files / ~7,960 tests, every CI guardrail green locally.
 
 ## In progress / Blocked (merge blockers, owner)
-- **H-025**: confirm the public no-commission claims (C-37's commission sentence is held with it).
-- **COPY.md**: re-approvals (re-approval table at the end of `COPY.md`).
-- Owner manual items on `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`: final budgets saved in /admin/plans, `PREVENTION_PERSONALIZATION_ENABLED=0`, Brevo + renewal cron run history. The Stripe live portal/webhook/trial reminder moved to «Before switching production to live Stripe keys» (GA blocker, not a merge blocker: production is on test keys and paid checkout is withheld; DECISIONS D28).
-- The owner's production-check values (round 7 template) arrived unfilled: no box ticked, PR #410 stays draft.
+- **Done 2026-10-24:** budgets written to production and re-read (D30); `PREVENTION_PERSONALIZATION_ENABLED` = 0 (MCP); H-025 closed and COPY approved in full (owner-attested); checklist items 1–4 ticked.
+- **Owner:** approve the journey check (`evidence/journey/RESULT.md`; no 320/390px screenshots possible), tick Brevo (item 8; SPF lists only Zoho) and the renewal cron (item 9; `automation.paused` unread); decide the review's open points (snapshot shape of five `plan_revisions` rows, settings guardrails, dev not rehearsed). Then mark PR #410 ready; NEW-UI (#411, #412) must be merged into the branch first.
+- The Stripe live portal/webhook/trial reminder are in «Before switching production to live Stripe keys» (GA blocker, not a merge blocker; D28).
 
 ## Top risks ranked
 1. **Broken / insecure (gates launch, GA):** BUDGET-MEASURE (token budgets are estimate-based; the scan/upload extraction and verification draw on the same row); H-035 Terms §12; `/api/v1/policies/share` skips the Family entitlement (PW-ENTITLE-01 item 2, security-reviewer); the live checkout grants the trial to every checkout (PW-ENTITLE-01 item 1); no subscription-start or trial-ending email (H-032); dead token top-up route still sells packs.
-2. H-025 no-commission claims; the boat-liability rule vs ν. 4926/2022 still in the in-app domain model.
+2. The boat-liability rule vs ν. 4926/2022 still in the in-app domain model.
 3. Previews reach the production database until a staging Supabase project is wired (blocks PW-ASSET-01).
 **UI/UX (does not gate):** dead verdict components still importable; demo dates/k-M amounts hand-typed.
 
 ## Next 3 actions
-1. Eli: the manual GO-CHECKLIST items; H-025; COPY re-approvals.
-2. Redeploy the preview from the tip; Eli: view-only journey check; then GO per the checklist (merge → CI → production deploy).
-3. Queue: BUDGET-MEASURE, H-035 legal commit, PW-ENTITLE-01 (trial once per customer; share-route entitlement), PW-CLAIMREG-01.
+1. Eli: approve the journey check; tick items 8, 9, 11; answer the review's open points.
+2. Merge NEW-UI into `pw-customer`, re-run the gates, mark PR #410 ready (Eli merges); then post-deploy check when deploy.yml has finished.
+3. Queue: BUDGET-MEASURE, H-035 legal commit, PW-ENTITLE-01, PW-CLAIMREG-01.
