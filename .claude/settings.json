@@ -80,7 +80,11 @@
       "mcp__plugin_supabase_supabase__delete_branch",
       "mcp__plugin_supabase_supabase__merge_branch",
       "mcp__plugin_supabase_supabase__rebase_branch",
-      "mcp__plugin_supabase_supabase__reset_branch"
+      "mcp__plugin_supabase_supabase__reset_branch",
+      "mcp__plugin_supabase_supabase__pause_project",
+      "mcp__plugin_supabase_supabase__restore_project",
+      "mcp__plugin_supabase_supabase__create_project",
+      "Bash(npx prisma:*)"
     ]
   }
 }
