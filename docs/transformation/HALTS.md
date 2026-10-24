@@ -1057,7 +1057,9 @@ Decisions are in `docs/transformation/DECISIONS.md` (PW-CONTENT-02 round 2). Sta
 - **H-022** — tagline «Τα ασφαλιστήριά σας, με απλά λόγια» APPROVED for root title, OG headline and home Twitter title. Item 3 (partner-referral revenue) stays unconfirmed: see **H-025**.
 - **H-024** — resolved or removed item by item: Schengen €30.000 kept and sourced (Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18); support is **email only** (no phone, no hours, no «Αποκλειστική υποστήριξη» — removed everywhere); Stripe portal downgrade claim REMOVED (the portal has no configuration in test mode, 0 of 0, and the app has no in-app downgrade flow); the boat sentence stays removed until the cited article of ν. 4926/2022.
 
-## H-025 — Public "no commission" claims: confirm they are true before they stay · OPEN
+## H-025 — Public "no commission" claims: confirm they are true before they stay · CLOSED 2026-10-24
+
+**Owner decision 2026-10-24 (Eli): no partner referral, affiliate or lead arrangement earns PolicyWallet money. The no-commission claims listed below are true and stay as written; C-37's commission sentence is approved.** Owner-attested, not repo evidence; if an arrangement is ever signed, this halt reopens and every claim below is removed with no replacement wording. The original entry follows.
 
 date: 2026-10-22 · raised_by: PW-CONTENT-02 · blocks: nothing in the build; **needs Eli**
 

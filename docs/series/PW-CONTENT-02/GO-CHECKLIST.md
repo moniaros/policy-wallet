@@ -28,11 +28,11 @@ A box is ticked by the owner, with today's date, after doing exactly the check w
 ## Pre-deploy
 - [ ] CI green on PR #410 (`audit:api-auth`, `lint`, `lint:i18n-changed`, `lint:utf8`, `type-check`, unit tests, production build). Local: all pass.
 - [ ] No migration and no plan-row SQL in this release: `git diff NEW-UI --stat -- prisma/` is empty.
-- [ ] Rollback plan: Vercel instant rollback to the previous production deployment (currently `dpl_HYmFCK1U…`, PR #408 `95c8670a`), or `git revert` the merge commit on `NEW-UI` (deploy re-runs). Copy and config defaults only; the Terms version bump is recorded on new sign-ups.
+- [ ] Rollback plan: Vercel instant rollback to the previous production deployment (read 2026-10-24: `dpl_HKWEuSk7…`, PR #411 `91579018`; re-read before deploying), or `git revert` the merge commit on `NEW-UI` (deploy re-runs). Copy and config defaults only; the Terms version bump is recorded on new sign-ups.
 - [ ] Check the live deploy's sha before deploying (parallel sessions have deployed divergent branches to the prod alias before).
 
 ## Deploy
-- [ ] **11. View-only journey check on the non-production preview** (the URL is in my round-7 report; it reaches the PRODUCTION database: no sign-up, no checkout): `/`, `/pricing` (toggle monthly/annual: Family «Δωρεάν δοκιμή 14 ημερών. Μετά χρεώνεται 8,99 € τον μήνα…», annual «79 € τον χρόνο»; Plus/Free no trial; savings «περίπου 21 € / 29 € τον χρόνο»; Agent Free 5 analyses, table 5/50/150/400), `/product`, `/product/travel`, `/contact` (email only), `/trust`, `/compare`, `/legal/terms` (§5 two paragraphs, version GR-GA-2026.10.22).
+- [ ] **11. View-only journey check on the non-production preview** (the URL is in my round-7 report; it reaches the PRODUCTION database: no sign-up, no checkout): `/`, `/pricing` (toggle monthly/annual: Family «Δωρεάν δοκιμή 14 ημερών. Μετά χρεώνεται 8,99 € τον μήνα…», annual «79 € τον χρόνο»; Plus/Free no trial; savings «περίπου 21 € / 29 € τον χρόνο»; Agent Free 5 analyses, table 5/50/150/400), `/product`, `/product/travel`, `/contact` (email only), `/trust`, `/compare`, `/terms` (§5 two paragraphs, version GR-GA-2026.10.22).
 - [ ] Merge to `NEW-UI` [Eli]; watch CI → deploy.yml.
 - [ ] Verify the live CSS/JS is the new build (a stale build cache once shipped old CSS; deploy uses `--force`).
 - [ ] Production smoke (owner session): `/pricing` both toggles; buttons per `publicCheckoutAvailability()`; `/account` has no token card; Stripe-hosted checkout (when live keys exist) shows the bilingual trial line.
