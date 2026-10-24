@@ -1,5 +1,7 @@
 import { Bell, Sparkles, Upload } from "lucide-react"
+import { BASIC_WHEN } from "@/lib/renewals/reminder-copy"
 import { PUBLIC_COUNTS } from "@/lib/marketing/public-counts"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 /**
  * Product-page marketing copy, shared between the client page (rendering)
@@ -31,8 +33,8 @@ export const PRODUCT_STEPS = [
         icon: Bell,
         titleEl: "Σας κρατάμε ενήμερους",
         titleEn: "We keep you in the loop",
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
-        descEn: "We warn you before something runs out — from the Plus plan — and when we find something new in your documents, with Family."
+        descEl: `Σας ειδοποιούμε με email πριν λήξει κάτι — μία υπενθύμιση ${BASIC_WHEN.el} σε όλα τα πλάνα, περισσότερες στα Plus και Family — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.`,
+        descEn: `We email you before something runs out — one reminder ${BASIC_WHEN.en} on every plan, more on Plus and Family — and when we find something new in your documents, with Family.`
     },
 ] as const
 
@@ -83,13 +85,13 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Πουλάτε ασφάλειες;",
         qEn: "Do you sell insurance?",
-        aEl: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία και δεν παίρνουμε προμήθεια από καμία. Πληρωνόμαστε μόνο από τη δική σας συνδρομή.",
-        aEn: "No. We are not an insurance company and we take no commission from any of them. We are paid only by your subscription.",
+        aEl: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία και δεν παίρνουμε προμήθεια από καμία.",
+        aEn: "No. We are not an insurance company and we take no commission from any of them.",
     },
     {
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
-        aEl: "Ναι. Ο δωρεάν λογαριασμός χωρά έως 3 ασφαλιστήρια, χωρίς κάρτα. Η ανάλυση έχει μηνιαίο όριο χρήσης. Οι πρόσθετες λειτουργίες περιγράφονται στη σελίδα με τα πλάνα.",
-        aEn: "Yes. The free account holds up to 3 policies without a payment card. Analysis has a monthly usage allowance. Additional features are listed on the plans page.",
+        aEl: `Ναι. Ο δωρεάν λογαριασμός χωρά ${FREE_UP_TO.el}, χωρίς κάρτα. Οι πρόσθετες λειτουργίες περιγράφονται στη σελίδα με τα πλάνα.`,
+        aEn: `Yes. The free account holds ${FREE_UP_TO.en} without a payment card. Additional features are listed on the plans page.`,
     },
 ] as const

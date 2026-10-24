@@ -732,18 +732,11 @@ export function AnalysisCard({
                     </div>
                 </div>
             )}
-            {/* The complimentary deep analysis exists server-side but was never
-                advertised — say it before use, nudge the upgrade after. */}
-            {tier === "free" && trialAnalysisAvailable === true && !analysisInProgress && (
-                <div className="px-6 pt-5">
-                    <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary-tint px-4 py-3 dark:border-primary/35">
-                        <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
-                        <p className="text-sm font-medium text-black/75 dark:text-white/80">
-                            {t.analysis.freeTrialAvailable}
-                        </p>
-                    </div>
-                </div>
-            )}
+            {/* The line that promised Free users a complimentary full analysis is gone
+                (PW-CONTENT-02 A1, H-019): nothing grants a free full analysis —
+                the orchestrator refuses Free (`free_tier_ai_locked`) and nothing
+                writes `trial_analysis_used_at`. The grant, if it is ever built,
+                is PW-ENTITLE-01 and brings its own copy with it. */}
             {tier === "free" && trialAnalysisAvailable === false && !analysisInProgress && (
                 <div className="px-6 pt-5">
                     <UpgradeTriggerCard

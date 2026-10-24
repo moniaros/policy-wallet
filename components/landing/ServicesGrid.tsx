@@ -1,4 +1,5 @@
 // No "use client": purely static markup, server-rendered on the landing.
+import { BASIC_WHEN } from "@/lib/renewals/reminder-copy"
 import { FolderOpen, ScanSearch, Bell, MessageCircle, Users } from "lucide-react"
 
 interface ServicesGridProps {
@@ -20,7 +21,7 @@ const services = [
         Icon: ScanSearch,
         titleEl: "Τι χρειάζεται έλεγχο;",
         titleEn: "What needs checking?",
-        // Gap detection is Plus-only — the tier is named, same rule as the
+        // Gap findings are Family — the tier is named, same rule as the
         // advisor-sharing card below.
         descEl: "Με το Family, δείτε σημεία που χρειάζονται προσοχή στα έγγραφά σας. Επιβεβαιώστε τα με το ασφαλιστήριο και τον ασφαλιστή σας.",
         descEn: "With Family, see points that need attention in your documents. Confirm them against the policy and with your adviser.",
@@ -44,8 +45,8 @@ const services = [
         titleEn: "When does it run out?",
         // Only promises what the product can do from documents: expiry
         // reminders and re-analysis findings — not price-change feeds.
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
-        descEn: "We warn you before something runs out — from the Plus plan — and when we find something new in your documents, with Family.",
+        descEl: `Σας ειδοποιούμε με email πριν λήξει κάτι — μία υπενθύμιση ${BASIC_WHEN.el} σε όλα τα πλάνα, περισσότερες στα Plus και Family — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.`,
+        descEn: `We email you before something runs out — one reminder ${BASIC_WHEN.en} on every plan, more on Plus and Family — and when we find something new in your documents, with Family.`,
         benefitEl: "Έχετε τις ημερομηνίες μπροστά σας",
         benefitEn: "Keep track of the dates",
         wide: false,
@@ -54,7 +55,7 @@ const services = [
         Icon: MessageCircle,
         titleEl: "Τι σημαίνει αυτό;",
         titleEn: "What does this mean?",
-        // Policy Q&A is Plus-only — same naming rule.
+        // Policy Q&A is Family — same naming rule.
         descEl: "Με το Family, κάντε ερωτήσεις για το ασφαλιστήριό σας και δείτε απαντήσεις που βασίζονται στο έγγραφο. Ελέγξτε τις σημαντικές πληροφορίες στο πρωτότυπο.",
         descEn: "With Family, ask about your policy and see answers based on the document. Check important information in the original.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",

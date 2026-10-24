@@ -1,0 +1,14 @@
+// Probe for tests/unit/cancel-claims-state-access.test.ts — each line is a claim the guard must flag.
+export const A = { el: "Ακύρωση ανά πάσα στιγμή", en: "Cancel anytime" }
+export const B = "Secure payment with Stripe · Cancel renewal at any time"
+export const C = "Μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε το πλάνο σας"
+export const D = "You can downgrade your plan whenever you like"
+export const E = "Cancel anytime (from your account)"
+export const F = "Μπορείτε να ακυρώσετε όποτε θέλετε"
+export const G = "You can cancel at any time."
+export const H = "Υποβάθμιση πλάνου με ένα κλικ"
+export const I = "Μπορείτε να διακόψετε τη συνδρομή όποτε θέλετε"
+export const J = "You can change your plan at any time"
+export const K = "Switch plans whenever you like"
+export const L = "Μπορείτε να αλλάξετε πρόγραμμα όποτε θέλετε"
+export const M = "Υποβάθμιση προγράμματος χωρίς χρέωση"

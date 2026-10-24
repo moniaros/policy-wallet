@@ -1,5 +1,6 @@
 "use client"
 
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import { presentationCopy } from "@/lib/i18n/presentation"
 import "@/components/landing/product-stage.css"
 import React, { useEffect, useState } from "react"
@@ -109,13 +110,9 @@ export default function PricingPage({
             el: "Ετήσια χρέωση",
             en: "Yearly billing",
         },
-        annualSavings: {
-            el: "Έκπτωση",
-            en: "Save",
-        },
         cancelAnytime: {
-            el: "Ακύρωση ανανέωσης όποτε θέλετε",
-            en: "Cancel renewal at any time",
+            el: CANCEL_ANYTIME.el,
+            en: CANCEL_ANYTIME.en,
         },
         noHiddenFees: {
             el: "Καμία κρυφή χρέωση",
@@ -365,12 +362,8 @@ export default function PricingPage({
                                 }`}
                             >
                                 {labels.annual[language]}
-                                {/* The mint chip is a fixed brand accent in BOTH themes, so its
-                                    label must stay dark. A dark:text-white here put white on
-                                    #89D9B2 — 1.66:1, effectively unreadable. */}
-                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#0F172A]">
-                                    {labels.annualSavings[language]}
-                                </span>
+                                {/* No «Έκπτωση» chip here: whether annual is cheaper depends on the live plan rows,
+                                    so each card states its own computed saving (or none). */}
                             </button>
                         </div>
                     </div>

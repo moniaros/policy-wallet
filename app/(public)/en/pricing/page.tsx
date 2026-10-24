@@ -42,7 +42,7 @@ export default async function PricingPageEnglish() {
                             .filter((plan) => !plan.isContactPlan)
                             .map((plan) => ({
                                 name: plan.name.en,
-                                price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),
+                                price: plan.pricing.monthly.value,
                                 description: plan.description.en,
                             })),
                         "en"

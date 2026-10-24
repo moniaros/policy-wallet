@@ -47,8 +47,8 @@ export const productCategories = [
         // "Market value tracking" would imply an external price feed. The
         // real capability: we surface what the policy would pay; the reader
         // compares it with what the car is worth.
-        headlineEl: "Τι θα πλήρωνε το ασφαλιστήριο — και κενά οδικής βοήθειας.",
-        headlineEn: "What the policy would pay — and roadside assistance gaps.",
+        headlineEl: "Τι θα πλήρωνε το ασφαλιστήριο — και πού ισχύει η οδική βοήθεια.",
+        headlineEn: "What the policy would pay — and where roadside assistance applies.",
         descEl: "Δείτε τις καλύψεις, τα ποσά και τη συμμετοχή σας σε ζημιά. Η αποζημίωση εξαρτάται από τους όρους και το περιστατικό.",
         descEn: "See the cover, limits and your share of a claim. Payment depends on the terms and the circumstances.",
         surface: "bg-[#DCEBDA]",
@@ -65,10 +65,12 @@ export const productCategories = [
         tagEn: "Real estate",
         headlineEl: "Κόστος ανακατασκευής και έκπτωση ΕΝΦΙΑ, με μια ματιά.",
         headlineEn: "Rebuild cost and the ENFIA tax discount, at a glance.",
-        // Underinsurance detection is a Plus output — the glossary hooks for
-        // «υπασφάλιση» and «ασφαλισμένο κεφάλαιο» name the plan, so this does too.
-        descEl: "Με το Family, δείτε αν το σπίτι σας είναι ασφαλισμένο για λιγότερα απ' όσο κοστίζει να ξαναχτιστεί.",
-        descEn: "With Family, see whether your home is insured for less than it would cost to rebuild.",
+        // The underinsurance finding is a Family output and compares two figures
+        // the policy document itself states (insured_value_below_rebuild_cost) —
+        // so the copy names the plan and says what is compared, not a fact about
+        // the house.
+        descEl: "Με το Family, συγκρίνουμε το ασφαλισμένο κεφάλαιο με το κόστος ανακατασκευής που αναφέρει το ίδιο το ασφαλιστήριο.",
+        descEn: "With Family, we compare the sum insured with the rebuild cost that the policy itself states.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -117,7 +119,7 @@ export const productCategories = [
         tagEn: "Third parties",
         headlineEl: "Ζημιές σε τρίτους — και έλεγχος για διπλή κάλυψη.",
         headlineEn: "Third-party damage — with a double-coverage check.",
-        // The double-coverage check is Plus-only — the teaser names the plan.
+        // Duplicate-cover detection is UNGATED (every plan) — see plan-gating-parity.test.ts.
         descEl: "Δείτε μαζί την ομαδική και την ατομική σας ασφάλιση και ρωτήστε πώς συνδυάζονται οι παροχές τους.",
         descEn: "Review group and individual insurance together and ask how their benefits work together.",
         surface: "bg-[#DCEBDA]",
@@ -201,8 +203,8 @@ export const productCategories = [
         tagEn: "Family",
         headlineEl: "Κεφάλαιο κάλυψης, σοβαρές ασθένειες και προστασία δανείου.",
         headlineEn: "Cover amount, serious illness and mortgage protection.",
-        descEl: "Δείτε αν το κεφάλαιο του ασφαλιστηρίου ζωής σας φτάνει πραγματικά για την οικογένεια και το στεγαστικό σας.",
-        descEn: "See whether your life policy's capital actually covers your family and your outstanding mortgage.",
+        descEl: "Δείτε τι αναφέρει το ασφαλιστήριο ζωής: κεφάλαιο, καλύψεις και εξαιρέσεις. Αν επαρκούν για την οικογένεια και το στεγαστικό σας, το συζητάτε με τον ασφαλιστή σας.",
+        descEn: "See what your life policy states: capital, covers and exclusions. Whether they are enough for your family and your mortgage is something to discuss with your insurance agent.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -217,8 +219,8 @@ export const productCategories = [
         tagEn: "Trips",
         headlineEl: "Ιατρικά έκτακτα, ακύρωση ταξιδιού και όρια για Σένγκεν.",
         headlineEn: "Emergency medical abroad, trip cancellation and Schengen limits.",
-        descEl: "Μάθετε τι καλύπτει η ταξιδιωτική σας ασφάλεια — και αν τα όρια αρκούν για βίζα — πριν φύγετε, όχι στο ταμείο του νοσοκομείου.",
-        descEn: "Know what your travel policy covers — and whether limits meet visa requirements — before you fly, not at a foreign hospital.",
+        descEl: "Δείτε τι καλύπτει το ταξιδιωτικό σας ασφαλιστήριο και ποια όρια αναφέρει, πριν φύγετε και όχι στο ταμείο του νοσοκομείου.",
+        descEn: "See what your travel policy covers and which limits it states, before you fly and not at a foreign hospital.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -247,10 +249,14 @@ export const productCategories = [
         labelEn: "Boat",
         tagEl: "Θάλασσα",
         tagEn: "Marine",
-        headlineEl: "Υποχρεωτική αστική ευθύνη και κάλυψη σκάφους & μηχανής.",
-        headlineEn: "Mandatory liability plus hull & machinery coverage.",
-        descEl: "Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε τι άλλο καλύπτει το ασφαλιστήριό σας πριν λύσετε κάβους.",
-        descEn: "Liability cover is mandatory in Greek waters. See what else your policy includes before you cast off.",
+        headlineEl: "Αστική ευθύνη και κάλυψη σκάφους & μηχανής.",
+        headlineEn: "Liability plus hull & machinery coverage.",
+        // The sentence «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα» is REMOVED
+        // (PW-CONTENT-02 H-024): no official source was found. Reinstate only with the
+        // specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) cited from the official
+        // text, worded to the law's actual scope (vessel type and length).
+        descEl: "Δείτε τι καλύπτει το ασφαλιστήριο του σκάφους σας πριν λύσετε κάβους.",
+        descEn: "See what your boat's policy covers before you cast off.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -286,8 +292,8 @@ export const productCategories = [
         tagEn: "Commercial",
         headlineEl: "Στέγη, εξοπλισμός, διακοπή εργασιών και ευθύνες μαζί.",
         headlineEn: "Premises, equipment, interruption and liabilities in one view.",
-        descEl: "Το πολυασφαλιστήριο της επιχείρησής σας έχει πολλά σκέλη. Δείτε ποια έχετε και ποια λείπουν, σε μία εικόνα.",
-        descEn: "A business multi-risk policy has many sections. See which ones you hold and which are missing, at a glance.",
+        descEl: "Το πολυασφαλιστήριο της επιχείρησής σας έχει πολλά σκέλη. Δείτε ποια σκέλη αναφέρει το ασφαλιστήριο, σε μία εικόνα.",
+        descEn: "A business multi-risk policy has many sections. See which sections the policy lists, at a glance.",
         surface: "bg-white",
         border: "border-[#E2E8F0]",
         tagBg: "bg-[#F1F5F9] text-[#475569]",
@@ -302,8 +308,8 @@ export const productCategories = [
         tagEn: "Companion animals",
         headlineEl: "Καλύπτεται η λεϊσμανίαση; Και ποιες παθήσεις εξαιρούνται;",
         headlineEn: "Is leishmaniasis covered? And which conditions are excluded?",
-        descEl: "Ξέρετε ακριβώς τι καλύπτεται και τι δεν καλύπτεται πριν ο κτηνίατρος σας δώσει τον λογαριασμό.",
-        descEn: "Know exactly what's covered and what isn't before the vet hands you the bill.",
+        descEl: "Δείτε τι αναφέρει το ασφαλιστήριο ότι καλύπτεται και τι εξαιρείται, πριν ο κτηνίατρος σας δώσει τον λογαριασμό.",
+        descEn: "See what the policy says is covered and what is excluded, before the vet hands you the bill.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",

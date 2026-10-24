@@ -16,6 +16,7 @@ import {
     tierUnlocks,
     recommendedPlan,
 } from '@/lib/monetization'
+import { FREE_PLAN_LIMIT } from '@/lib/marketing/limit-statement'
 import { UPGRADE_COPY_EL } from '@/lib/monetization/upgrade-copy.el'
 import { UPGRADE_COPY_EN } from '@/lib/monetization/upgrade-copy.en'
 import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
@@ -38,8 +39,9 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         for (const [tier, pricing] of Object.entries(PLAN_PRICING)) {
             const publicPlan = allPlans.find((p: any) => p.checkoutPlanId === pricing.planId)
             expect(publicPlan, `public pricing plan for ${tier}`).toBeTruthy()
-            expect(publicPlan.pricing.monthly.amount).toBe(`€${pricing.monthlyEur}`)
-            expect(publicPlan.pricing.annual?.amount).toBe(`€${pricing.annualEur}`)
+            // The public price is a NUMBER until render (PW-CONTENT-02 A3).
+            expect(publicPlan.pricing.monthly.value).toBe(pricing.monthlyEur)
+            expect(publicPlan.pricing.annual?.value).toBe(pricing.annualEur)
         }
     })
 
@@ -161,7 +163,6 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
             'advanced_gap_detection',
             'unlimited_ai_questions',
             'multi_insurer_insights',
-            'claims_preparation_assistant',
             // family_portfolio was removed — a Pro-gated promise with full sales
             // copy that nothing implemented and nothing could reach.
             // duplicate_coverage_detection was removed 2026-08-30 the other way
@@ -195,6 +196,7 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         const source = [
             'components/landing/WorldClassLanding.tsx',
             'lib/marketing/positioning.ts',
+            'lib/marketing/limit-statement.ts',
         ]
             .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
             .join('\n')
@@ -208,9 +210,14 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         const freeLimit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
         expect(freeLimit, 'the free tier must enforce a finite policy count').toBeTypeOf('number')
 
-        expect(source, 'the landing must state the enforced free limit in Greek')
+        // The count is no longer typed in the landing: it is read from the
+        // entitlement source by lib/marketing/limit-statement.ts (PW-CONTENT-02
+        // item 2), so the statement itself is what is checked.
+        expect(source, 'the landing must state the free limit through FREE_PLAN_LIMIT')
+            .toMatch(/FREE_PLAN_LIMIT/)
+        expect(FREE_PLAN_LIMIT.el, 'the landing must state the enforced free limit in Greek')
             .toMatch(new RegExp(`${freeLimit}\\s*ασφαλιστήρι`))
-        expect(source, 'the landing must state the enforced free limit in English')
+        expect(FREE_PLAN_LIMIT.en, 'the landing must state the enforced free limit in English')
             .toMatch(new RegExp(`${freeLimit}\\s*polic`))
 
         for (const wrong of [1, 2, 3, 5, 10, 25].filter((n) => n !== freeLimit)) {

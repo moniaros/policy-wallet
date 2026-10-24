@@ -1,4 +1,5 @@
 import { presentationCopy } from "@/lib/i18n/presentation"
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import React from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -7,7 +8,8 @@ import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
 import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
-import { formatEur } from "@/lib/pricing/pricing-view-model"
+import { FREE_PLAN_LIMIT } from "@/lib/marketing/limit-statement"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 
 /**
  * Names and prices come from the same defaults that seed the live catalog,
@@ -67,7 +69,10 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                 {children}
 
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
-                <section className="border-t border-neutral-200 bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
+                {/* data-shell: the same closing band on every branch page, like the
+                    footer — excluded from the duplicate-block metrics (PW-CONTENT-02,
+                    M-X1; the decision and both counts are in RESULT.md). */}
+                <section data-shell className="border-t border-neutral-200 bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
                         {/* A <p>, not an h2: this band repeats on all 16 branch pages,
                             and as a heading it gave every one the same outline entry
@@ -75,20 +80,20 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                         <p className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white">
                             {isAgentAudience
                                 ? presentationCopy[locale].agentClosing
-                                : t("Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 3 policies. Upgrade whenever you need it.")}
+                                : t(`${FREE_PLAN_LIMIT.el}. Αναβάθμιση όποτε τη χρειαστείτε.`, `${FREE_PLAN_LIMIT.en}. Upgrade whenever you need it.`)}
                         </p>
                         <p className="mb-8 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-400">
                             {isAgentAudience
                                 ? AGENT_FUNNEL_PLANS
                                     ? t(
-                                          `${AGENT_FUNNEL_PLANS.starter.displayName} ${formatEur(AGENT_FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${AGENT_FUNNEL_PLANS.pro.displayName} ${formatEur(AGENT_FUNNEL_PLANS.pro.monthlyEur)}/μήνα για ομάδες. Ακύρωση όποτε θέλετε.`,
-                                          `${AGENT_FUNNEL_PLANS.starter.displayName} at ${formatEur(AGENT_FUNNEL_PLANS.starter.monthlyEur)}/month, ${AGENT_FUNNEL_PLANS.pro.displayName} at ${formatEur(AGENT_FUNNEL_PLANS.pro.monthlyEur)}/month for teams. Cancel anytime.`
+                                          `${AGENT_FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "el")}/μήνα, ${AGENT_FUNNEL_PLANS.pro.displayName} ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "el")}/μήνα για ομάδες.`,
+                                          `${AGENT_FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.starter.monthlyEur, "en")}/month, ${AGENT_FUNNEL_PLANS.pro.displayName} at ${formatPlanPrice(AGENT_FUNNEL_PLANS.pro.monthlyEur, "en")}/month for teams.`
                                       )
                                     : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")
                                 : FUNNEL_PLANS
                                   ? t(
-                                        `${FUNNEL_PLANS.starter.displayName} ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/μήνα, ανάλογα με το πλάνο. Ακύρωση όποτε θέλετε.`,
-                                        `${FUNNEL_PLANS.starter.displayName} at ${formatEur(FUNNEL_PLANS.starter.monthlyEur)}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatEur(FUNNEL_PLANS.plus.monthlyEur)}/month, depending on your plan. Cancel anytime.`
+                                        `${FUNNEL_PLANS.starter.displayName} ${formatPlanPrice(FUNNEL_PLANS.starter.monthlyEur, "el")}/μήνα, ${FUNNEL_PLANS.plus.displayName} ${formatPlanPrice(FUNNEL_PLANS.plus.monthlyEur, "el")}/μήνα, ανάλογα με το πλάνο. ${CANCEL_ANYTIME.el}.`,
+                                        `${FUNNEL_PLANS.starter.displayName} at ${formatPlanPrice(FUNNEL_PLANS.starter.monthlyEur, "en")}/month, ${FUNNEL_PLANS.plus.displayName} at ${formatPlanPrice(FUNNEL_PLANS.plus.monthlyEur, "en")}/month, depending on your plan. ${CANCEL_ANYTIME.en}.`
                                     )
                                   : t("Δείτε όλα τα πλάνα στη σελίδα τιμών.", "See every plan on the pricing page.")}
                         </p>

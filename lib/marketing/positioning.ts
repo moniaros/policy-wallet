@@ -13,7 +13,7 @@
  *     Life changes.
  *     Your risks change with it.
  *     Your insurance does not always keep up.
- *     PolicyWallet tells you whether you are still protected.
+ *     PolicyWallet helps you read what your policies say.
  *
  * and every page answers the same four questions in the same order:
  *
@@ -34,6 +34,9 @@
  * unit tests can all read it.
  */
 
+import { FREE_PLAN_LIMIT } from "@/lib/marketing/limit-statement"
+import type { ClaimKey } from "@/lib/marketing/plan-claims"
+
 export type MarketingLocale = "el" | "en"
 
 /** A bilingual string. `el` is authoritative; `en` must mean the same thing. */
@@ -48,8 +51,19 @@ export function pick(value: Bilingual, locale: MarketingLocale): string {
  * not name: the label renders wherever a page states what PolicyWallet IS —
  * the sitewide footer identity line, the company kicker, /product, /compare
  * and the OG cards — and CATEGORY below is its plain-language decode.
- * Must stay aligned with the definitional sentence in lib/seo/site.ts
- * («προσωπικής ανάλυσης ρίσκου» ↔ "personal risk intelligence").
+ * Must stay aligned with the definitional sentence in lib/seo/site.ts.
+ *
+ * PW-CONTENT-02 / H-022: this is the ONE positioning line. Every other
+ * variant («προσωπικής ανάλυσης ρίσκου», «έλεγχος ρίσκου», «αν είστε
+ * καλυμμένοι», …) is retired from public routes and metadata, and the
+ * positioning lint in tests/unit/voice-guards.test.ts keeps it that way.
+ *
+ * Two FORMS, because a sentence that embeds the label needs its own grammar:
+ * the label (`CATEGORY_NAME`, capitalised, article-free) for headings and
+ * lines that stand alone; the inline form (`CATEGORY_NAME_INLINE`, lower
+ * case) for the middle of a sentence («είναι μια πλατφόρμα…», "is a
+ * platform…"). The 2026-10-21 rename shipped «η Πλατφόρμα…» and "is an A
+ * platform…" because only the label existed.
  *
  * It is NOT in the homepage hero. A stranger giving the page three seconds
  * cannot do anything with a category label, so the hero leads with the decode
@@ -57,7 +71,13 @@ export function pick(value: Bilingual, locale: MarketingLocale): string {
  */
 export const CATEGORY_NAME: Bilingual = {
     el: "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων",
-    en: "A platform for organising and understanding insurance policies",
+    en: "Platform for organising and understanding insurance policies",
+}
+
+/** The same line for the middle of a sentence. Compose with your own article. */
+export const CATEGORY_NAME_INLINE: Bilingual = {
+    el: "πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων",
+    en: "platform for organising and understanding insurance policies",
 }
 
 /**
@@ -369,8 +389,10 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
  * is three policies with full analysis — stated once, here.
  */
 export const CTA_REASSURANCE: Bilingual = {
-    el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Αναβάθμιση όποτε τη χρειαστείτε.",
-    en: "Free for 3 policies. No card required. Upgrade when you need to.",
+    // The policy cap is read from the entitlement source (lib/marketing/limit-statement.ts),
+    // never typed: the free-tier promise has drifted four times when it was.
+    el: `${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. Αναβάθμιση όποτε τη χρειαστείτε.`,
+    en: `${FREE_PLAN_LIMIT.en}. No card required. Upgrade when you need to.`,
 }
 
 /**
@@ -464,6 +486,13 @@ export const COMPARISON_COLUMNS: readonly {
 ]
 
 export const COMPARISON_ROWS: readonly {
+    /**
+     * The enforced capability the PolicyWallet cell states, or `null` for a row
+     * that is prose about the product's job. The «policywallet» verdict is
+     * checked against `planClaim` for free / plus / pro by plan-gating-parity
+     * (review I3): all true → «yes», Family only → «family».
+     */
+    claim: ClaimKey | null
     job: Bilingual
     folder: ComparisonVerdict
     insurer: ComparisonVerdict
@@ -471,6 +500,7 @@ export const COMPARISON_ROWS: readonly {
     policywallet: ComparisonVerdict
 }[] = [
     {
+        claim: null,
         job: { el: "Βλέπετε όλα τα ασφαλιστήρια μαζί", en: "See all your policies together" },
         folder: "partial",
         insurer: "no",
@@ -478,6 +508,7 @@ export const COMPARISON_ROWS: readonly {
         policywallet: "yes",
     },
     {
+        claim: null,
         job: { el: "Σας εξηγεί τι λένε με απλά λόγια", en: "Explains what they say in plain words" },
         folder: "no",
         insurer: "partial",
@@ -485,17 +516,21 @@ export const COMPARISON_ROWS: readonly {
         policywallet: "yes",
     },
     {
-        // Gap & duplicate detection is a Family feature — these two
-        // rows use the "plus" verdict so the cell never over-promises to a
-        // Free reader (same honesty rule as the renewal row below).
-        job: { el: "Βοηθά να βρείτε τι εξαιρείται", en: "Shows you what is NOT covered" },
+        // Exclusions are read from the policy at upload and shown on EVERY plan
+        // (ExclusionsCard has no gate), so the cell is «yes», not «family»
+        // (H-023: copy follows code). The English used to say "Shows you what is
+        // NOT covered" — gap detection, a Family output, which is a different
+        // claim from the Greek. Both now state what the policy lists as excluded.
+        claim: "exclusions",
+        job: { el: "Βοηθά να βρείτε τι εξαιρείται", en: "Helps you find what is excluded" },
         folder: "no",
         insurer: "no",
         advisor: "partial",
-        policywallet: "family",
+        policywallet: "yes",
     },
     {
-        job: { el: "Εντοπίζει πιθανές κοινές καλύψεις", en: "Finds if you are paying twice" },
+        claim: "duplicateDetection",
+        job: { el: "Εντοπίζει πιθανές κοινές καλύψεις", en: "Finds possible shared cover" },
         folder: "no",
         insurer: "no",
         advisor: "partial",
@@ -503,22 +538,20 @@ export const COMPARISON_ROWS: readonly {
     },
     {
         // Worded on what every plan delivers: even Free shows each policy's
-        // renewal date. Email reminders are a paid feature, so the row must
-        // not promise "warns you" unqualified to a Free reader.
-        job: { el: "Ξέρετε πάντα πότε λήγει το καθένα", en: "You always know when each one runs out" },
+        // renewal date, and «πάντα» promised a date for every policy — a date
+        // the document does not state cannot be shown. Every plan also gets a
+        // 30-day email reminder; the longer ladder is Plus and Family.
+        claim: "renewalDate",
+        job: { el: "Βλέπετε πότε λήγει το καθένα", en: "You see when each one runs out" },
         folder: "no",
         insurer: "partial",
         advisor: "partial",
         policywallet: "yes",
     },
-    {
-        job: { el: "Δεν κερδίζει τίποτα από την απάντηση", en: "Earns nothing from the answer it gives" },
-        folder: "yes",
-        insurer: "no",
-        advisor: "no",
-        policywallet: "yes",
-    },
 ]
+// There was a sixth row, «Δεν κερδίζει τίποτα από την απάντηση», that marked the
+// agent «Όχι» while the same site sells to agents. Deleted outright, with no
+// replacement wording (PW-CONTENT-02 A5, 2026-10-21).
 
 export const FINAL_ACTION_HEADING: Bilingual = {
     el: "Δείτε τι γράφει το ασφαλιστήριό σας. Κρατήστε τις ερωτήσεις για τον ασφαλιστή σας.",

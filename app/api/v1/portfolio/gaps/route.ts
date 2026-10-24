@@ -28,7 +28,7 @@ export const GET = withApiGuard(
         if (!allowed && !authResult.dbUser.roles?.includes("admin")) {
             return createApiError(
                 "FORBIDDEN",
-                "Portfolio gap view is available on Plus and Pro plans.",
+                "Portfolio gap view is available on the Family plan.",
                 403
             )
         }

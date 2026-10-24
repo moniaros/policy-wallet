@@ -46,7 +46,7 @@ export async function requireCollaborationEntitlement(
 
     return createApiError(
         "UPGRADE_REQUIRED",
-        "Agent collaboration requires a paid plan",
+        "Agent collaboration is available on the Family plan",
         403
     )
 }

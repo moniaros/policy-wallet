@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { LADDER_LIST } from '@/lib/renewals/reminder-copy'
 import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 
 /**
@@ -22,8 +23,10 @@ describe('help center states only facts the product actually implements', () => 
         const limit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
         expect(limit, 'the free tier must enforce a finite policy count').toBeTypeOf('number')
 
-        expect(HELP).toContain(`The free plan includes ${limit} policies`)
-        expect(HELP).toContain(`Το δωρεάν πλάνο περιλαμβάνει ${limit} ασφαλιστήρια`)
+        // The help text READS the count from the entitlement source (PW-CONTENT-02), so the
+        // assertion is that it does — a typed number cannot pass this.
+        expect(HELP).toContain('The free plan includes ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} policies')
+        expect(HELP).toContain('Το δωρεάν πλάνο περιλαμβάνει ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} ασφαλιστήρια')
 
         // No other count may appear in the same sentence.
         for (const wrong of [1, 2, 3, 5, 10, 25].filter((n) => n !== limit)) {
@@ -46,7 +49,11 @@ describe('help center states only facts the product actually implements', () => 
 
     it('states the real renewal-reminder ladder, not the invented 30/14/3', () => {
         expect(HELP).not.toMatch(/30, 14,? (and|και) 3/)
-        expect(HELP).toMatch(/90, 60, 30, 15 (and|και) 7/)
+        // The ladder is COMPOSED from the scheduler's constants (reminder-copy.ts), never typed.
+        expect(HELP).toContain('${LADDER_LIST.en}')
+        expect(HELP).toContain('${LADDER_LIST.el}')
+        expect(LADDER_LIST.en).toMatch(/90, 60, 30, 15, 7 and 3/)
+        expect(LADDER_LIST.el).toMatch(/90, 60, 30, 15, 7 και 3/)
     })
 
     it('does not promise a 10–30 second analysis (it queues; takes minutes)', () => {

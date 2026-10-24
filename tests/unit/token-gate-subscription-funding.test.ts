@@ -12,6 +12,7 @@
  * the reservation path's '2026-07-31'). Both now flow through billingMonth().
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 
 const { db, executeRawCalls } = vi.hoisted(() => {
     const executeRawCalls: Array<{ sql: string; values: unknown[] }> = []
@@ -123,7 +124,8 @@ describe('an active paid subscriber with zero purchased tokens and zero usage', 
 describe('a subscriber who has genuinely exhausted the monthly allowance', () => {
     it('is blocked, and the block classifies as KEEP-AND-INFORM (TOKEN_LIMIT_BLOCKED)', async () => {
         db.monthlyTokenUsage.findUnique.mockResolvedValue({
-            totalTokens: BigInt(3_000_000),
+            // exactly the plan's budget — derived, not typed (Family's interim budget moved in round 6)
+            totalTokens: BigInt(DEFAULT_ENTITLEMENT_LIMITS.pro.monthlyTokenBudget as number),
             reservedTokens: BigInt(0),
         })
         const gate = await canUserUseTokens('user-1', 50_000)

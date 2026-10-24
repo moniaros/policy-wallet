@@ -1,0 +1,72 @@
+// ONE-OFF harness (not part of CI; deleted after the run, source kept as evidence): drives the REAL updatePlan server
+// action (app/(protected)/admin/plans/actions.ts) against the DEV database with the round-7 budgets. Only the session
+// guard and Next's request/cache APIs are stubbed; the Prisma transaction, plan_revisions row and activity_logs row are
+// written by the real code path.
+import { describe, it, expect, vi } from 'vitest'
+import { config } from 'dotenv'
+config({ path: '.env', override: true })
+
+vi.mock('@/lib/admin/admin-guard', async (orig) => ({
+    ...(await orig<typeof import('@/lib/admin/admin-guard')>()),
+    verifyAdminRole: async () => ({ id: 'session-maintenance', email: 'claude-code-session' }),
+}))
+vi.mock('next/headers', () => ({ headers: async () => new Map([['x-forwarded-for', 'dev-harness']]) }))
+vi.mock('next/navigation', () => ({ redirect: (url: string) => { throw new Error('NEXT_REDIRECT ' + url) } }))
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn(), unstable_cache: (fn: unknown) => fn }))
+
+const DEV_REF = 'lzqvtvjggylcujenlelh'
+const PROD_REF = 'cquudefwfwrmvpftuhyl'
+const BUDGETS: Array<[string, number, number]> = [
+    ['ph-pro', 1_500_000, 8_700_000],
+    ['agent-free', 150_000, 2_000_000],
+    ['agent-starter', 1_600_000, 19_600_000],
+    ['agent-pro', 4_500_000, 58_700_000],
+    ['agent-agency', 12_000_000, 156_300_000],
+]
+
+describe('apply round-7 budgets to DEV through updatePlan', () => {
+    it('writes only monthlyTokenBudget on five plans', async () => {
+        const url = `${process.env.DIRECT_URL ?? ''}|${process.env.DATABASE_URL ?? ''}|${process.env.POOLED_DATABASE_URL ?? ''}`
+        expect(url).toContain(DEV_REF)
+        expect(url).not.toContain(PROD_REF)
+        expect(process.env.POOLED_DATABASE_URL ?? '').toBe('')
+
+        const { db } = await import('@/lib/db')
+        const { entitlementFieldKinds } = await import('@/lib/pricing/entitlement-schema')
+        const { updatePlan } = await import('@/app/(protected)/admin/plans/actions')
+
+        for (const [planId, oldBudget, newBudget] of BUDGETS) {
+            const plan = await db.plan.findUnique({ where: { id: planId } })
+            expect(plan, planId).not.toBeNull()
+            const ent = plan!.entitlements as Record<string, unknown>
+            if (ent.monthlyTokenBudget === newBudget) { console.log(`DEV ${planId}: already ${newBudget} (v${plan!.version}), skipped`); continue }
+            expect(ent.monthlyTokenBudget, `${planId} before`).toBe(oldBudget)
+            const planType = plan!.planType === 'agent' ? 'agent' : 'policyholder'
+            const form = new FormData()
+            form.set('planId', planId)
+            form.set('displayName', plan!.displayName)
+            form.set('price', String(Number(plan!.price)))
+            form.set('annualPrice', plan!.annualPrice == null ? '' : String(Number(plan!.annualPrice)))
+            form.set('trialDays', String(plan!.trialDays))
+            if (plan!.isActive) form.set('isActive', 'on')
+            if (plan!.isPublic) form.set('isPublic', 'on')
+            form.set('sortOrder', String(plan!.sortOrder))
+            for (const { key, kind } of entitlementFieldKinds(planType)) {
+                const v = key === 'monthlyTokenBudget' ? newBudget : ent[key]
+                if (kind === 'boolean') { if (v) form.set(`ent_${key}`, 'on') }
+                else if (v === null) form.set(`ent_${key}_unlimited`, 'on')
+                else form.set(`ent_${key}`, String(v))
+            }
+            await updatePlan(form).then(() => { throw new Error('updatePlan returned without redirecting') }, (e: Error) => { expect(e.message).toBe(`NEXT_REDIRECT /admin/plans/${planId}?saved=1`) })
+
+            const after = await db.plan.findUnique({ where: { id: planId } })
+            expect(after!.version, `${planId} version`).toBe(plan!.version + 1)
+            expect({ ...(after!.entitlements as object), monthlyTokenBudget: oldBudget }, `${planId} other keys unchanged`).toEqual(ent)
+            expect((after!.entitlements as Record<string, unknown>).monthlyTokenBudget).toBe(newBudget)
+            const rev = await db.planRevision.findFirst({ where: { planId, version: after!.version }, orderBy: { createdAt: 'desc' } })
+            expect(rev!.changes).toEqual({ 'entitlements.monthlyTokenBudget': { from: oldBudget, to: newBudget } })
+            expect(Object.keys(rev!.snapshot as object)).toContain('planType')
+            console.log(`DEV ${planId}: v${plan!.version} -> v${after!.version}, budget ${oldBudget} -> ${newBudget}, revision ${rev!.id}`)
+        }
+    }, 120_000)
+})

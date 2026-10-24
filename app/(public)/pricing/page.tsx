@@ -49,7 +49,7 @@ export default async function PricingPage() {
                             .filter((plan) => !plan.isContactPlan)
                             .map((plan) => ({
                                 name: plan.name.el,
-                                price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),
+                                price: plan.pricing.monthly.value,
                                 description: plan.description.el,
                             }))
                     ),

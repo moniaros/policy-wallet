@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import type { Guide, GuideTable, LocalizedString } from "@/lib/guides/content"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { resolveLocale } from "@/lib/i18n/format"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
@@ -257,13 +258,14 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                             "Check your own policies in minutes"
                         )}
                     </h2>
-                    {/* The free tier ships a basic summary for one policy; gap
-                        detection is a paid feature — the CTA says so instead
-                        of promising free AI gap analysis. */}
+                    {/* Free reads each policy and shows possible shared cover; the
+                        gap findings are Family (canRunDeepAnalysis). The CTA used
+                        to promise gaps to Free and attribute the ungated overlap
+                        check to Family — the opposite (PW-CONTENT-02 review C4). */}
                     <p className="mb-6 text-body leading-relaxed text-white/70">
                         {t(
-                            "Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι καλύπτουν και τι κενά έχουν. Στο πλάνο Family, η AI εντοπίζει και τις επικαλύψεις μεταξύ τους.",
-                            "Start free with three policies, no card — we read them and show you what they cover, gaps included."
+                            `Ξεκινήστε δωρεάν με ${FREE_UP_TO.el}, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι αναφέρουν και πιθανές κοινές καλύψεις. Στο πλάνο Family βλέπετε και τα κενά που βρέθηκαν.`,
+                            `Start free with ${FREE_UP_TO.en}, no card — we read them and show what they say, and possible shared cover. With Family you also see the gaps found.`
                         )}
                     </p>
                     <Link

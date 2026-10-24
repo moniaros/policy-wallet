@@ -1,0 +1,14 @@
+     × agent-free: analysis count, customers and fallback price match 1ms
+     × agent-starter: analysis count, customers and fallback price match 0ms
+     × agent-pro: analysis count, customers and fallback price match 0ms
+     × agent-agency: analysis count, customers and fallback price match 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H-019: Family only until PW-ENTITLE-01) > no source file under app/, components/ or lib/ carries the promise
+app/(protected)/agent/pricing/AgentPricingClient.tsx:120  "Αποκλειστική υποστήριξη",: expected [ …(4) ] to deeply equal []
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 — /agent/pricing equals the enforced entitlements > agent-free: analysis count, customers and fallback price match
+AssertionError: agent-free: the count is not stated for this plan: expected [ 5, 5 ] to deeply equal []
+    321|         const expected = planClaim('agent.analysesPerMonth', tier)
+    322|         if (expected === UNSTATED) expect(analyses, `${id}: the count …
+    323|         else if (expected !== null) expect(new Set(analyses), `${id}: …
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 — /agent/pricing equals the enforced entitlements > agent-starter: analysis count, customers and fallback price match
+AssertionError: agent-starter fallback price: expected 19.99 to be 29 // Object.is equality

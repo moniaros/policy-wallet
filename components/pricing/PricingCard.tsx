@@ -2,6 +2,8 @@
 
 import React from "react"
 import { Check, Sparkles, X } from "lucide-react"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 import type {
     BillingPeriod,
     LocalizedText,
@@ -49,6 +51,8 @@ export function PricingCard({
     const annualAvailable = Boolean(plan.pricing.annual)
     const displayAnnual = billingPeriod === "annual" && annualAvailable
     const pricing = displayAnnual ? plan.pricing.annual! : plan.pricing.monthly
+    // The trial, its length and what follows it, read from the plan row (PW-C02-D10).
+    const trial = trialDisclosure(plan.trialDays ?? 0, pricing.value, displayAnnual ? "annual" : "monthly")
 
     return (
         <div
@@ -72,13 +76,16 @@ export function PricingCard({
 
             <div className="mb-8 text-center">
                 <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-bold text-slate-900 dark:text-white">{pricing.amount}</span>
+                    <span className="text-5xl font-bold text-slate-900 dark:text-white">{formatPlanPrice(pricing.value, language)}</span>
                     <span className="text-lg text-slate-600 dark:text-slate-400">{pricing.period[language]}</span>
                 </div>
                 {displayAnnual && plan.pricing.annual?.savings && (
                     <p className="mt-2 text-xs font-semibold text-[#29685B] dark:text-[#89D9B2]">
                         {plan.pricing.annual.savings[language]}
                     </p>
+                )}
+                {trial && (
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{trial[language]}</p>
                 )}
             </div>
 

@@ -648,7 +648,7 @@ export class PolicyAnalysisOrchestratorService {
                     status: "blocked",
                     blockedReason: "free_tier_ai_locked",
                     failureCode: "UPGRADE_REQUIRED",
-                    failureMessage: "Full AI analysis is a Plus feature; free and Starter plans get the basic summary only",
+                    failureMessage: "Full AI analysis is a Family feature; free and Plus plans get the basic summary only",
                     finishedAt: new Date(),
                 },
             })

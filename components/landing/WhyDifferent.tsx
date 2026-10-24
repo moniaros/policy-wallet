@@ -26,7 +26,7 @@ import {
  * tests/unit/homepage-comparison-excerpt.test.ts so a reordering of the source
  * array cannot silently change which rows a stranger sees first.
  */
-const HOMEPAGE_ROW_INDICES = [2, 3, 5] as const
+const HOMEPAGE_ROW_INDICES = [2, 3] as const
 
 export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)

@@ -31,13 +31,13 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
         id: "health",
         label: { el: "Υγεία", en: "Health" },
         docLines: [
-            { el: "Άρθρο 4 — Νοσοκομειακή περίθαλψη: έως €500.000 ανά έτος…", en: "Art. 4 — Inpatient care: up to €500,000 per year…" },
+            { el: "Άρθρο 4 — Νοσοκομειακή περίθαλψη: έως 500.000 € ανά έτος…", en: "Art. 4 — Inpatient care: up to €500,000 per year…" },
             { el: "Άρθρο 7 — Απαλλαγή: βλ. Πίνακα Παροχών…", en: "Art. 7 — Deductible: see Benefits Table…" },
             { el: "Άρθρο 9 — Περίοδοι αναμονής: 12 μήνες για…", en: "Art. 9 — Waiting periods: 12 months for…" },
             { el: "Άρθρο 12 — Εξαιρέσεις: εξωνοσοκομειακή περίθαλψη…", en: "Art. 12 — Exclusions: outpatient care…" },
         ],
         results: [
-            { state: "covered", text: { el: "Νοσοκομειακή περίθαλψη: έως €500.000 τον χρόνο.", en: "Inpatient care: up to €500,000 a year." } },
+            { state: "covered", text: { el: "Νοσοκομειακή περίθαλψη: έως 500.000 € τον χρόνο.", en: "Inpatient care: up to €500,000 a year." } },
             { state: "gap", text: { el: "Η εξωνοσοκομειακή περίθαλψη εξαιρείται — ερώτηση για τον ασφαλιστή σας.", en: "Outpatient care is excluded — a question for your insurer." } },
             { state: "review", text: { el: "Η απαλλαγή παραπέμπει σε πίνακα που δεν επισυνάπτεται. Χρειάζεται έλεγχο.", en: "The deductible points to a table that is not attached. Needs review." } },
             { state: "review", text: { el: "Αναμονή 12 μηνών. Οι πλήρεις όροι χρειάζονται έλεγχο στο άρθρο 9.", en: "A 12-month waiting period. Review the full terms in article 9." } },
@@ -49,14 +49,14 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
         docLines: [
             { el: "Καλύψεις: πυρκαγιά, κεραυνός, έκρηξη…", en: "Covers: fire, lightning, explosion…" },
             { el: "Προαιρετικές καλύψεις: σεισμός — ΔΕΝ έχει επιλεγεί…", en: "Optional covers: earthquake — NOT selected…" },
-            { el: "Ασφαλιζόμενο κεφάλαιο: €180.000…", en: "Sum insured: €180,000…" },
-            { el: "Αστική ευθύνη προς τρίτους: €100.000…", en: "Third-party liability: €100,000…" },
+            { el: "Ασφαλιζόμενο κεφάλαιο: 180.000 €…", en: "Sum insured: €180,000…" },
+            { el: "Αστική ευθύνη προς τρίτους: 100.000 €…", en: "Third-party liability: €100,000…" },
         ],
         results: [
             { state: "covered", text: { el: "Πυρκαγιά και κεραυνός: καλύπτονται.", en: "Fire and lightning: covered." } },
             { state: "gap", text: { el: "Ο σεισμός είναι προαιρετικός και δεν έχει επιλεγεί — ερώτηση για τον ασφαλιστή σας.", en: "Earthquake is optional and not selected — a question for your insurer." } },
-            { state: "review", text: { el: "Αν τα €180.000 φτάνουν για ανακατασκευή εξαρτάται από το ακίνητό σας. Χρειάζεται έλεγχο.", en: "Whether €180,000 rebuilds your home depends on your property. Needs review." } },
-            { state: "covered", text: { el: "Αστική ευθύνη: έως €100.000.", en: "Liability: up to €100,000." } },
+            { state: "review", text: { el: "Αν τα 180.000 € φτάνουν για ανακατασκευή εξαρτάται από το ακίνητό σας. Χρειάζεται έλεγχο.", en: "Whether €180,000 rebuilds your home depends on your property. Needs review." } },
+            { state: "covered", text: { el: "Αστική ευθύνη: έως 100.000 €.", en: "Liability: up to €100,000." } },
         ],
     },
     {
@@ -64,13 +64,13 @@ export const READING_DEMO_TABS: readonly ReadingDemoTab[] = [
         label: { el: "Αυτοκίνητο", en: "Motor" },
         docLines: [
             { el: "Αστική ευθύνη: σωματικές βλάβες / υλικές ζημίες…", en: "Third-party liability: bodily injury / property damage…" },
-            { el: "Ίδιες ζημιές: με απαλλαγή €500…", en: "Own damage: €500 deductible…" },
+            { el: "Ίδιες ζημιές: με απαλλαγή 500 €…", en: "Own damage: €500 deductible…" },
             { el: "Θραύση κρυστάλλων: εξαιρείται…", en: "Glass breakage: excluded…" },
             { el: "Οδική βοήθεια: βλ. συνημμένο παράρτημα…", en: "Roadside assistance: see attached annex…" },
         ],
         results: [
             { state: "covered", text: { el: "Αναφέρεται αστική ευθύνη για σωματικές βλάβες και υλικές ζημιές.", en: "Third-party liability for bodily injury and property damage is listed." } },
-            { state: "covered", text: { el: "Ίδιες ζημιές: καλύπτονται, με απαλλαγή €500.", en: "Own damage: covered, with a €500 deductible." } },
+            { state: "covered", text: { el: "Ίδιες ζημιές: καλύπτονται, με απαλλαγή 500 €.", en: "Own damage: covered, with a €500 deductible." } },
             { state: "gap", text: { el: "Η θραύση κρυστάλλων εξαιρείται — ερώτηση για τον ασφαλιστή σας.", en: "Glass breakage is excluded — a question for your insurer." } },
             { state: "review", text: { el: "Η οδική βοήθεια παραπέμπει σε παράρτημα που λείπει. Χρειάζεται έλεγχο.", en: "Roadside assistance points to a missing annex. Needs review." } },
         ],
@@ -88,3 +88,16 @@ export const READING_DEMO_STRINGS = {
     },
     replay: { el: "Δείτε το ξανά", en: "Replay" },
 } as const
+
+/**
+ * The home sample's «review» finding — «Αν τα 180.000 € φτάνουν για
+ * ανακατασκευή εξαρτάται από το ακίνητό σας. Χρειάζεται έλεγχο.». /product's
+ * example card shows THIS line (a document-reading output the sample cannot
+ * settle) instead of a typed verdict about the visitor's home.
+ */
+export const HOME_REVIEW_LINE: Bilingual = (() => {
+    const home = READING_DEMO_TABS.find((tab) => tab.id === "home")
+    const line = home?.results.find((r) => r.state === "review")
+    if (!line) throw new Error("reading-demo: the home tab lost its review line")
+    return line.text
+})()

@@ -11,6 +11,8 @@
  * - Factual claims that depend on legislation point readers to the official
  *   source (AADE, EAEE, Bank of Greece) instead of asserting volatile details.
  */
+import { BASIC_WHEN, LADDER_FROM } from "@/lib/renewals/reminder-copy"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 export type LocalizedString = { el: string; en: string }
 
@@ -319,7 +321,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Παράδειγμα: ένα σπίτι κοστίζει €200.000 να ξαναχτιστεί, αλλά είναι ασφαλισμένο για €100.000, δηλαδή για το μισό ποσό. Αν εφαρμόζεται ο αναλογικός κανόνας, μια ζημιά €20.000 μπορεί να δώσει αποζημίωση €10.000, πριν από άλλες αφαιρέσεις. Αυτό λέγεται υπασφάλιση. Ελέγξτε αν ο κανόνας ισχύει στη δική σας κάλυψη και συζητήστε το ποσό με τον ασφαλιστή σας.",
+                        el: "Παράδειγμα: ένα σπίτι κοστίζει 200.000 € να ξαναχτιστεί, αλλά είναι ασφαλισμένο για 100.000 €, δηλαδή για το μισό ποσό. Αν εφαρμόζεται ο αναλογικός κανόνας, μια ζημιά 20.000 € μπορεί να δώσει αποζημίωση 10.000 €, πριν από άλλες αφαιρέσεις. Αυτό λέγεται υπασφάλιση. Ελέγξτε αν ο κανόνας ισχύει στη δική σας κάλυψη και συζητήστε το ποσό με τον ασφαλιστή σας.",
                         en: "Example: a home costs €200,000 to rebuild but is insured for €100,000, half that amount. If the average clause applies, a €20,000 loss may result in a €10,000 payout before other deductions. This is underinsurance. Check whether the clause applies to your cover and discuss the insured amount with your insurance advisor.",
                     },
                 ],
@@ -331,8 +333,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των ασφαλιστηρίων και η AI διαβάζει καλύψεις και εξαιρέσεις και επισημαίνει τα κενά σε απλά ελληνικά — και, στο πλάνο Family, τα διασταυρώνει μεταξύ τους και εντοπίζει τα κενά και τις επικαλύψεις.",
-                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the Family plan, cross-checks them and flags gaps and overlaps in plain language.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των ασφαλιστηρίων και η AI διαβάζει καλύψεις και εξαιρέσεις σε απλά ελληνικά, και δείχνει πιθανές επικαλύψεις· στο πλάνο Family τα διασταυρώνει και εντοπίζει και τα κενά.",
+                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions in plain language and shows possible overlaps; on the Family plan it also cross-checks them and flags gaps.",
                     },
                 ],
             },
@@ -584,12 +586,11 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και — από το πλάνο Plus — σας ειδοποιεί εγκαίρως, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
-                        // The Greek says «από το πλάνο Plus»; the English had
-                        // dropped it, so it promised renewal alerts on a page
-                        // whose CTA is "Start free with one policy". Free has
-                        // notifications off — reminders begin at Starter.
-                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and — from the Plus plan — alerts you in time, with a ready coverage summary so you can compare quotes on equal footing.",
+                        el: "Τριάντα ημέρες πριν από τη λήξη. Έτσι προλαβαίνετε να ζητήσετε προσφορές, να διαπραγματευτείτε και να μην βρεθείτε χωρίς χρόνο να αποφασίσετε με αυτόματη ανανέωση σε χειρότερους όρους. Το PolicyWallet κρατά τις ημερομηνίες λήξης των ασφαλιστηρίων σας σε ένα σημείο και σας στέλνει υπενθύμιση πριν τη λήξη, με έτοιμη τη σύνοψη καλύψεων για να συγκρίνετε προσφορές σε ίση βάση.",
+                        // Every plan gets one renewal reminder email once the policy is within 30
+                        // days (lib/renewals/reminder-copy.ts); the longer ladder is Plus and Family — so neither
+                        // language attributes the reminder to a plan (PW-CONTENT-02).
+                        en: "Thirty days before expiry. That leaves time to request quotes, negotiate, and avoid being locked into an automatic renewal on worse terms. PolicyWallet tracks the expiry dates of all your policies and sends you a reminder before expiry, with a ready coverage summary so you can compare quotes on equal footing.",
                     },
                 ],
             },
@@ -1891,12 +1892,12 @@ export const guides: Guide[] = [
                         en: "Upload your policies and the application organises the information it reads: cover, exclusions, amounts and dates. The explanation helps you read them but must be checked against the original.",
                     },
                     {
-                        el: "Με το Family, δείτε ευρήματα από τους ελέγχους στα έγγραφά σας, όπως ρητές εξαιρέσεις ή διαφορές μεταξύ ποσών. Αν δύο ασφαλιστήρια έχουν παρόμοιες καλύψεις, ρωτήστε πώς συνδυάζονται· δεν είναι αυτόματα διπλή χρέωση για το ίδιο αποτέλεσμα.",
-                        en: "With Family, review findings from checks on your documents, such as explicit exclusions or differences between amounts. If two policies have similar cover, ask how they work together; it is not automatically double payment for the same result.",
+                        el: "Δείτε τις ρητές εξαιρέσεις του εγγράφου σας· με το Family δείτε και ευρήματα από τους ελέγχους, όπως διαφορές μεταξύ ποσών. Αν δύο ασφαλιστήρια έχουν παρόμοιες καλύψεις, ρωτήστε πώς συνδυάζονται· δεν είναι αυτόματα διπλή χρέωση για το ίδιο αποτέλεσμα.",
+                        en: "See the explicit exclusions in your document; with Family also review findings from checks, such as differences between amounts. If two policies have similar cover, ask how they work together; it is not automatically double payment for the same result.",
                     },
                     {
-                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
-                        en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
+                        el: `Από εκεί και πέρα: υπενθυμίσεις ανανέωσης ${LADDER_FROM.el} τη λήξη στα πλάνα Plus και Family, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο ασφαλιστήριο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.`,
+                        en: `Beyond that: renewal reminders ${LADDER_FROM.en} of expiry on Plus and Family, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.`,
                     },
                 ],
             },
@@ -1972,8 +1973,8 @@ export const guides: Guide[] = [
                     en: "How much does a policy-management platform cost?",
                 },
                 answer: {
-                    el: "Οι τιμές διαφέρουν ανά υπηρεσία. Το PolicyWallet διαθέτει δωρεάν πλάνο για έως 3 ασφαλιστήρια. Δείτε τις τρέχουσες τιμές, τις λειτουργίες και τα όρια στη σελίδα τιμών.",
-                    en: "Prices vary by service. PolicyWallet has a free plan for up to 3 policies. See current prices, features and limits on the pricing page.",
+                    el: `Οι τιμές διαφέρουν ανά υπηρεσία. Το PolicyWallet διαθέτει δωρεάν πλάνο για ${FREE_UP_TO.el}. Δείτε τις τρέχουσες τιμές, τις λειτουργίες και τα όρια στη σελίδα τιμών.`,
+                    en: `Prices vary by service. PolicyWallet has a free plan for ${FREE_UP_TO.en}. See current prices, features and limits on the pricing page.`,
                 },
             },
             {
@@ -2195,8 +2196,8 @@ export const guides: Guide[] = [
                         en: "The combined annual cost of every policy together — usually the first surprise.",
                     },
                     {
-                        el: "Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις από τις 90 ημέρες πριν στα πληρωμένα πλάνα.",
-                        en: "Expiry and renewal dates, with reminders from 90 days out on paid plans.",
+                        el: `Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις ${LADDER_FROM.el} στα Plus και Family.`,
+                        en: `Expiry and renewal dates, with reminders ${LADDER_FROM.en} on Plus and Family.`,
                     },
                     {
                         el: "Τι άλλαξε ανάμεσα σε δύο εκδόσεις του ίδιου ασφαλιστηρίου, ώστε μια αύξηση ασφαλίστρου να συγκρίνεται με το τι πήρατε επιπλέον.",
@@ -2222,8 +2223,8 @@ export const guides: Guide[] = [
                     en: "Can I pay my premium inside PolicyWallet?",
                 },
                 answer: {
-                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πόσο και πότε — από το πλάνο Plus.",
-                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you how much and when — from the Plus plan.",
+                    el: "Όχι. Το PolicyWallet δεν εισπράττει ασφάλιστρα και δεν είναι ίδρυμα πληρωμών. Η πληρωμή γίνεται στην ασφαλιστική εταιρεία ή στον διαμεσολαβητή σας· η εφαρμογή σάς θυμίζει πότε λήγει το ασφαλιστήριο.",
+                    en: "No. PolicyWallet does not collect premiums and is not a payment institution. Payment happens with your insurer or intermediary; the app reminds you when a policy ends.",
                 },
             },
             {
@@ -2376,8 +2377,8 @@ export const guides: Guide[] = [
                         en: "Not file status, but something that in practice goes missing far more often: your own data, at the moment you need it. In the first hours after an incident the question is not how the claim is progressing — it is what you must do right now so you do not forfeit your right to be paid.",
                     },
                     {
-                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας προσωπικής ανάλυσης ρίσκου από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
-                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a personal risk intelligence platform and a plain document store: it does not just hand you the file — it hands you what the file means.",
+                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας οργάνωσης και κατανόησης ασφαλιστηρίων από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
+                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a platform for organising and understanding insurance policies and a plain document store: it does not just hand you the file — it hands you what the file means.",
                     },
                     {
                         el: "Δείτε τις υποχρεώσεις ειδοποίησης και ενημερώστε έγκαιρα την ασφαλιστική. Η συνέπεια καθυστέρησης εξαρτάται από τον νόμο, τους όρους και τα περιστατικά· δεν σημαίνει αυτόματα απώλεια κάθε δικαιώματος αποζημίωσης.",
@@ -2396,8 +2397,8 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Οι υπενθυμίσεις ανανέωσης προσφέρονται από το Plus. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.",
-                        en: "With Family, you can review findings, ask questions about documents and share information with an adviser. Renewal reminders are available from Plus. See each plan's exact features on the pricing page.",
+                        el: `Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλιστή. Η υπενθύμιση ανανέωσης ${BASIC_WHEN.el} ισχύει σε όλα τα πλάνα· οι υπενθυμίσεις ${LADDER_FROM.el} προσφέρονται στα Plus και Family. Δείτε τις ακριβείς δυνατότητες κάθε πλάνου στη σελίδα τιμών.`,
+                        en: `With Family, you can review findings, ask questions about documents and share information with an adviser. The renewal reminder ${BASIC_WHEN.en} applies on every plan; reminders ${LADDER_FROM.en} are available on Plus and Family. See each plan's exact features on the pricing page.`,
                     },
                 ],
             },

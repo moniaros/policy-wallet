@@ -1,0 +1,6 @@
+// Probe for tests/unit/trial-disclosure-everywhere.test.ts — a surface that sells a plan
+// (it starts a checkout) and never discloses the trial: the guard must flag this file.
+export function BuyFamily() {
+    const go = () => fetch("/api/v1/billing/checkout", { method: "POST", body: JSON.stringify({ planId: "ph-pro" }) })
+    return <button onClick={go}>Αναβάθμιση σε Family — 8,99 €/μήνα</button>
+}

@@ -1,0 +1,99 @@
+{
+ "tool": "lighthouse 12.6.1, categories seo+accessibility, production build on localhost, 3 runs per cell, median",
+ "before_head_87e877df": {
+  "/ desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/ mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  }
+ },
+ "after": {
+  "/ desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/ mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  }
+ },
+ "final_tree_after_review_loop": {
+  "/ desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/ mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/pricing mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product desktop": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  },
+  "/product mobile": {
+   "runs": 3,
+   "seo_median": 100,
+   "accessibility_median": 100
+  }
+ }
+}

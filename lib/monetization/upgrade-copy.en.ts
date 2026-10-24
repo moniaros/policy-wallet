@@ -2,10 +2,12 @@
  * English conversion copy — mirror of upgrade-copy.el.ts (keys parity-tested).
  */
 
+import { BASIC_WHEN, LADDER_LIST, LADDER_RANGE } from "@/lib/renewals/reminder-copy"
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import type { FeatureKey } from "./feature-gates"
 import type { UpgradeTriggerCopy } from "./upgrade-copy.el"
 
-const TRUST = "Secure payment with Stripe · Cancel anytime · No hidden fees"
+const TRUST = `Secure payment with Stripe · ${CANCEL_ANYTIME.en} · No hidden fees`
 
 export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     policy_upload_limit: {
@@ -17,7 +19,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
             "Up to 10 policies (Plus) or up to 25 (Family)",
             "Full AI analysis for every policy (Family)",
             "One view across all your insurers",
-            "Smart renewal reminders",
+            "More renewal reminders (Plus)",
         ],
         trust: TRUST,
         successMessage: "Upgrade complete. You can now add all your policies.",
@@ -45,8 +47,7 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         secondaryCta: "Not now",
         benefits: [
             "Full explanation of each gap with evidence",
-            "Prioritized by severity",
-            "Avoid duplicate coverage",
+            "Findings to discuss with your insurance adviser",
             "Concrete next steps",
         ],
         trust: TRUST,
@@ -57,8 +58,8 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         headline: "Keep asking the AI",
         // See the note in upgrade-copy.el.ts: there is no free allowance and no
         // monthly reset, so "used your free questions for this month" is wrong twice.
-        body: "AI questions about your policies are included in the paid plans. Upgrade to ask freely about coverages, limits and exclusions.",
-        primaryCta: "Continue with unlimited questions",
+        body: "AI questions about your policies are included in the Family plan. Upgrade to ask about coverages, limits and exclusions.",
+        primaryCta: "Continue with questions",
         secondaryCta: "Not now",
         benefits: [
             "Questions about coverages, limits and exclusions",
@@ -116,18 +117,18 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Download report",
     },
     advanced_renewal_reminders: {
-        headline: "Smart renewal reminders",
-        body: "Don't wait for the expiry date to go looking for your policy. Unlock smart renewal reminders.",
-        primaryCta: "Enable smart reminders",
+        headline: "More renewal reminders",
+        body: `On every plan you get one reminder ${BASIC_WHEN.en}. On Plus and Family you get reminders ${LADDER_RANGE.en}.`,
+        primaryCta: "See Plus",
         secondaryCta: "Not now",
         benefits: [
-            "Email alerts before every expiry",
-            "Multiple reminders per policy",
-            "Pre-renewal checklist",
+            `Reminders ${LADDER_LIST.en}`,
+            "An email before every expiry",
+            `The reminder ${BASIC_WHEN.en} stays on every plan`,
             "Never miss a renewal again",
         ],
         trust: TRUST,
-        successMessage: "Upgrade complete. Smart reminders are active.",
+        successMessage: "Upgrade complete. The full renewal reminders are active.",
         successCta: "Set up reminders",
     },
     pdf_preview: {
@@ -147,33 +148,17 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     token_topup: {
         headline: "Continue your AI analyses",
-        body: "This month's AI tokens are used up. Upgrade your plan or add tokens to continue.",
-        primaryCta: "Continue with more tokens",
+        body: "You have reached your plan's monthly analysis limit. The limit starts again on the 1st of each month.",
+        primaryCta: "See the plans",
         secondaryCta: "Not now",
         benefits: [
-            "Monthly tokens that renew automatically",
-            "Option to buy extra packs",
-            "Priority analysis queue (Plus)",
-            "Full usage control from your account",
+            "The limit starts again on the 1st of each month",
+            "Your policies stay saved",
+            "See which plan fits the volume of your documents",
         ],
         trust: TRUST,
-        successMessage: "Upgrade complete. Your AI tokens have been renewed.",
+        successMessage: "Upgrade complete. You can continue the analysis.",
         successCta: "Continue to analysis",
-    },
-    claims_preparation_assistant: {
-        headline: "Claim preparation guide",
-        body: "If you ever need to file a claim, unlock a step-by-step guide based on your policy: what to prepare, deadlines and who to notify.",
-        primaryCta: "Open claim guide",
-        secondaryCta: "Not now",
-        benefits: [
-            "Step-by-step of what the claim needs",
-            "Deadlines and contact details from your policy",
-            "List of documents usually requested",
-            "Ask your insurer or advisor anytime",
-        ],
-        trust: TRUST,
-        successMessage: "Upgrade complete. The claim preparation guide is available.",
-        successCta: "Open guide",
     },
     partner_offers: {
         headline: "Partner benefits with Family",

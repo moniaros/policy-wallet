@@ -398,5 +398,80 @@
     "locator": "call:components/landing/PublicMegaFooter.tsx",
     "text": "Συγκεντρώστε τα ασφαλιστήριά σας και καταλάβετε τι γράφουν. Βρείτε τι χρειάζεται να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες.",
     "reason": "2026-10-21 public-language review: explain insurance terms or qualify a legal/product claim in plain Greek. Reviewed against official sources and implementation; responsive rendering verified in the public-language evidence sweep."
+  },
+  {
+    "locator": "inline:lib/landing/content.ts",
+    "text": "Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση π",
+    "reason": "PW-CONTENT-02 H-019/E20: the step now states which plan sends which reminder (every plan: one 30-day email; Plus: from 90 days). The 91-char original attributed an ungated feature to Plus. Reviewed by greek-copy-reviewer (COPY.md C-10)."
+  },
+  {
+    "locator": "inline:lib/pricing/pricing-view-model.ts",
+    "text": "Εξοικονομείτε ~${formatPlanPrice(saved",
+    "reason": "PW-CONTENT-02 A4: not a copy change — the template shape now formats the amount through formatPlanPrice instead of typing «~€N»; rendered text is «Εξοικονομείτε ~19 €»."
+  },
+  {
+    "locator": "inline:lib/pricing/public-pricing-content.ts",
+    "text": "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
+    "reason": "PW-CONTENT-02 E10/E11: the plan comparison must name the schedule to be a true claim (90/60/30/15/7/3 days, `lib/renewals/milestones.ts`); the old 22–30 char labels said ✗ for Free and merged reminders with report export. 55 chars wraps to 2–3 lines in cards and scrolls in the table; reviewed (COPY.md C-20/C-21)."
+  },
+  {
+    "locator": "inline:lib/seo/site.ts",
+    "text": "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων: διαβάζουμε",
+    "reason": "PW-CONTENT-02 H-022: root meta description now states the single positioning line; it is a search snippet, not a laid-out slot."
+  },
+  {
+    "locator": "call:components/landing/ProductCategoryExplorer.tsx",
+    "text": "Δείτε πώς διαβάζουμε τα έγγραφα κάθε κατηγορίας.",
+    "reason": "PW-CONTENT-02 item 7: positional re-key, not a rewrite — the intro sentence is unchanged; the card-link strings that held its slot (#n) were removed when the cross-links became titles-only."
+  },
+  {
+    "locator": "inline:lib/subscription-limits.ts",
+    "text": "Αυτό το χαρακτηριστικό δεν περιλαμβάνεται στο πλάνο σας.",
+    "reason": "PW-CONTENT-02 review: «επί πληρωμή πλάνου» told a Plus buyer a Family-only feature was in their reach; the replacement names the problem (not in your plan) and the remedy (see the plans). A neutral generic error line, not a layout slot."
+  },
+  {
+    "locator": "inline:lib/subscription-limits.ts",
+    "text": "Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν",
+    "reason": "PW-CONTENT-02 review: «Οι ειδοποιήσεις email είναι διαθέσιμες σε επί πληρωμή πλάνα» was false for Free (it gets the 30-day email); the line now names the rung range and the two plans that have it."
+  },
+  {
+    "locator": "call:app/(public)/product/property/PageClient.tsx",
+    "text": "Η πλημμύρα δεν αναφέρεται στο δείγμα",
+    "reason": "PW-CONTENT-02 review: replaces the demo verdict «Λείπει κάλυψη πλημμύρας»; names the sample so it cannot read as a claim about the visitor's home."
+  },
+  {
+    "locator": "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx",
+    "text": "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία",
+    "reason": "PW-CONTENT-02 review C1: branded reports are Agent Pro and Agency; the line must name the plan the way the reminders line does."
+  },
+  {
+    "locator": "call:app/(public)/solutions/agents/AgentsSolutionPageClient.tsx",
+    "text": "Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελ",
+    "reason": "PW-CONTENT-02 review C1: same plan attribution on step 3."
+  },
+  {
+    "locator": "call:components/landing/PolicyWalletWidget.tsx",
+    "text": "Το ασφαλιστήριο δεν αναφέρει κάλυψη πλημμύρας",
+    "reason": "PW-CONTENT-02 review: the demo verdict «Το σπίτι σας δεν καλύπτεται για πλημμύρα.» becomes a document reading with the adviser question (component is unmounted; queued for deletion)."
+  },
+  {
+    "locator": "call:components/landing/AgentWidgets.tsx",
+    "text": "Κατοικία — ο σεισμός δεν αναφέρεται στο δείγμα",
+    "reason": "PW-CONTENT-02 review pass 7: replaces the demo verdict «λείπει σεισμική κάλυψη» with a reading of a SAMPLE document (it must not read as a claim about a real client's home)."
+  },
+  {
+    "locator": "inline:lib/subscription-copy.ts",
+    "text": "{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ",
+    "reason": "PW-CONTENT-02 review pass 8: the trial length is read from the plan row (`trial_days`, what checkout passes to Stripe) instead of a typed 14; `{days}` is a 6-character placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
+  },
+  {
+    "locator": "inline:lib/subscription-copy.ts",
+    "text": "ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ",
+    "reason": "PW-CONTENT-02 review pass 8: the trial length is read from the plan row (`trial_days`, what checkout passes to Stripe) instead of a typed 14; `{days}` is a 6-character placeholder replaced by 1-2 digits at render, so the rendered string is not longer."
+  },
+  {
+    "locator": "inline:lib/subscription-limits.ts",
+    "text": "Οι υπενθυμίσεις ανανέωσης ${LADDER_RANGE.el} είναι διαθέσιμες στα πλάνα Plus και Family.",
+    "reason": "PW-C02-D16: the offsets are composed from RENEWAL_MILESTONES (lib/renewals/reminder-copy.ts) instead of typed; the template shows the interpolation placeholder (18 characters) where the rendered text reads «από 90 έως 3 ημέρες πριν», the same words as before."
   }
 ]

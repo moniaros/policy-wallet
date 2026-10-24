@@ -1,0 +1,82 @@
+(node:14845) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:14847) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/budget-reaches-published-count.test.ts (10 tests | 5 failed) 5ms
+     × agent_free: budget >= published count × (R_max + the verification reservation) 1ms
+     × agent_starter: budget >= published count × (R_max + the verification reservation) 0ms
+     × agent_pro: budget >= published count × (R_max + the verification reservation) 0ms
+     × agency: budget >= published count × (R_max + the verification reservation) 0ms
+     × pro (Family): budget >= policy cap × R_max + the Q&A allowance 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_free: budget >= published count × (R_max + the verification reservation)
+AssertionError: agent_free: 5 × (151200 + 102000) = 1266000: expected 850000 to be greater than or equal to 1266000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:57:123
+     55|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     56|         const need = (l.aiAnalysesPerMonth as number) * (R + VERIFICAT…
+     57|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                           ^
+     58|     })
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_starter: budget >= published count × (R_max + the verification reservation)
+AssertionError: agent_starter: 50 × (151200 + 102000) = 12660000: expected 8400000 to be greater than or equal to 12660000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:57:123
+     55|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     56|         const need = (l.aiAnalysesPerMonth as number) * (R + VERIFICAT…
+     57|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                           ^
+     58|     })
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_pro: budget >= published count × (R_max + the verification reservation)
+AssertionError: agent_pro: 150 × (151200 + 102000) = 37980000: expected 25000000 to be greater than or equal to 37980000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:57:123
+     55|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     56|         const need = (l.aiAnalysesPerMonth as number) * (R + VERIFICAT…
+     57|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                           ^
+     58|     })
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agency: budget >= published count × (R_max + the verification reservation)
+AssertionError: agency: 400 × (151200 + 102000) = 101280000: expected 67000000 to be greater than or equal to 101280000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:57:123
+     55|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     56|         const need = (l.aiAnalysesPerMonth as number) * (R + VERIFICAT…
+     57|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                           ^
+     58|     })
+     59|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > pro (Family): budget >= policy cap × R_max + the Q&A allowance
+AssertionError: pro: 25 × 151200 + 100 × 15000 = 5280000: expected 1500000 to be greater than or equal to 5280000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:64:108
+     62|         expect(l.policies, 'Family must have a finite policy cap').toB…
+     63|         const need = (l.policies as number) * R + QA_QUESTIONS * QA_UN…
+     64|         expect(l.monthlyTokenBudget, `pro: ${l.policies} × ${R} + ${QA…
+       |                                                                                                            ^
+     65|     })
+     66|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 5 passed (10)
+   Start at  22:25:47
+   Duration  608ms (transform 44ms, setup 138ms, import 30ms, tests 5ms, environment 365ms)
+

@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import Link from "next/link"
 import { CheckCircle2, ShieldCheck } from "lucide-react"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -23,12 +24,12 @@ import { resolveUserLanguage } from "@/lib/i18n/resolve-language"
 const COPY = {
     title: { el: "Η αναβάθμιση ολοκληρώθηκε", en: "Upgrade complete" },
     body: {
-        el: "Το πλάνο σας είναι ενεργό. Έχετε πλέον πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI.",
-        en: "Your plan is active. You unlocked full analysis, more policies and unlimited AI questions.",
+        el: "Το πλάνο σας είναι ενεργό. Έχετε πλέον περισσότερα ασφαλιστήρια και, με το Family, πλήρη ανάλυση και ερωτήσεις AI.",
+        en: "Your plan is active. You now have more policies and, with Family, full analysis and AI questions.",
     },
     agentBody: {
-        el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες, πλήρη ροή εσόδων και προτεραιότητα στην ανάλυση AI.",
-        en: "Your agent plan is active. You unlocked more customers, the full revenue pipeline and priority AI analysis.",
+        el: "Το πλάνο συμβούλου είναι ενεργό. Έχετε πλέον περισσότερους πελάτες και περισσότερες αναλύσεις AI τον μήνα.",
+        en: "Your agent plan is active. You now have more customers and more AI analyses each month.",
     },
     pendingTitle: { el: "Η πληρωμή επεξεργάζεται", en: "Payment processing" },
     pendingBody: {
@@ -38,13 +39,13 @@ const COPY = {
     cta: { el: "Συνέχεια", en: "Continue" },
     ctaHome: { el: "Μετάβαση στο πορτοφόλι", en: "Go to wallet" },
     trust: {
-        el: "Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή",
-        en: "Secure payment with Stripe · Cancel anytime",
+        el: `Ασφαλής πληρωμή με Stripe · ${CANCEL_ANYTIME.el}`,
+        en: `Secure payment with Stripe · ${CANCEL_ANYTIME.en}`,
     },
     tokensTitle: { el: "Η αγορά ολοκληρώθηκε", en: "Purchase complete" },
     tokensBody: {
-        el: "Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα.",
-        en: "Your extra tokens were added to your account and are available immediately.",
+        el: "Η αγορά καταχωρήθηκε στον λογαριασμό σας και είναι άμεσα διαθέσιμη.",
+        en: "Your purchase was added to your account and is available immediately.",
     },
     reportTitle: { el: "Η αναφορά είναι διαθέσιμη", en: "Report unlocked" },
     reportBody: {

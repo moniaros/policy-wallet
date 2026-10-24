@@ -81,7 +81,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-[#475569] dark:text-slate-300">{t("Κάλυψη σε σχέση με το υπόλοιπο του δανείου", "Cover against what is left on the mortgage")}</span>
-                                    <span className="font-medium text-amber-700 dark:text-amber-300">{t("Βρέθηκε κενό", "Gap found")}</span>
+                                    <span className="font-medium text-amber-700 dark:text-amber-300">{t("Για έλεγχο", "To check")}</span>
                                 </div>
                                 <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-amber-500 w-[72%] h-2 rounded-full" />
@@ -94,7 +94,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex justify-between border border-rose-100 dark:border-rose-800/40">
                                 <div>
                                     <p className="font-medium text-rose-900 dark:text-rose-200 text-sm flex items-center gap-2">
-                                        <ShieldAlert className="w-4 h-4" /> {t("Λείπει κάλυψη", "Missing cover")}
+                                        <ShieldAlert className="w-4 h-4" /> {t("Δεν αναφέρεται στο δείγμα", "Not listed in the sample")}
                                     </p>
                                     <p className="text-xs text-rose-700 dark:text-rose-200 mt-1">{t("- Μόνιμη αναπηρία", "- Permanent disability")}</p>
                                 </div>

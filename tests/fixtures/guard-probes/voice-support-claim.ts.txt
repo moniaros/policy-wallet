@@ -1,0 +1,30 @@
+// PW-CONTENT-02 probe — support claims PolicyWallet does not offer (support is email only).
+export const probe = {
+    plan: "Αποκλειστική υποστήριξη",
+    plan2: "Dedicated support",
+    phone: "Τηλεφωνική υποστήριξη στο +30 210 123 4567",
+    hours: "Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00",
+    live: "Υποστήριξη 24/7 και ώρες λειτουργίας 9-5",
+    placeholder: "+30 XXX XXX XXXX",
+}
+export const probe2 = {
+    hours: "Οι ειδικοί μας είναι διαθέσιμοι Δευτέρα έως Παρασκευή, 9:00 π.μ. έως 6:00 μ.μ. (EET)",
+    en: "Available Monday to Friday, 9:00 AM to 6:00 PM",
+    call: "Call us any time",
+    expert: "Contact Expert",
+}
+export const probe3 = {
+    h1: "Απαντάμε 09:00–18:00 κάθε εργάσιμη.",
+    h2: "We answer between 9:00 and 18:00 on working days.",
+    p1: "Τηλέφωνο υποστήριξης: 210 123 4567",
+}
+export const probe4 = [
+    "Τηλεφωνική εξυπηρέτηση",
+    "Εξυπηρέτηση πελατών στο τηλέφωνο",
+]
+export const probe5 = [
+    "Υποστήριξη μέσω τηλεφώνου",
+    "Support by phone",
+    "Υποστήριξη με βιντεοκλήση",
+    "Μιλήστε με έναν ειδικό",
+]

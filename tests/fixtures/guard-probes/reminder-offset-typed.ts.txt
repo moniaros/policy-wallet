@@ -1,0 +1,14 @@
+// Probe for tests/unit/reminder-offsets-from-scheduler.test.ts — each line types a reminder offset.
+export const A = { el: "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", en: "Renewal reminders from 90 to 3 days ahead (email)" }
+export const B = "Every plan gets one reminder email 30 days before expiry"
+export const C = "Υπενθυμίσεις στις 90, 60, 30, 15, 7 και 3 ημέρες πριν τη λήξη"
+export const D = "We email you before something runs out — 30 days ahead on every plan"
+export const E = <p>Η υπενθύμιση ανανέωσης 30 ημέρες πριν ισχύει σε όλα τα πλάνα</p>
+export const F = "Προσθέστε ασφαλιστήρια και θα σας ειδοποιούμε 90 ημέρες πριν από κάθε ανανέωση."
+export const G = "Add policies and we will alert you 90 days before every renewal."
+export const H = "Μπορώ να έχω υπενθύμιση; Ναι, 30 ημέρες πριν τη λήξη."
+export const I = "We will remind you 30 days before it ends"
+export const J = "Θα λάβετε email 30 ημέρες πριν τη λήξη"
+export const K = "Ειδοποίηση 30 ημέρες πριν"
+export const L = "Let us notify you 90 days ahead"
+export const M = "Ενημέρωση 60 ημέρες πριν από κάθε λήξη"

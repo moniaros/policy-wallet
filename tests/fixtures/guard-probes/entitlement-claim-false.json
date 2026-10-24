@@ -1,0 +1,21 @@
+{
+  "_why": "PW-CONTENT-02 probe: a pricing table that states what the code does not enforce. The entitlement-claim guard must flag every line marked FALSE below.",
+  "agent": {
+    "plans": [ { "key": "agent-free", "features": [ { "claim": "agent.clientScreen", "label": { "el": "Απεριόριστοι πελάτες", "en": "Unlimited clients" }, "included": true } ] } ],
+    "comparisonRows": [
+      { "claim": "agent.analysesPerMonth", "name": { "el": "Αναλύσεις AI ανά μήνα", "en": "AI analyses per month" },
+        "values": { "agent-free": "—", "agent-starter": "50", "agent-pro": "200", "agent-agency": { "el": "Απεριόριστες", "en": "Unlimited" } } }
+    ]
+  },
+  "policyholder": {
+    "plans": [
+      { "key": "free", "features": [
+        { "claim": "deepAnalysis", "label": { "el": "Πλήρης ανάλυση AI", "en": "Full AI analysis" }, "included": true },
+        { "label": { "el": "Μια δυνατότητα χωρίς ετικέτα", "en": "A capability with no claim tag" }, "included": true },
+        { "claim": "basicSummary", "label": { "el": "Πλήρης ανάλυση AI", "en": "Full AI analysis" }, "included": true },
+        { "claim": "renewalDate", "label": { "el": "Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)", "en": "Renewal reminders from 90 to 3 days ahead (email)" }, "included": true }
+      ] }
+    ],
+    "comparisonRows": []
+  }
+}

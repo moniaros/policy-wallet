@@ -1,0 +1,89 @@
+(node:98405) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:98407) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/budget-reaches-published-count.test.ts (7 tests | 5 failed) 5ms
+     × agent_free: budget >= published count × R_max (all runs reserving concurrently) 1ms
+     × agent_starter: budget >= published count × R_max (all runs reserving concurrently) 0ms
+     × agent_pro: budget >= published count × R_max (all runs reserving concurrently) 0ms
+     × agency: budget >= published count × R_max (all runs reserving concurrently) 0ms
+     × the code defaults equal the budgets the owner set in production (fixture) 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_free: budget >= published count × R_max (all runs reserving concurrently)
+AssertionError: agent_free: 5 × 151200 = 756000: expected 150000 to be greater than or equal to 756000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:38:91
+     36|         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
+     37|         const need = (l.aiAnalysesPerMonth as number) * R
+     38|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                           ^
+     39|     })
+     40|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_starter: budget >= published count × R_max (all runs reserving concurrently)
+AssertionError: agent_starter: 50 × 151200 = 7560000: expected 1600000 to be greater than or equal to 7560000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:38:91
+     36|         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
+     37|         const need = (l.aiAnalysesPerMonth as number) * R
+     38|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                           ^
+     39|     })
+     40|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agent_pro: budget >= published count × R_max (all runs reserving concurrently)
+AssertionError: agent_pro: 150 × 151200 = 22680000: expected 4500000 to be greater than or equal to 22680000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:38:91
+     36|         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
+     37|         const need = (l.aiAnalysesPerMonth as number) * R
+     38|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                           ^
+     39|     })
+     40|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agency: budget >= published count × R_max (all runs reserving concurrently)
+AssertionError: agency: 400 × 151200 = 60480000: expected 12000000 to be greater than or equal to 60480000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:38:91
+     36|         const l = DEFAULT_AGENT_ENTITLEMENT_LIMITS[tier]
+     37|         const need = (l.aiAnalysesPerMonth as number) * R
+     38|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                           ^
+     39|     })
+     40|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > the code defaults equal the budgets the owner set in production (fixture)
+AssertionError: agent_free: expected 150000 to be 850000 // Object.is equality
+
+- Expected
++ Received
+
+- 850000
++ 150000
+
+ ❯ tests/unit/budget-reaches-published-count.test.ts:43:107
+     41|     it('the code defaults equal the budgets the owner set in productio…
+     42|         const prod = JSON.parse(readFileSync('tests/fixtures/productio…
+     43|         for (const tier of TIERS) expect(DEFAULT_AGENT_ENTITLEMENT_LIM…
+       |                                                                                                           ^
+     44|     })
+     45|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 2 passed (7)
+   Start at  21:56:06
+   Duration  588ms (transform 41ms, setup 136ms, import 28ms, tests 5ms, environment 355ms)
+

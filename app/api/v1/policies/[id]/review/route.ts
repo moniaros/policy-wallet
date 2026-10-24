@@ -80,7 +80,7 @@ export const POST = withApiGuard(
                 if (run.failureCode === "UPGRADE_REQUIRED") {
                     return createApiError(
                         "UPGRADE_REQUIRED",
-                        "AI analysis requires a paid plan; the free trial analysis has been used",
+                        "The full AI analysis is available on the Family plan",
                         402,
                         { run_id: run.id }
                     )

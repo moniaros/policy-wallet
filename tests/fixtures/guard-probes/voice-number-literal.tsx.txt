@@ -1,0 +1,3 @@
+// PW-CONTENT-02 probe — a Greek literal with a prefixed euro sign, an English literal with Greek grouping, and the in-app formatter.
+import { formatEur } from "@/lib/pricing/pricing-view-model"
+export const probe = (t) => [t("Συνολική αξία €28.000", "Total value €28,000"), t("Ασφάλιση 35.000 €", "Insured for €35.000")]

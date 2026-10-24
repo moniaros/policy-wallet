@@ -92,7 +92,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Συλλογή 4 έργων", "Collection of 4 works")}</p>
-                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Συνολική αξία €28.000 · Σε ισχύ", "Total value €28,000 · In force")}</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Συνολική αξία 28.000 € · Σε ισχύ", "Total value €28,000 · In force")}</p>
                             </div>
                             <Gem className="w-6 h-6 text-[#29685B] dark:text-brand-accent" />
                         </div>

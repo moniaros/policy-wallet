@@ -1,0 +1,40 @@
+ ❯ tests/unit/budget-reaches-published-count.test.ts:78:165
+     76|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     77|         const need = agentNeed(l.aiAnalysesPerMonth as number)
+     78|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                                                                     ^
+     79|     })
+     80|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > agency: budget >= published count × (R_max + scan/upload + verification) × 1.1 (cache-miss path)
+AssertionError: agency: 400 × (151200 + 102000 + 102000) × 1.1 = 156288000: expected 134000000 to be greater than or equal to 156288000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:78:165
+     76|         expect(l.aiAnalysesPerMonth, `${tier} must publish a finite co…
+     77|         const need = agentNeed(l.aiAnalysesPerMonth as number)
+     78|         expect(l.monthlyTokenBudget, `${tier}: ${l.aiAnalysesPerMonth}…
+       |                                                                                                                                                                     ^
+     79|     })
+     80|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/unit/budget-reaches-published-count.test.ts > an agent plan's token budget never binds before its published analysis count (H-027) > pro (Family): budget >= (policy cap × (R_max + verification) + the Q&A allowance) × 1.1
+AssertionError: pro: (25 × (151200 + 102000) + 100 × 15000) × 1.1 = 8613000: expected 5700000 to be greater than or equal to 8613000
+ ❯ tests/unit/budget-reaches-published-count.test.ts:85:156
+     83|         expect(l.policies, 'Family must have a finite policy cap').toB…
+     84|         const need = familyNeed(l.policies as number)
+     85|         expect(l.monthlyTokenBudget, `pro: (${l.policies} × (${R} + ${…
+       |                                                                                                                                                            ^
+     86|     })
+     87|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 6 passed (11)
+   Start at  01:31:01
+   Duration  592ms (transform 40ms, setup 136ms, import 26ms, tests 5ms, environment 362ms)
+

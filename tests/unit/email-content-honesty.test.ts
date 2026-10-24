@@ -96,7 +96,7 @@ describe('the win-back email only claims a problem when there is one', () => {
         const { subject, html } = getChurnDay7Email({ language: 'en', expiringPolicies: 0, openGaps: 0 })
         expect(subject).not.toMatch(/need attention/i)
         expect(html).not.toMatch(/needs attention/i)
-        expect(html).toMatch(/nothing that needs action/i)
+        expect(html).toMatch(/nothing new to show you/i)
     })
 
     it('does say so when there is something', () => {

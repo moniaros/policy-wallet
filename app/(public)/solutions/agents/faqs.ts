@@ -38,8 +38,8 @@ export const AGENT_FAQS: { q: { el: string; en: string }; a: { el: string; en: s
             en: "Do you compete with the agent?",
         },
         a: {
-            el: "Όχι. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια — πληρωνόμαστε μόνο από συνδρομές. Η ίδια ανεξάρτητη ανάλυση που εμπιστεύεται ο ασφαλισμένος γίνεται το κοινό έδαφος της κουβέντας σας μαζί του.",
-            en: "No. We sell no insurance and take no commission — we are paid only by subscriptions. The same independent analysis the policyholder trusts becomes the common ground for your conversation with them.",
+            el: "Όχι. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια. Η ίδια ανάλυση που βλέπει ο ασφαλισμένος γίνεται το κοινό έδαφος της κουβέντας σας μαζί του.",
+            en: "No. We sell no insurance and take no commission. The same analysis the policyholder sees becomes the common ground for your conversation with them.",
         },
     },
 ]

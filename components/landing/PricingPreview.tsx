@@ -4,6 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight, Check } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
 import type { MarketingLocale } from "@/lib/marketing/positioning"
 import { PlanRecommender } from "@/src/design-system/plan-recommender"
@@ -46,11 +48,7 @@ export function PricingPreview({
     // `pro`, where `plus` is the plan displayed as "Starter" and `pro` is the
     // one displayed as "Family". Sorting on those names would be a
     // trap for whoever edits this next.
-    const amountOf = (plan: PublicPricingPlan) => {
-        const digits = plan.pricing.monthly.amount.replace(/[^\d.,]/g, "").replace(",", ".")
-        const value = Number.parseFloat(digits)
-        return Number.isFinite(value) ? value : 0
-    }
+    const amountOf = (plan: PublicPricingPlan) => plan.pricing.monthly.value
     const bookable = plans.filter((plan) => !plan.isContactPlan)
     const freePlan = bookable.find((plan) => amountOf(plan) === 0)
     const paidPlans = bookable.filter((plan) => amountOf(plan) > 0).sort((a, b) => amountOf(a) - amountOf(b))
@@ -150,17 +148,22 @@ export function PricingPreview({
 
                                 <p className="mb-1 flex items-baseline gap-1">
                                     <span className="text-h2 font-bold tracking-tight text-neutral-900 dark:text-white">
-                                        {priceOf(plan).amount}
+                                        {formatPlanPrice(priceOf(plan).value, locale)}
                                     </span>
                                     <span className="text-body text-muted-foreground dark:text-slate-400">
                                         {pick(priceOf(plan).period)}
                                     </span>
                                 </p>
                                 <p className="mb-4 min-h-5 text-body-sm text-neutral-500 dark:text-slate-400">
-                                    {billing === "annual" && plan.pricing.annual
+                                    {billing === "annual" && plan.pricing.annual?.savings
                                         ? pick(plan.pricing.annual.savings)
                                         : "\u00a0"}
                                 </p>
+                                {trialDisclosure(plan.trialDays ?? 0, priceOf(plan).value, billing === "annual" && plan.pricing.annual ? "annual" : "monthly") && (
+                                    <p className="mb-4 text-body-sm text-neutral-600 dark:text-slate-300">
+                                        {pick(trialDisclosure(plan.trialDays ?? 0, priceOf(plan).value, billing === "annual" && plan.pricing.annual ? "annual" : "monthly")!)}
+                                    </p>
+                                )}
 
                                 <p className="mb-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                     {pick(plan.description)}

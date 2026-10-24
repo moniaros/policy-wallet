@@ -50,7 +50,10 @@ describe("Marketing interactions", () => {
         fireEvent.click(screen.getByRole("button", { name: /keep you in the loop/ }))
         expect(screen.getByText("What needs attention")).toBeVisible()
         expect(screen.getByText(/An example showing/)).toBeVisible()
-        expect(screen.getByText(/from the Plus plan/)).toBeVisible()
+        // The reminder is on every plan (30 days ahead); only the longer ladder is Plus.
+        // This line used to pin «from the Plus plan», which was false for Free.
+        expect(screen.getByText(/one reminder once \d+ days or fewer remain on every plan, more on Plus and Family/)).toBeVisible()
+        expect(screen.queryByText(/from the Plus plan/)).toBeNull()
         expect(track).toHaveBeenCalledWith("marketing_preview_select", { route: "/en/product", locale: "en", control: "step_3" })
     })
 })

@@ -124,11 +124,11 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
             "Όλες οι ασφάλειές σας — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
             "All your insurance — car, home, health — on one screen",
         ),
-        // Reminders start on the Plus plan (Free shows only the date), so the
-        // benefit names the plan instead of promising it to everyone.
+        // Every plan gets one reminder email 30 days ahead; the longer ladder is
+        // Plus and Family — the benefit says so instead of attributing it to Plus.
         t(
-            "Υπενθυμίσεις πριν λήξουν τα ασφαλιστήριά σας — από το πλάνο Plus",
-            "Reminders before your policies expire — from the Plus plan",
+            "Υπενθύμιση πριν λήξουν τα ασφαλιστήριά σας· νωρίτερα στα Plus και Family",
+            "A reminder before your policies expire; earlier on Plus and Family",
         ),
         // Gap detection is a Family feature — same honesty rule.
         t(
@@ -182,7 +182,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         </AppScreen>
                         <p className="mt-g-3 flex flex-wrap items-center gap-g-2 text-sm text-fg-primary">
                             <MiniChip state="gap">{pick(STATE_LABELS.gap, locale)}</MiniChip>
-                            {t("Κατοικία: λείπει η κάλυψη σεισμού", "Home: earthquake cover is missing")}
+                            {t("Κατοικία: ο σεισμός δεν αναφέρεται στο δείγμα", "Home: earthquake is not listed in the sample")}
                         </p>
                     </PhoneSample>
                     {/* Names the plan: finding the gap is a Family job, and this

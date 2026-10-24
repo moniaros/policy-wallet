@@ -176,26 +176,35 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
 
     const gaps = [
         {
-            severity: t("Επείγον", "Urgent"),
-            textColor: "text-status-danger",
-            bg: "bg-status-danger-tint",
-            border: "border-status-danger-edge",
+            // One neutral word for every row (PW-CONTENT-02 review I10): the demo used to
+            // grade three findings Urgent / Important / Medium with danger-warning-info
+            // colours — a hand-rolled severity verdict outside describeSeverity().
+            severity: t("Για έλεγχο", "To check"),
+            textColor: "text-status-info",
+            bg: "bg-status-info-tint",
+            border: "border-status-info/40",
             label: t("Χωρίς ασφάλεια ζωής (εξαρτώμενα άτομα)", "No life insurance (has dependents)"),
             delay: 1500,
         },
         {
-            severity: t("Σημαντικό", "Important"),
-            textColor: "text-status-warning",
-            bg: "bg-[#FFFBEB] dark:bg-amber-500/10",
-            border: "border-status-warning-edge",
-            label: t("Κατοικία — λείπει σεισμική κάλυψη", "Home — missing earthquake cover"),
+            // One neutral word for every row (PW-CONTENT-02 review I10): the demo used to
+            // grade three findings Urgent / Important / Medium with danger-warning-info
+            // colours — a hand-rolled severity verdict outside describeSeverity().
+            severity: t("Για έλεγχο", "To check"),
+            textColor: "text-status-info",
+            bg: "bg-status-info-tint",
+            border: "border-status-info/40",
+            label: t("Κατοικία — ο σεισμός δεν αναφέρεται στο δείγμα", "Home — earthquake is not listed in the sample"),
             delay: 1800,
         },
         {
-            severity: t("Μέτριο", "Medium"),
+            // One neutral word for every row (PW-CONTENT-02 review I10): the demo used to
+            // grade three findings Urgent / Important / Medium with danger-warning-info
+            // colours — a hand-rolled severity verdict outside describeSeverity().
+            severity: t("Για έλεγχο", "To check"),
             textColor: "text-status-info",
             bg: "bg-status-info-tint",
-            border: "border-[#BFDBFE] dark:border-blue-500/40",
+            border: "border-status-info/40",
             label: t("Δεν υπάρχει ταξιδιωτική ασφάλεια", "No travel insurance"),
             delay: 2100,
         },

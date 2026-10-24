@@ -89,8 +89,22 @@ describe('the post-parse card grid names the tier its own cards require', () => 
 
     it('every card in the grid resolves in the gate registry', () => {
         const cardKeys = [...src.matchAll(/featureKey:\s*"(\w+)"/g)].map((m) => m[1] as FeatureKey)
-        expect(cardKeys.length).toBeGreaterThanOrEqual(6)
+        expect(cardKeys.length).toBeGreaterThanOrEqual(3)
         for (const k of cardKeys) expect(FEATURE_GATES[k], `${k} not in FEATURE_GATES`).toBeDefined()
+    })
+
+    it('EVERY card requires exactly the tier the heading names — a card gated below it is a false «Available with Family»', () => {
+        const cardKeys = [...src.matchAll(/featureKey:\s*"(\w+)"/g)].map((m) => m[1] as FeatureKey)
+        const maxRank = Math.max(...cardKeys.map((k) => RANK[FEATURE_GATES[k].requiredPlan]))
+        const below = cardKeys.filter((k) => RANK[FEATURE_GATES[k].requiredPlan] < maxRank)
+        expect(below, `cards gated below the heading tier: ${below.join(', ')}`).toEqual([])
+    })
+
+    it('probe — a Plus-gated card in the grid is caught', () => {
+        const withReminders = src.replace('const CARDS: {', 'const X: {') + '\n{ featureKey: "advanced_renewal_reminders" }'
+        const keys = [...withReminders.matchAll(/featureKey:\s*"(\w+)"/g)].map((m) => m[1] as FeatureKey)
+        const max = Math.max(...keys.map((k) => RANK[FEATURE_GATES[k].requiredPlan]))
+        expect(keys.filter((k) => RANK[FEATURE_GATES[k].requiredPlan] < max), 'advanced_renewal_reminders is Plus').toEqual(['advanced_renewal_reminders'])
     })
 
     it('the section heading names the highest tier the cards require, and no cheaper one', () => {

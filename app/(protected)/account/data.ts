@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { listPasskeys, passkeysEnabled, type PasskeySummary } from "@/lib/auth/passkeys"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { canRunDeepAnalysis } from "@/lib/monetization/feature-gates"
 import { getCanonicalPlanForTier, getPlanById } from "@/lib/pricing/plan-catalog"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { startOfAthensMonth } from "@/lib/policy-status"
@@ -143,9 +144,13 @@ export async function getPlanData(): Promise<PlanData> {
             policiesLimit: entitlements.limits.policies,
             analysesThisMonth,
             analysesLimit: entitlements.limits.aiAnalysisPerMonth,
+            // The processing budget only BINDS where the deep analysis runs
+            // (canRunDeepAnalysis, orchestrator) — on Free/Plus the card and its
+            // "once it runs out, analyses wait until next month" line described a
+            // monthly cap production does not enforce (PREVENTION_PERSONALIZATION_ENABLED=0).
             hasAiBudget:
-                entitlements.limits.monthlyTokenBudget === null ||
-                entitlements.limits.monthlyTokenBudget > 0,
+                canRunDeepAnalysis(entitlements.tier) &&
+                (entitlements.limits.monthlyTokenBudget === null || entitlements.limits.monthlyTokenBudget > 0),
         },
         upgradeTarget:
             nextPlan && nextPlan.isActive
