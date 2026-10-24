@@ -831,6 +831,8 @@ preserves the IP in its pre-change record and would otherwise look like an unexa
 `docs/STATUS.md` reads **contained, not closed**, and stays that way until the drain question is
 answered by a human. The agent does not close this.
 
+**Check 2026-10-24 (owner asked for a read-only listing through the Vercel MCP): INCONCLUSIVE, SEC-01 stays open.** `list_drains` (`GET /v1/drains`) returned `404 not_found` on every scope tried: team `team_QzKsHlvajknceItFyQlikMk2` (by id and by slug `moniaros-projects`) and project `policy-wallet` (`prj_J0YkE21dIhru7WXpSUEMmKQ8H5FG`). The same 404 on all three scopes means the endpoint is not reachable through this MCP and credential, not that the list is empty; it is not evidence that no drain exists. `get_project` works (so the scope is right). The dashboard check above (project Settings → Log Drains, and the team-level drains list) is still the only way to answer it. No fallback to the CLI was tried, because the instruction was MCP only.
+
 
 ---
 
@@ -853,7 +855,14 @@ Full assessment: `docs/growth/STEP0_ASSESSMENT.md`. Queue: `docs/growth/QUEUE-GR
 
 ---
 
-## H-011 — A document reaches a model provider before anyone consents. CLAUDE.md says this cannot happen.
+## H-011 — CLOSED 2026-10-24 (verified in code): a document reaches a model provider before anyone consents. CLAUDE.md says this cannot happen.
+
+**Closure (2026-10-24, read-only check at `fd92773b`; owner asked for closure only if verifiable in code).** Every path in the table below now reads consent before the document is touched:
+- Agent scan `parsePolicyPdfWithGemini`: `app/(protected)/agent/actions.ts:1386-1388` returns `AI_CONSENT_REQUIRED` / `AGENT_ATTESTATION_REQUIRED` **before** `formData.get("file")` at `:1390`; the provider call is `:1501`. This is option 2 (owner decision D1: the agent's recorded consent plus a per-scan mandate attestation), `scanPolicyForResolution` (`:1524`) delegates to it at `:1530`; the only client caller of either is `components/agent/UploadPolicyModal.tsx:305` (via `scanPolicyForResolution`), and `AddCustomerModal` no longer calls the scan (the halt's `:113` reference is stale).
+- Upload extract: `app/api/policies/extract/route.ts:140-144`, before the body is read.
+- Deep pipeline: `lib/services/analysis/policy-analysis-orchestrator.service.ts:389-391` (owner's consent, not the initiator's).
+- The halt's "also missing" item exists: `tests/unit/ai-processing-consent-gate.test.ts:462-` (source guard, cases at `:772-800`) enumerates every `.extractPolicyData(` / `.askQuestion(` / `.classifyDocument(` caller under `app/` and `lib/` from the filesystem, requires a consent read first in the same function, rejects stale exemptions and runs against a committed probe; behavioural cases at `:417-440` pin the agent scan's order. `npx vitest --run tests/unit/ai-processing-consent-gate.test.ts` → 18 passed.
+- Not verified: the text below still describes the state on 2026-08-27; the commit that changed the agent scan was not traced.
 
 **Raised 2026-08-27, found while wiring the extra-documents feature. Verified in code, not inferred.**
 
