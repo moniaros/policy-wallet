@@ -1363,3 +1363,189 @@ holds the same tree.
 
 The other 137 stale capture files across 9 surfaces are recorded, derivable as bounds, and not
 actionable: none is a ceiling baseline and none lands within 1 of one.
+
+---
+
+# PW-CONTENT-02 — decisions at Step 0 approval (2026-10-21, Eli)
+
+Source: `docs/series/PW-CONTENT-02/STEP0.md` (approved with amendments A1–A5). Each decision closes the HALTS.md entry of the same id.
+
+## PW-C02-H019 — Public copy reflects enforced code; future entitlement policy is a separate series
+Full analysis = Family only, today. Intended future policy (NOT implemented here): Free = one lifetime full analysis; Plus and Family = full analysis on all policies. Supersedes the written disagreement between H-009 ("both paid tiers"), `feature-gates.ts:93`, and the run-plan H3. Opens **PW-ENTITLE-01** (stub in QUEUE.md). The in-app line «Η πρώτη πλήρης ανάλυση είναι δωρεάν» is removed (A1) because no code grants it.
+
+## PW-C02-H020 — No analysis limit is published
+No monthly analysis count exists to publish (`aiAnalysisPerMonth` null on every B2C tier). «μηνιαίο όριο επεξεργασίας» and monthly-cap wording are removed from B2C copy. The enforced policy cap stays. `limitStatement` therefore states the policy cap only.
+
+## PW-C02-H021 — Production is the source of truth for baselines
+`PREVENTION_PERSONALIZATION_ENABLED` is `0` in Vercel production (read 2026-10-21); local `.env.local` was `1` and is aligned to `0` before baselines. Live /pricing prices equal dev rows. Production `plans.entitlements` not read (no credential; pull blocked by classifier): residual risk recorded, verdicts rest on dev rows = code defaults.
+
+## PW-C02-H022 — One positioning line
+«Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». Every other variant is removed from public routes and metadata, including the «ανεξάρτητος έλεγχος ρίσκου» keywords (SEO trade accepted) and the OG headline «Σας λέμε αν είστε καλυμμένοι.».
+
+## PW-C02-H023 — Exclusions: copy follows code
+Exclusions render on every plan, so /compare no longer says «Ναι, με το Family» for them. Any packaging change is deferred to H3.
+
+## PW-C02-H024 — Boat-liability sentence removed pending an official citation
+Reinstate only after the specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) is cited from the official text and the sentence matches the law's actual scope. Operational facts (Stripe portal, support hours, «Αποκλειστική υποστήριξη», Schengen minimum) remain flagged and unchanged.
+
+## PW-C02-A5 — The «Δεν κερδίζει τίποτα από την απάντηση» row is deleted
+No replacement wording. Closes build item 5 and A7 (funding-claim wording) for that row.
+
+## PW-C02-A3/A4 — Numbers
+Prices are numbers in the model and formatted at render (el-GR «4,99 €», «35.000 €»); JSON-LD offers carry a numeric `price` and `priceCurrency: "EUR"`.
+
+
+---
+
+# PW-CONTENT-02 — owner round 2026-10-22 (Eli)
+
+## PW-C02-D1 — H-022: tagline approved
+«Τα ασφαλιστήριά σας, με απλά λόγια» is approved for the root `<title>`, the OG headline and the home Twitter title (the EN /product title follows). H-022's "one positioning line" governs the category name; this is a tagline.
+
+## PW-C02-D2 — Support is email only
+There is no phone support, no chat and no service hours. «Αποκλειστική υποστήριξη» is removed everywhere; a plan line that needs a support entry reads «Υποστήριξη μέσω email». Every support-hours claim, phone number and phone placeholder for PolicyWallet is removed from public routes, the app and the email templates; all public contact points use `info@policywallet.gr` (`siteConfig.contactEmail`). The positioning lint gained a support arm (banned: «Αποκλειστική υποστήριξη», «τηλεφωνική υποστήριξη», «ώρες λειτουργίας», «24/7», phone-number patterns, answering-hours windows), shown red first. Insurer helplines printed in policy content and the visitor's own phone-number inputs are not PolicyWallet promises and are out of its universe.
+
+## PW-C02-D3 — DPO sign-off is not required for any item in this series
+Every "DPO sign-off pending" flag is removed from COPY.md, HALTS.md and the status/deploy notes. Reversible: restore the flag on a string if a reviewer asks.
+
+## PW-C02-D4 — Deletion line
+The /trust-mirroring draft ships on /product and the sign-up form: «Μπορείτε να ζητήσετε διαγραφή των στοιχείων σας. Όσα πρέπει να κρατήσουμε, όπως τα φορολογικά παραστατικά, δεν διαγράφονται πριν λήξει η σχετική υποχρέωση.» Rows C-01, C-A2, C-55 are approved by Eli in COPY.md.
+
+## PW-C02-D5 — Schengen €30.000 stays, with a source
+Regulation (EC) No 810/2009 (Visa Code), Article 15(3): «The minimum coverage shall be EUR 30 000.» (OJ L 243, 15.9.2009, p. 1; read from the official EUR-Lex HTML 2026-10-22; the owner named Article 15, the sentence is in paragraph 3). Wording is limited to the minimum medical cover for the visa application. CLAIMS C18.
+
+## PW-C02-D6 — Stripe portal downgrade claim removed
+Checked in test mode with the local dev test key: `GET /v1/billing_portal/configurations` returned 0 configurations, so the portal cannot offer plan switching, and the app has no in-app downgrade flow. «αναβαθμίσετε ή να υποβαθμίσετε» becomes «αναβαθμίσετε» on /pricing and in the in-app FAQ. Reinstating the claim is a QUEUE item (portal configuration with plan switching).
+
+## PW-C02-D7 — No-commission claims untouched; open halt H-025
+No no-commission wording was changed in this round. All public claims are listed with file:line in HALTS.md H-025 for Eli to confirm.
+
+## PW-C02-D8 — H-021 stays OPEN and is a merge blocker
+Production `plans.entitlements` have not been read; the guard is not verified against production. `vercel env pull` is denied in `.claude/settings.json`.
+
+## PW-C02-D9 — Scope extension: in-app «unlimited»/monthly-cap strings (same class as A1/H-020)
+/account no longer says «Απεριόριστες αναλύσεις» (the analyses row shows the count used; the unlimited feature line, `noPaidFeatures` and the unused `aiBudget*` keys are gone); the AI processing budget card and its «εξαντληθεί … μέχρι τον επόμενο μήνα» line show only where the budget binds (`canRunDeepAnalysis`, i.e. Family). /agent/pricing lists the enforced counts (Free: none stated, Pro 150, Agency 400), no token budget, fallback prices 29 / 79 / 199. The in-app arm of the entitlement-claim guard is widened and a new guard compares /agent/pricing with `planClaim` and `DEFAULT_PLAN_FACTS`.
+
+
+# PW-CONTENT-02 — owner round 3 (2026-10-22, Eli)
+
+## PW-C02-D10 — Family keeps its 14-day trial, and every surface that sells it says so (closes H-028 for copy)
+The trial stays. Everywhere Family is sold the sentence is «Δωρεάν δοκιμή {days} ημερών. Μετά χρεώνεται {price} τον μήνα, εκτός αν ακυρώσετε πριν λήξει.» (annual variant: «τον χρόνο», annual price), with `{days}` and `{price}` read from the plan row (`lib/pricing/trial-disclosure.ts`). Surfaces: /pricing card and the home pricing preview, UpgradeModal, /upgrade comparison, the dashboard carried-plan card, the sign-up confirmation page, and the Stripe hosted checkout (`custom_text.submit.message`, both languages). No «νέοι συνδρομητές» qualifier while the code gives the trial to every checkout. Guard: `tests/unit/trial-disclosure-everywhere.test.ts` (enumerates every file that starts a checkout; shown red first, `evidence/d10-trial-disclosure-guard-red.txt`). Not here: one trial per customer, lifetime — PW-ENTITLE-01 item 1 (`lib/billing.ts:90,116`). There is no subscription-start email and no `customer.subscription.trial_will_end` handler (see H-032); the owner's deploy checklist carries «Stripe trial-ending reminder email enabled».
+
+## PW-C02-D11 — Cancellation: trace, do not change the claims
+No claim was changed. Test mode: the in-app «Διακοπή αυτόματης ανανέωσης» path works without a portal configuration (`cancel_at_period_end` via `app/(protected)/account/actions.ts:92-135`; Free resumes at `customer.subscription.deleted`, `stripe-lifecycle.ts:200-220`). The Stripe billing portal does not (0 configurations). There is no immediate downgrade. So a working self-serve cancel path EXISTS and the merge-blocking halt was not opened; the owner verifies the live-mode portal. Every cancel/stop claim is listed in H-030.
+
+## PW-C02-D12 — H-027: published agent caps are the ANALYSIS COUNTS; tokens are internal
+5 / 50 / 150 / 400 stay published (Agent Free's 5 is restored in the pricing card, table and /agent/pricing). The token meter and every token-count string leave customer surfaces: the account `TokenUsageCard` (and its extra-token purchase UI) is removed; `token_topup` upgrade copy, the three «όριο AI tokens / αγοράστε credits» messages and the purchase-success line now speak of the monthly analysis limit. Budget enforcement is unchanged. Guard: `tests/unit/no-token-copy-customer-facing.test.ts` (red first, `evidence/h027-token-copy-guard-red.txt`). H-027 stays OPEN and is a merge blocker until the owner returns the output of `evidence/h027-token-per-analysis-prod.sql` and resizes budgets in /admin/plans. No plan-row writes were made.
+
+## PW-C02-D13 — H-021 closed: the production rows are the evidence
+The owner read production `plans` on 2026-10-22. `tests/fixtures/production-plan-rows-2026-10-22.json` + `tests/unit/plan-defaults-match-production-rows.test.ts` compare them field by field with `DEFAULT_ENTITLEMENT_LIMITS`, `DEFAULT_AGENT_ENTITLEMENT_LIMITS` and `DEFAULT_PLAN_FACTS`; all 9 comparisons pass, so the claim guard (which derives from those defaults) holds against production. Agent tables read 5 / 50 / 150 / 400. Annual savings are derived from the two prices (`lib/pricing/annual-savings.ts`; «2 μήνες δωρεάν» / «Save 4 months» typed strings removed; guard `annual-savings-derived.test.ts`, red first). Token budget: ENFORCED for Family (every deep run passes `canUserUseTokens`, `policy-analysis-orchestrator.service.ts:708`), so no policyholder copy says «απεριόριστες» (guard already bans it in-app, `plan-gating-parity.test.ts`); a fair-use decision belongs to the owner (H-027).
+
+## PW-C02-D14 — Queued, not fixed here
+Recorded in QUEUE.md: boat-liability rule vs ν. 4926/2022 (H-024 residue); `/api/v1/policies/share` entitlement bypass (PW-ENTITLE-01 item 2, for the security-reviewer); preview deployments on the staging Supabase project (blocks the PW-ASSET-01 build); new series PW-CLAIMREG-01; referral-credits copy; the token top-up endpoint left without a UI.
+
+
+# PW-CONTENT-02 — owner round 4 (2026-10-22, Eli)
+
+## PW-C02-D15 — Cancel claims carry their consequence; no downgrade is offered (closes H-030 for copy)
+Cancelling works in-app and ends at the END of the paid period (`cancelSubscription` → `cancel_at_period_end`, `app/(protected)/account/actions.ts:92-135`; `stripe-lifecycle.ts:200-220`); downgrade does not exist. Every «cancel any time» claim now comes from `lib/marketing/cancellation-statement.ts` («Ακύρωση όποτε θέλετε· η πρόσβαση συνεχίζεται έως το τέλος της περιόδου που έχετε πληρώσει») and a guard fails on one without its consequence (`cancel-claims-state-access.test.ts`, red first: 6 files, `evidence/d15-cancel-claims-guard-red.txt`). Downgrade and plan-switch claims: the guard finds none (the earlier ones were removed on 2026-10-22). QUEUE: self-serve downgrade; payment-method update without a billing portal.
+
+## PW-C02-D16 — Reminder offsets are composed from the scheduler's constants; the conditional rows are rewritten and held for re-approval
+Every reminder offset claim reads `RENEWAL_MILESTONES` / `BASIC_MILESTONES` through `lib/renewals/reminder-copy.ts`; `reminder-offsets-from-scheduler.test.ts` fails on a typed rung (red first: 12 files, `evidence/d16-reminder-offsets-guard-red.txt`). Proof and the parts not provable from the repo are in HALTS H-034. Rewritten because they were imprecise or incomplete: Free gets one email once the policy is within 30 days (not «30 ημέρες πριν» exactly); the ladder is Plus **and Family**. C-10, C-20, C-21, R3-1, R3-4 stay `pending re-approval`.
+
+## PW-C02-D17 — Token budget reset wording; token reservation arithmetic for policyholder plans
+The monthly limit starts again on the 1st of the SERVER'S calendar month (`billingMonth()`, `lib/token-tracking.ts:66-69`; not the subscription period; about 02:00–03:00 Athens on a UTC server). R4-3 says «ξαναρχίζει την 1η κάθε μήνα»; a guard bans «ανανεώνεται»/"renews" beside a limit. Arithmetic (H-033): no SOLD Free or Plus capability is refused by the token gate — they never reach it (`canRunDeepAnalysis` false) and upload-time extraction is not token-gated while `PREVENTION_PERSONALIZATION_ENABLED=0` — so no GA-blocking halt was opened for «Δωρεάν για 3 ασφαλιστήρια». Family clears the gate on every branch at zero usage and fits 9–10 first-time runs a month at the reservation. Agent Free is the failing plan (H-027). **Condition:** switching `PREVENTION_PERSONALIZATION_ENABLED` to 1 in production would make Free's 150,000 budget bind the basic path (about one scan a month) — GA-blocking; keep it 0 until budgets are resized (GO checklist).
+
+## PW-C02-D18 — COPY.md round 4 dispositions
+Approved: C-11b, C-38, R2-4, R2-6, R3-2, R3-3, R3-5, R3-6, R3-8, R3-10, C-36, C-50, C-57, R2-2, R2-3, R3-7, R3-9, R4-5, R4-6. Approved with amendment: R2-5 («κανονισμός (ΕΚ) 810/2009, άρθρο 15 παρ. 3»), R4-2 («περίπου 21 €» / «περίπου 29 €»; no chip uses the label). Held for H-025: the commission sentence of C-37. Conditional (rewritten, pending your re-approval): C-10, C-20, C-21, R3-1, R3-4, R4-3. New this round: R5-1..R5-8.
+
+
+# PW-CONTENT-02 — owner round 5 (2026-10-22, Eli)
+
+## PW-C02-D19 — H-027 rule: the published count is the cap; the token budget is a safety rail that never binds first
+Agent budgets (set by the owner in /admin/plans; code defaults aligned in `lib/pricing/plan-defaults.ts`): agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 = published count × 151,200 + ~10 %. Arithmetic: a run is admitted iff `used + R ≤ budget` (`lib/token-tracking.ts:398`) ; `createRun` checks the whole-run estimate R without reserving, and each step then reserves only its own slice (≤ 102,000) and replaces it with ACTUAL usage when it completes (`policy-analysis-orchestrator.service.ts:708,2266,2580`). So N × R_max is a conservative bound for the ESTIMATE, not a proof: what actually binds the k-th run is Σ(actual of the previous runs) + R ≤ budget, i.e. for Agent Free actual ≤ (850,000 − 151,200)/4 ≈ 174,700 per run for the 5th to start. Actuals are unmeasured until the owner's p95 SQL runs. R_max = 151,200 (8-rule branch; the estimator the gate uses, over the authored catalogue). 5 × 151,200 = 756,000 ≤ 850,000; 50 × = 7,560,000 ≤ 8,400,000; 150 × = 22,680,000 ≤ 25,000,000; 400 × = 60,480,000 ≤ 67,000,000. Guard `tests/unit/budget-reaches-published-count.test.ts` (red first: 4 plans below the rule, `evidence/h027-budget-rule-guard-red.txt`) also pins the defaults to the owner-set values. The headroom assumes ≤ 8 active rules per branch: the ~10 % headroom tolerates R up to ~170,000 on agent_free (about 15 more rules on a branch) before the guard fails, so it fails where the budget would start to bind, not earlier. **Assumes a pure-analysis month:** the same `monthly_token_usage` row is also drawn by agent MEDIC suggestions (`app/(protected)/agent/actions.ts:542-546`), the review workspace (`lib/agent/review-workspace.ts:131-133`, 24,000 reserved per call), agent Q&A on granted policies (`wallet/actions.ts:1744,1778`), batch translation (`batch-translator.ts:181`) and, if `AGENT_INDEPENDENT_VERIFICATION=1`, a second extraction per run (`independent-verification.ts:51-52`). Agent Free's headroom after five estimated runs is 94,000 tokens (about four review-workspace calls). Family waits for the owner's SQL. H-027 stays OPEN for Family and for confirming the production rows were saved.
+
+## PW-C02-D20 — Terms §5 for agents: cancel by email — DRAFTED, NOT APPLIED
+Owner decision: agent subscriptions are cancelled by email to info@policywallet.gr, effective at the end of the paid period. Old and new text, and what a version bump triggers, are in `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`; `lib/legal/legal-content.ts` is untouched until the owner has seen it. In-app agent cancel control queued (AGENT-CANCEL-PATH).
+
+
+# PW-CONTENT-02 — owner round 6 (2026-10-22, Eli)
+
+## PW-C02-D21 — Interim token budgets; BUDGET-MEASURE is a GA blocker
+Family 5,700,000 = 25 policies × 151,200 × 1.1 (analyses) + 1,500,000 (≈100 questions at the 15,000 unit). Agents 1,700,000 / 16,800,000 / 50,000,000 / 134,000,000 because `AGENT_INDEPENDENT_VERIFICATION=1` in production (R_agent = 151,200 + 102,000 = 253,200; needs 1,266,000 / 12,660,000 / 37,980,000 / 101,280,000). Defaults, fixture and `budget-reaches-published-count.test.ts` aligned; extended to Family and to the verification reservation, red first (`evidence/d21-interim-budgets-guard-red.txt`: 4 agent plans and Family below the rule). Replacement by measured budgets ((N−1)·A_p95 + R)·1.1 is QUEUE BUDGET-MEASURE, a GA blocker. **What the rule does not cover** (review): the scan-time/upload-time extraction is recorded against the same monthly row without a budget gate (QUEUE BUDGET-DRAW-SCAN-UPLOAD: on the agent cache-miss path a policy costs 355,200, not 253,200; the Family batch path costs 6,330,000 for 25 policies), and verification only fires when `ai.full_failover` and the `ai.remediation_canary` flag authorise it (GO checklist). A_p95 in the measured formula must include both. Not changed: Free 150,000 and Plus 600,000 (they never reach the gate).
+
+## PW-C02-D22 — No copy promises unbounded Q&A
+Q&A is bounded by the shared budget (gate `wallet/actions.ts:1778`) until QA-BUDGET-SPLIT. Found and removed (guard `no-unlimited-questions-claim.test.ts`, red first, 4 strings): «ρωτάτε ελεύθερα» / "ask freely" in the Family upsell (`upgrade-copy.el.ts:76`, `.en.ts:61`) and the placeholders «Ρωτήστε οτιδήποτε…» / "Ask anything…" (`translations/el.ts:445`, `en.ts:448`). No copy states «απεριόριστες ερωτήσεις» / "unlimited questions"; `questionsPerDay: null` is never rendered as a count (`plan-claims.ts` does not read it). The identifier `unlimited_ai_questions` is never rendered (queued rename).
+
+## PW-C02-D23 — Flag R verified in code: the production rows parse
+`tests/unit/production-rows-parse-as-entitlements.test.ts` lays every listed field of the committed production rows over the canonical shape; the strict `EntitlementLimitsSchema` / `AgentEntitlementLimitsSchema` accept all 7 rows (3 policyholder + 4 agent), and `resolveB2cPlanLimits` / `resolveAgentPlanLimits` (now exported) return the ROW's values (proved with a sentinel no default carries), not the code fallback; a malformed row would fall back silently (probe). Limit: the fixture holds the owner's field list, not the raw `plans.entitlements` blob, so an extra unknown key in the real blob (the schema is strict) cannot be excluded from the repo.
+
+## PW-C02-D24 — Terms §5 applied; versions bumped together; §12 opened as a GA blocker
+TERMS-5-DRAFT.md approved and applied (`lib/legal/legal-content.ts`: policyholder subscriptions cancel in-app; agent subscriptions by email to info@policywallet.gr, both effective at the end of the paid period). `LEGAL_CONTENT_VERSION` and the four `LEGAL_DOC_META` versions → `GR-GA-2026.10.22` (dates 2026-10-22), prior text archived (`docs/archive/legal-content-before-2026-10-22.ts.txt`). No re-consent flow (TERMS-RECONSENT stays queued): existing accounts keep their recorded version. Terms §12 EN/GR mismatch → H-035, GA blocker, drafted fix for a separate legal commit.
+
+## PW-C02-D25 — FINAL interim budgets (round 7); BUDGET-MEASURE replaces every one before GA
+Owner, 2026-10-23: Family `pro` 8,700,000 = (25 × 253,200 + 100 × 15,000) × 1.1 (= 8,613,000, rounded up); agent_free 2,000,000 · agent_starter 19,600,000 · agent_pro 58,700,000 · agency 156,300,000 = N × 355,200 × 1.1 (1,953,600 / 19,536,000 / 58,608,000 / 156,288,000, rounded up), 355,200 = R_max 151,200 + ungated scan/upload extraction 102,000 + verification 102,000 (the cache-miss path BUDGET-DRAW-SCAN-UPLOAD described). `plan-defaults.ts`, `DEFAULT_TOKEN_LIMITS`, the fixture and `budget-reaches-published-count.test.ts` aligned; the guard moved to the round-7 rule and turned red against the round-6 values first (`evidence/d25-final-budgets-guard-red.txt`); its probe now asserts the round-6 budgets fail. **Budget sizing ends in this series: any further finding goes to BUDGET-MEASURE (QUEUE), a GA blocker, whose A_p95 must include the ungated scan/upload extraction and the verification actuals and which replaces EVERY interim value before GA.** The budgets assume verification is on. For information only (not awaited): `ai.remediation_canary` (`FF_AI_REMEDIATION_CANARY_MODE`) defaults to `internal` (`lib/flags/registry.ts:153`), so by default verification applies only to admin/internal roles; and a read of the production environment variable NAMES through the Vercel MCP on 2026-10-23 listed no `AGENT_INDEPENDENT_VERIFICATION` (code default `false`, `registry.ts:91`) — values are encrypted and were not read. Either way the budgets are an upper bound, not a shortfall.
+
+## PW-C02-D26 — Flag R on the RAW blobs: all seven parse
+The fixture now holds the raw `plans.entitlements` blobs as the owner read them on 2026-10-22 (verbatim text plus its parse; only `monthlyTokenBudget` is superseded by D25). `production-rows-parse-as-entitlements.test.ts` parses each UNMODIFIED through the strict `EntitlementLimitsSchema` / `AgentEntitlementLimitsSchema` and the real resolvers: **ph-free, ph-plus, ph-pro, agent-free, agent-starter, agent-pro, agency all pass, no key fails, the schema was not loosened.** The resolver returns the blob's values, not the fallback (sentinel); the code defaults equal the blobs on every key but the budget; the fixture rows agree with the blobs on every shared key. Remaining limits: the blobs are the owner's transcription, tier routing by plan name and the live-subscription query are not exercised, and the budgets saved after 2026-10-22 are not read.
+
+## PW-C02-D27 — H-035 decision and the shared "last updated" side effect
+H-035 drafted fix extended (owner, round 7): the Greek §12 gets the Greek counterpart «Μετά τον τερματισμό, τα δεδομένα σας διαχειρίζονται σύμφωνα με την Πολιτική Απορρήτου.» in place of the leaked English paragraph; still a GA blocker for a separate legal commit. Privacy, Cookies and Subprocessors show «last updated 22 Oct 2026» though only Terms changed: stays queued under LEGAL-VERSION-SINGLE-SOURCE, not a merge blocker.
+
+## PW-C02-D28 — Gate change: live-Stripe items leave the merge gate; verification flag recorded unset
+Owner, 2026-10-23: production runs on Stripe TEST keys and `publicCheckoutAvailability()` withholds paid checkout, so nobody can subscribe from this release. The live customer portal, the live webhook at `/api/v1/billing/webhook`, the trial-ending reminder and the live cancel test (former GO-CHECKLIST items 5–7) move to a new section «Before switching production to live Stripe keys» — a **GA blocker, not a merge blocker**. COPY rows that depend only on flags P and W (the payment-method article, R5-7, the cancel claims) are approved on that basis and are re-verified at that gate. `AGENT_INDEPENDENT_VERIFICATION` is unset in production (code default off, `lib/flags/registry.ts:91`; production env var NAMES read through the Vercel MCP 2026-10-23); the budgets stay as set (D25), an upper bound. The owner's production-check values (budgets saved, PREVENTION flag, Brevo, cron rows, journey check, H-025, COPY approvals) had not been filled in when this was recorded; no box was ticked on them.
+
+## PW-C02-D29 — Owner decisions and checks, 2026-10-24
+**H-025 closed** (owner-attested): no partner referral, affiliate or lead arrangement earns PolicyWallet money; the no-commission claims stay; C-37's commission sentence approved. **COPY re-approval table approved in full**, rows tied to a production check conditional on it. **Brevo**: key present and `policywallet.gr` authenticated, owner-verified 2026-10-24 (owner-attested). MCP-read supporting evidence: public DNS has Brevo DKIM CNAMEs (`brevo1`/`brevo2._domainkey` → `b1`/`b2.policywallet-gr.dkim.brevo.com`) and `_dmarc` = `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com`, but the apex SPF is `v=spf1 include:zohomail.com ~all` — it does not include Brevo (DMARC alignment then rests on DKIM alone); production runtime logs for the last 24h contain no Brevo line. **`PREVENTION_PERSONALIZATION_ENABLED`**: the Production value was revealed through the Vercel MCP (that one variable only) and is `0`. **Renewal cron** (MCP-verified): `/api/v1/jobs/renewal-check` runs `0 5 * * *` (`vercel.json`) and the runtime logs show a completed run on each of 2026-10-22, 10-23 and 10-24 (05:00 UTC, `errorCount` 0, 1 policy scanned, 0 notifications) — the `job_runs` SELECT is pending the Supabase MCP. **Journey check** on the `d8fa8f58` preview: evidence in `evidence/journey/RESULT.md` (320/390 screenshots impossible here: the window does not resize); awaiting the owner's word. Live production is now `91579018` (#411, mobile menu), ahead of the sha the checklist named; `pw-customer` has not merged it.
+
+## PW-C02-D30 — The round-7 budgets written to production (2026-10-24)
+Guardrails first: `.claude/settings.json` now has an `ask` rule for `mcp__plugin_supabase_supabase__execute_sql` and `deny` rules for the Supabase migration, edge-function and branch tools (`apply_migration`, `deploy_edge_function`, `create_edge_function_secret`, `create_branch`, `delete_branch`, `merge_branch`, `rebase_branch`, `reset_branch`). Production project: `cquudefwfwrmvpftuhyl` (PolicyWallet-Prod; `lzqvtvjggylcujenlelh` is dev). Before: ph-pro 1,500,000 · agent-free 150,000 · agent-starter 1,600,000 · agent-pro 4,500,000 · agent-agency 12,000,000 (ph-free 150,000, ph-plus 600,000). One owner-approved statement (`evidence/b3-budgets-write.sql`) set `monthlyTokenBudget` only, guarded by the before-value, and reproduced what `/admin/plans` `updatePlan` writes (`actions.ts:51-95`): `plans.version+1` and `updated_at`, one `plan_revisions` row and one `UPDATE_PLAN` `activity_logs` row per plan; result 5 / 5 / 5. Attribution is `session-maintenance` / `claude-code-session` (the July maintenance revisions' precedent), not the owner's admin identity. No `UPDATE_PLAN` row existed before: the admin page had never saved a plan in production. Cache: the token gate reads `plans` directly (Prisma, `lib/subscription-entitlements.ts`), so it sees the budgets on its next call; the public catalog (`unstable_cache` tag `plan-catalog`, 300 s) does not render budgets. The `revalidateTag`/`revalidatePath` calls of the admin action were not run (SQL cannot). Rollback: `evidence/b3-budgets-rollback.sql` (a forward write with from/to swapped; history stays append-only). Fixture refreshed from the re-read rows; the three budget/production-row guards pass (38 tests).
+
+### D30 corrections after the final-delta review (2026-10-24)
+- **Not an exact reproduction.** The statement reproduces `plans.version`, `updated_at`, `changes`, `description` and the `activity_logs` metadata, but `plan_revisions.snapshot` holds database column names and a numeric `price`, not the Prisma-field-name JSON `updatePlan` stores (`actions.ts:70`). Two snapshot shapes now coexist for the same plan; no reader depends on it. Fixing the five rows would be a second production write and awaits the owner.
+- **Unrehearsed on dev.** The write was NOT applied to dev (`lzqvtvjggylcujenlelh`) first; per CLAUDE.md it is declared unrehearsed (the plan rows are a production catalogue; the SQL was guarded by the before-values). Dev `plans` still hold their old budgets; the code on this branch and production hold the new ones.
+- Attribution `session-maintenance` / `claude-code-session` exists only in production rows (the July maintenance revisions), not in the repo; the five `activity_logs` rows will appear in `/admin/activity` attributed to that non-user id.
+- "The admin page had never saved a plan" rests on `plans.version` being 1 on the five rows before the write, not on the absence of `UPDATE_PLAN` rows (`logAdminAction` is best-effort).
+- Run counts (amends D29): Vercel runtime logs show completed runs on 22, 23, 24 Oct; the `job_runs` SELECT (done in this round) shows `succeeded` `cron` rows on all seven days 18–24 Oct. `notification_events`, the `automation.paused` setting and the Vercel cron-enabled switch were NOT read, so "healthy rather than paused" is unproven; item 9 stays unticked.
+- Evidence: `evidence/b3-budgets-verification.md`.
+
+## PW-C02-D31 — Snapshot shapes, dev budgets, guardrails, merge (2026-10-24)
+**Snapshot (owner decision):** revisions stay append-only, nothing was rewritten. (a) An unchanged save through `updatePlan` writes NO revision (`actions.ts:47-49`: empty diff redirects `?saved=unchanged`), so five corrective revisions in `updatePlan`'s shape (Prisma field names, string decimals, ISO `Z` dates; `evidence/b3-snapshot-correction.sql`, rollback `b3-snapshot-correction-rollback.sql`: delete the five fixed ids) were appended on production on the owner-approved tool call; their key set and value types equal the revision the real action wrote on dev (compared key by key). (b) Revisions carrying the database-column shape and why: `40fe6c12…` ph-free and `fdb738d1…` ph-plus (July maintenance SQL), `46213ad3…` ph-pro, `f23dd428…` agent-free, `fd853170…` agent-starter, `f0b3b3d7…` agent-pro, `67ed1320…` agent-agency (the 2026-10-24 budget write, SQL cannot produce Prisma's JSON). (c) QUEUE: PLAN-REVISION-SHAPE.
+**Dev:** the same budgets were applied to the dev plan rows through the real `updatePlan` server action (harness: `evidence/dev-apply-budgets.harness.ts.txt`; only the session guard and Next request/cache APIs stubbed; refused to run unless the connection string named the dev project and not production): five plans at v2, one canonical-shape revision and one UPDATE_PLAN audit row each, ph-free/ph-plus untouched. Guard run against dev rows (`dev-rows-parse.harness.ts.txt`): all seven parse strict, resolvers use the rows, equal the fixture blobs and the code-default budgets; the budget guard, rows-parse and plan-defaults tests pass (39). Order note: production was written first (D30, unrehearsed on dev); dev now conforms.
+**Guardrails:** `.claude/settings.json` denies `pause_project`, `restore_project`, `create_project`, `apply_migration`, `deploy_edge_function`, `create_edge_function_secret`, the five branch tools and `Bash(npx prisma:*)`; `execute_sql` stays `ask`. The untracked `.claude/settings.local.json` no longer allows `execute_sql` or `Bash(npx prisma:*)`. Production SQL needs the owner's approval per call. Consequence: `npx prisma …` (generate, migrate deploy/resolve/status) is refused for the agent; the standing "migrate deploy/resolve" path now needs the owner or `npm run` wrappers.
+**Item 9 evidence:** production `notification_settings` has no `automation.paused` row (default `false`, `lib/notifications/settings.ts:44`); `job_schedules.renewal-check` `enabled = true` (row since 2026-08-11); `job_runs` `succeeded`/`cron` on 18–24 Oct. The Vercel Cron Jobs switch is the owner's to confirm.
+**Merge:** NEW-UI (#411, #412) merged into `pw-customer` (merge commit, not rebase). The only code NEW-UI added is a 3-line nav filter in `components/public/PublicHeader.tsx` (the mobile menu lists «Για ασφαλιστές» once); the rest is docs and evidence. No claim-bearing file, no customer-facing string, no guard fixture was touched, so no review of that delta is needed beyond the full guard run. Gates after the merge: audit:api-auth (116 routes), lint, lint:i18n-changed, lint:utf8, lint:encoding, type-check, verify:migrations, 710 files / 7,975 tests — all green.
+
+# PW-ASSET-01 — decisions at Step 0 approval (2026-10-24, Eli)
+
+Source: `docs/series/PW-ASSET-01/STEP0.md`, **Approved 2026-10-24 — Eli, with H-012..H-018 decisions.** Each decision closes the HALTS.md entry of the same id (H-010 moves instead of closing). **The build has not started; it waits for PW-STAGING-01.** New halt ids for this series start at H-036 (H-036 raised; H-037–H-039 unused).
+
+## PW-A01-H012 — Production profiled; migration approved for staging only; ambiguous rows stay unlinked (run-plan H4)
+(1) The STEP0 §2.9 profile ran on production (`cquudefwfwrmvpftuhyl`) through the Supabase MCP, read-only, one owner-approved call. The Step 0 scratch script had not been committed, so the SELECTs were rebuilt as one statement (`docs/series/PW-ASSET-01/evidence/profile.sql`, counts and plate shapes only). Before production, the same statement ran on dev and reproduced every 2026-10-21 dev figure, so the rebuild is faithful. Production: 12 policies / 6 owners; motor 5 (plate 3, VIN 1); **0 duplicate groups, 0 cases in all five ambiguous classes**. Results pasted into STEP0 §2.9. **The design does not change**, so there was no stop. (2) **Migration SQL §3.1 is approved for staging only; production waits for the build review.** This overrides CLAUDE.md's dev-first-then-prod-automatically rule for this migration, by explicit owner instruction. Whether dev counts as staging: H-036, defaulting to the literal reading (staging project only). (3) **The backfill leaves ambiguous rows unlinked.**
+
+## PW-A01-H013 — D-034 superseded
+"D-034 is superseded: the 21 Oct policyholder review showed customers think in things, not policies; the asset view is the base of the paid value case (PW-ASSET-01)." (Eli, verbatim.) D-034's reopen trigger (`duplicate-identity-row > 0` on a real capture) has not fired and is not claimed; the grounds are product, not that evidence. D-034 stays in place above as history (append-only). `ASSET-REFRAME-SPEC.md` carries a 2026-10-24 status line saying so.
+
+## PW-A01-H014 — Authorization criterion: option (a); per-role RLS deferred to PW-HOUSEHOLD-01
+The PW-ASSET-01 RLS criterion is replaced by: same ENABLE-RLS posture on `insured_assets`, `policy_insured_assets`, `asset_match_suggestions`; `policy-authorization-single-path` enumerates the new server actions; `cross-tenant-authorization.spec.ts` covers the asset routes and proves denial over HTTP for a stranger agent and a stranger policyholder. The security reviewer's brief names (a). **Per-role RLS policies are deferred to PW-HOUSEHOLD-01** (noted in that series file).
+
+## PW-A01-H015 — No umbrella noun; «Τι ασφαλίζετε»; per-type headings and counts; status and prompt copy
+Section title **«Τι ασφαλίζετε»**. Per-type headings **Οχήματα, Κατοικίες, Κατοικίδια, Σκάφη, Άτομα, Επιχείρηση, Άλλα**. **No umbrella noun in counts**: per type, «2 οχήματα · 1 κατοικία». Status **«Σε ισχύ έως 14/3»** confirmed. Prompt **«Αφορά: {label};»** with **«Ναι» / «Όχι, άλλο» / «Νέο»**, no article before `{label}`. **`greek-copy-reviewer` checks every composed string containing `{label}` for article/gender agreement.** LEXICON row 22 added. Not decided here, and so still drafts for the build's copy pass: the other status phrases in STEP0 §3.5 (they must need no agreement), and the per-type singular/plural forms.
+
+## PW-A01-H016 — Person and business assets: owner-created only (confirmed)
+Never extracted, never auto-matched: `origin='owner'`, `match_source='owner_assigned'` only. The matcher never proposes one, and nothing reads `insured.name` / `policyholder.taxId` as an asset key. On production those fields hold the policyholder's data (STEP0 §2.9).
+
+## PW-A01-H017 — No entitlement or price reads asset counts in this series (confirmed)
+`maxPoliciesPerCustomer` stays the only metered quantity. Pricing by asset would be its own series, under the catalog-coupling rule.
+
+## PW-A01-H018 — A group has no lifecycle of its own; it states its members' dated facts with the denominator visible (approved)
+`ASSET-REFRAME-SPEC.md` §2.4 amended to that sentence (original wording kept beneath it). `lib/assets/asset-status.ts` (when built) summarises member `resolvePolicyLifecycle` outputs with «{n} από {m} ασφαλιστήρια» beside every status. An unreadable end date never contributes green.
+
+## PW-A01-H010 — Insured-person / business extraction out of scope; moves to PW-HOUSEHOLD-01
+Health, life and travel stay «Χωρίς αντικείμενο» in PW-ASSET-01. H-010 stays **open** and moves, both halves together, to PW-HOUSEHOLD-01, alongside H5. An owner may still hand-create a person asset (PW-A01-H016).
+
+## PW-A01-D1 — Acceptance criteria added (Eli)
+Added to `docs/series/PW-ASSET-01.md`: (1) DSR export and deletion cover `insured_assets`, `policy_insured_assets`, `asset_match_suggestions`; (2) `asset.count` joins the count-consistency guard; (3) the staging seed includes the hard matching cases: plate separator variants, homoglyphs, VIN-only, street-only address, pet name only.
+
+## PW-A01-D2 — Where this record lives (decision taken under standing authority)
+`pw-asset` was cut at NEW-UI `25f3ff41` and held none of the PW-CUSTOMER programme docs. Those live on `pw-customer` (42 commits ahead, including PW-CONTENT-02 product code). To record these decisions without pulling unmerged PW-CONTENT-02 code into the asset branch, the programme docs this series needs (`00-RUN-PLAN.md`, `PW-ASSET-01.md`, `PW-ASSET-01/STEP0.md`, `PW-HOUSEHOLD-01.md`, `transformation/{HALTS,DECISIONS,QUEUE}.md`, `STATUS.md`) were copied **file-for-file from `pw-customer` at `2e64e82a`**, then amended. Docs only: no code, test or config file came across. Consequence: when `pw-customer` and `pw-asset` meet, these files merge from identical bases plus the edits above. Expect conflicts only in append regions (HALTS/DECISIONS/STATUS). Reversible: `git diff 2e64e82a -- <file>` shows exactly what this series added.

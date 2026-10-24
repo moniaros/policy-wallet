@@ -5,6 +5,12 @@
 > derivation below is live and §2–§4's invariants govern any consumer that groups by it. What is
 > deferred is §7.3's re-rendering of the wallet around it. §5 asked for a measurement before building;
 > the measurement (P5-wallet-00) came back 0/3 on a typical wallet and this is the answer to it.
+>
+> **Status 2026-10-24 (PW-A01-H013, PW-A01-H018): the deferral is SUPERSEDED by an owner decision; §2.4 is AMENDED.**
+> D-034 is superseded on product grounds (not on its evidence trigger, which has not fired): PW-ASSET-01
+> builds the asset view on a persisted `insured_assets` model (its STEP0 §3.1), so §1's "no schema change"
+> no longer describes the series that consumes this spec. §1's derivation stays the subject key
+> (`policyAssetSubjectKey`, unwidened). §2.1–§2.3, §3 and §4 stand unchanged. §2.4 is amended below.
 
 `LEDGER.md` states the gate plainly:
 
@@ -45,9 +51,17 @@ Concretely, for any grouping the wallet renders:
    not a substitute for the rows inside it.
 3. **Individual identity.** Inside a group, each policy is still identified by insurer and policy
    number through `lib/wallet/policy-identity.ts`. "Three policies on this car" is not an identity.
-4. **Status is per policy, never per group.** One expired policy on a car with two live ones must not
-   render the car as live, and must not render it as expired either. `resolvePolicyLifecycle` answers
-   per policy; a group has no lifecycle.
+4. **Status is per policy; a group has no lifecycle of its own.** *(Amended 2026-10-24, Eli, H-018.)*
+   **A group has no lifecycle of its own; it states its members' dated facts with the denominator
+   visible.** `resolvePolicyLifecycle` answers per policy, and every member keeps its own status and
+   link. A group may say «Σε ισχύ έως 14/3 · 2 από 3 ασφαλιστήρια», a dated fact of its members with
+   the denominator beside it. It may never say "the car is live" or "the car is expired" as a state of
+   its own. That is why one expired policy on a car with two live ones still renders the car neither
+   as live nor as expired. A member whose end date was unreadable can never make the group read as
+   in force.
+   *Original wording (2026-08-26):* "One expired policy on a car with two live ones must not render
+   the car as live, and must not render it as expired either. `resolvePolicyLifecycle` answers per
+   policy; a group has no lifecycle."
 
 ## 3. When the key is unreadable, do not group
 
