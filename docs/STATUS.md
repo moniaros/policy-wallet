@@ -13,7 +13,8 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 ## In progress / Blocked (merge blockers, owner)
 - **H-025**: confirm the public no-commission claims (C-37's commission sentence is held with it).
 - **COPY.md**: re-approvals (re-approval table at the end of `COPY.md`).
-- Owner manual items on `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`: final budgets saved in /admin/plans, `PREVENTION_PERSONALIZATION_ENABLED=0`, Stripe live portal + webhook + trial reminder, Brevo + renewal cron run history.
+- Owner manual items on `docs/series/PW-CONTENT-02/GO-CHECKLIST.md`: final budgets saved in /admin/plans, `PREVENTION_PERSONALIZATION_ENABLED=0`, Brevo + renewal cron run history. The Stripe live portal/webhook/trial reminder moved to «Before switching production to live Stripe keys» (GA blocker, not a merge blocker: production is on test keys and paid checkout is withheld; DECISIONS D28).
+- The owner's production-check values (round 7 template) arrived unfilled: no box ticked, PR #410 stays draft.
 
 ## Top risks ranked
 1. **Broken / insecure (gates launch, GA):** BUDGET-MEASURE (token budgets are estimate-based; the scan/upload extraction and verification draw on the same row); H-035 Terms §12; `/api/v1/policies/share` skips the Family entitlement (PW-ENTITLE-01 item 2, security-reviewer); the live checkout grants the trial to every checkout (PW-ENTITLE-01 item 1); no subscription-start or trial-ending email (H-032); dead token top-up route still sells packs.
