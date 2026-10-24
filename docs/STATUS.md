@@ -13,8 +13,10 @@ PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-cus
 
 ## In progress / Blocked (merge blockers, owner)
 - **Done 2026-10-24:** budgets written to production and re-read (D30); `PREVENTION_PERSONALIZATION_ENABLED` = 0 (MCP); H-025 closed and COPY approved in full (owner-attested); checklist items 1–4 ticked.
-- **Owner:** approve the journey check (`evidence/journey/RESULT.md`; no 320/390px screenshots possible), tick Brevo (item 8; SPF lists only Zoho) and the renewal cron (item 9; `automation.paused` unread); decide the review's open points (snapshot shape of five `plan_revisions` rows, settings guardrails, dev not rehearsed). Then mark PR #410 ready; NEW-UI (#411, #412) must be merged into the branch first.
+- **Owner:** approve the journey check (`evidence/journey/RESULT.md`; no 320/390px screenshots possible), confirm the Vercel Cron Jobs switch (item 9; `automation.paused` default false, schedule enabled); Brevo (item 8) is ticked owner-attested, SPF fix queued (BREVO-SPF); the snapshot, dev and guardrail points are done (D31). Then mark PR #410 ready; NEW-UI (#411, #412) must be merged into the branch first.
 - The Stripe live portal/webhook/trial reminder are in «Before switching production to live Stripe keys» (GA blocker, not a merge blocker; D28).
+
+- **Production SQL needs the owner's approval per call** (`execute_sql` is `ask`; migration, edge-function, branch, project and `npx prisma` tools are denied in `.claude/settings.json`).
 
 ## Top risks ranked
 1. **Broken / insecure (gates launch, GA):** BUDGET-MEASURE (token budgets are estimate-based; the scan/upload extraction and verification draw on the same row); H-035 Terms §12; `/api/v1/policies/share` skips the Family entitlement (PW-ENTITLE-01 item 2, security-reviewer); the live checkout grants the trial to every checkout (PW-ENTITLE-01 item 1); no subscription-start or trial-ending email (H-032); dead token top-up route still sells packs.
