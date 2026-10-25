@@ -5,20 +5,19 @@ import { COMPARISON_ROWS, DIFFERENTIATORS } from '@/lib/marketing/positioning'
 const SRC = readFileSync('components/landing/WhyDifferent.tsx', 'utf-8')
 
 /**
- * The homepage shows three of the six comparison rows, chosen deliberately and
+ * The homepage shows two of the five comparison rows, chosen deliberately and
  * addressed by index. An index list is only safe if something notices when the
  * source array moves underneath it, which is what this file is for.
  *
- * The section used to assert independence in three identical cards and prove it
- * nowhere; the table is the proof, and the last row is the argument itself —
- * the only row where the folder in the drawer beats both professionals, because
- * it earns nothing from the answer it gives. If that row stops being last on
- * the homepage, the section has lost its point.
+ * PW-CONTENT-02 A5 (2026-10-21): the sixth row, «Δεν κερδίζει τίποτα από την
+ * απάντηση» / "Earns nothing from the answer it gives", was the argument the
+ * excerpt used to end on. It marked the agent «Όχι» while the same site sells to
+ * agents, and it is deleted with no replacement. The excerpt now ends on a row the
+ * product delivers on every plan.
  */
 const EXPECTED = [
-    'Shows you what is NOT covered',
-    'Finds if you are paying twice',
-    'Earns nothing from the answer it gives',
+    'Helps you find what is excluded',
+    'Finds possible shared cover',
 ]
 
 describe('the homepage comparison excerpt', () => {
@@ -26,20 +25,21 @@ describe('the homepage comparison excerpt', () => {
         .flatMap((m) => m[1].split(',').map((n) => Number(n.trim())))
         .filter((n) => Number.isInteger(n))
 
-    it('addresses three rows', () => {
-        expect(indices).toHaveLength(3)
+    it('addresses two rows', () => {
+        expect(indices).toHaveLength(2)
+    })
+
+    it('the deleted row stays deleted (A5)', () => {
+        expect(COMPARISON_ROWS.map((r) => r.job.en)).not.toContain('Earns nothing from the answer it gives')
+        expect(COMPARISON_ROWS.map((r) => r.job.el)).not.toContain('Δεν κερδίζει τίποτα από την απάντηση')
     })
 
     it('still points at the rows it was chosen for', () => {
         expect(indices.map((i) => COMPARISON_ROWS[i]?.job.en)).toEqual(EXPECTED)
     })
 
-    it('ends on the row that carries the argument', () => {
-        const last = COMPARISON_ROWS[indices[indices.length - 1]]
-        expect(last.job.en).toBe('Earns nothing from the answer it gives')
-        // The claim only lands because every professional column concedes it.
-        expect(last.advisor).toBe('no')
-        expect(last.policywallet).toBe('yes')
+    it('every excerpt row is one the product delivers on every plan (no «with Family» cell on the homepage)', () => {
+        for (const i of indices) expect(COMPARISON_ROWS[i].policywallet).toBe('yes')
     })
 
     it('keeps every differentiator claim — they exist nowhere else on the site', () => {

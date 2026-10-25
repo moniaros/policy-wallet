@@ -35,9 +35,9 @@ describe('paywall copy does not describe an allowance that never existed', () =>
         expect(en).not.toMatch(/for this month/i)
     })
 
-    it('says plainly that the feature belongs to the paid plans', () => {
-        expect(el).toMatch(/περιλαμβάνονται στα επί πληρωμή πλάνα/)
-        expect(en).toMatch(/included in the paid plans/i)
+    it('says plainly that the feature belongs to the FAMILY plan (not "the paid plans" — Plus has no AI Q&A)', () => {
+        expect(el).toMatch(/περιλαμβάνονται στο πλάνο Family/)
+        expect(en).toMatch(/included in the Family plan/i)
     })
 })
 

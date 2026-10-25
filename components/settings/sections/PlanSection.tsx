@@ -9,7 +9,6 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { SettingsSection, SettingsRowList } from "@/components/settings/SettingsSection"
 import { SettingRow } from "@/components/settings/SettingRow"
 import { UsageMeter } from "@/components/monetization/UsageMeter"
-import { TokenUsageCard } from "@/components/account/TokenUsageCard"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { Alert } from "@/components/ui/Alert"
 import {
@@ -41,7 +40,6 @@ const FEATURE_ORDER = {
     agentCollaboration: 4,
     analysisComparison: 5,
     savingsReportExport: 6,
-    priorityQueue: 7,
 } as const
 
 export function PlanSection({ data }: { data: PlanData }) {
@@ -75,7 +73,6 @@ export function PlanSection({ data }: { data: PlanData }) {
         else if (limits.policies === 1) lines.push(copy.features.policiesOne)
         else lines.push(`${formatCount(limits.policies)} ${copy.features.policiesMany}`)
 
-        if (limits.aiAnalysisPerMonth === null) lines.push(copy.features.analysesUnlimited)
         if (limits.notifications) lines.push(copy.features.notifications)
 
         for (const key of Object.keys(FEATURE_ORDER) as FeatureKey[]) {
@@ -236,13 +233,13 @@ export function PlanSection({ data }: { data: PlanData }) {
                 )}
             </SettingsSection>
 
-            <SettingsSection icon={Gauge} title={copy.usageTitle} description={copy.usageResets}>
+            <SettingsSection icon={Gauge} title={copy.usageTitle}>
                 <div className="space-y-5">
                     <UsageMeter
                         label={copy.storedPolicies}
                         used={data.usage.policiesStored}
                         limit={data.usage.policiesLimit}
-                        unlimitedLabel={copy.analysesUnlimited}
+                        unlimitedLabel={copy.policiesUnlimited}
                         hint={
                             data.usage.policiesLimit === null
                                 ? undefined
@@ -252,36 +249,24 @@ export function PlanSection({ data }: { data: PlanData }) {
                         }
                     />
 
-                    {data.usage.analysesLimit === null ? (
+                    {/* The count of analyses this month — shown only where it can be non-zero:
+                        a plan with a monthly analysis limit (used / limit) or one that runs the
+                        deep analysis (Family). On Free/Plus the row could only ever read 0 and
+                        would imply an allowance. Never "unlimited". (PW-CONTENT-02) */}
+                    {(data.usage.analysesLimit !== null || data.usage.hasAiBudget) && (
                         <SettingRow
                             label={copy.analyses}
-                            value={copy.analysesUnlimited}
-                            hint={`${formatCount(data.usage.analysesThisMonth)} ${copy.analysesUsed}`}
-                        />
-                    ) : (
-                        <SettingRow
-                            label={copy.analyses}
-                            value={copy.noPaidFeatures}
-                            muted
-                            hint={data.upgradeTarget ? copy.upgradeHint : undefined}
+                            value={
+                                data.usage.analysesLimit === null
+                                    ? formatCount(data.usage.analysesThisMonth)
+                                    : `${formatCount(data.usage.analysesThisMonth)} / ${formatCount(data.usage.analysesLimit)}`
+                            }
+                            hint={copy.analysesUsed}
                         />
                     )}
 
-                    {/* The token budget is the limit that actually binds on the AI
-                        tier — "unlimited analyses" is true, and this is what runs
-                        out first. Tiers with no allowance are not shown a meter
-                        that could only ever read zero of zero. */}
-                    {data.usage.hasAiBudget && (
-                        <p className="text-caption leading-snug text-muted-foreground">
-                            {copy.aiBudgetExhausted}
-                        </p>
-                    )}
                 </div>
             </SettingsSection>
-
-            {/* Own card: it loads its own live balance and sells the top-up the
-                line above refers to. */}
-            {data.usage.hasAiBudget && <TokenUsageCard />}
 
             <SettingsSection icon={Receipt} title={copy.billingTitle} description={copy.billingDesc}>
                 {storeManaged ? (

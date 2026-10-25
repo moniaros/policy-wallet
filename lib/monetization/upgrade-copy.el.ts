@@ -4,6 +4,8 @@
  * upgrade-copy.en.ts (keep keys in sync — parity-tested).
  */
 
+import { BASIC_WHEN, LADDER_LIST, LADDER_RANGE } from "@/lib/renewals/reminder-copy"
+import { CANCEL_ANYTIME } from "@/lib/marketing/cancellation-statement"
 import type { FeatureKey } from "./feature-gates"
 
 export interface UpgradeTriggerCopy {
@@ -17,7 +19,7 @@ export interface UpgradeTriggerCopy {
     successCta: string
 }
 
-const TRUST = "Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις"
+const TRUST = `Ασφαλής πληρωμή με Stripe · ${CANCEL_ANYTIME.el} · Χωρίς κρυφές χρεώσεις`
 
 export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
     policy_upload_limit: {
@@ -29,7 +31,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
             "Έως 10 ασφαλιστήρια (Plus) ή έως 25 (Family)",
             "Πλήρης ανάλυση AI για κάθε ασφαλιστήριο (Family)",
             "Συνολική εικόνα από όλες τις ασφαλιστικές",
-            "Υπενθυμίσεις ανανέωσης",
+            "Περισσότερες υπενθυμίσεις ανανέωσης (Plus)",
         ],
         trust: TRUST,
         successMessage: "Η αναβάθμιση ολοκληρώθηκε. Μπορείτε τώρα να προσθέσετε όλα σας τα ασφαλιστήρια.",
@@ -57,8 +59,7 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         secondaryCta: "Όχι τώρα",
         benefits: [
             "Πλήρης εξήγηση κάθε κενού με τεκμηρίωση",
-            "Προτεραιοποίηση ανά σοβαρότητα",
-            "Απόφυγε διπλές καλύψεις",
+            "Ευρήματα για να τα συζητήσετε με τον ασφαλιστή σας",
             "Συγκεκριμένα επόμενα βήματα",
         ],
         trust: TRUST,
@@ -72,8 +73,8 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         // claims the reader had questions and used them, and that more arrive next
         // month. Neither is true: they never had any and none are coming. Someone
         // waiting for a reset would wait forever.
-        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στα επί πληρωμή πλάνα. Αναβαθμίστε για να ρωτάτε ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
-        primaryCta: "Συνέχεια με απεριόριστες ερωτήσεις",
+        body: "Οι ερωτήσεις AI για τα ασφαλιστήριά σας περιλαμβάνονται στο πλάνο Family. Αναβαθμίστε για να ρωτάτε για καλύψεις, όρια και εξαιρέσεις.",
+        primaryCta: "Συνέχεια με τις ερωτήσεις",
         secondaryCta: "Όχι τώρα",
         benefits: [
             "Ερωτήσεις για καλύψεις, όρια και εξαιρέσεις",
@@ -131,18 +132,18 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Κατεβάστε την αναφορά",
     },
     advanced_renewal_reminders: {
-        headline: "Υπενθυμίσεις ανανέωσης",
-        body: "Μην περιμένετε τη λήξη για να ψάξετε το ασφαλιστήριό σας. Ενεργοποιήστε τις υπενθυμίσεις ανανέωσης.",
-        primaryCta: "Ενεργοποίηση υπενθυμίσεων",
+        headline: "Περισσότερες υπενθυμίσεις ανανέωσης",
+        body: `Σε όλα τα πλάνα λαμβάνετε μία υπενθύμιση ${BASIC_WHEN.el}. Στα Plus και Family λαμβάνετε υπενθυμίσεις ${LADDER_RANGE.el}.`,
+        primaryCta: "Δείτε το Plus",
         secondaryCta: "Όχι τώρα",
         benefits: [
-            "Ειδοποιήσεις email πριν από κάθε λήξη",
-            "Πολλαπλές υπενθυμίσεις ανά ασφαλιστήριο",
-            "Λίστα ελέγχου πριν την ανανέωση",
+            `Υπενθυμίσεις ${LADDER_LIST.el}`,
+            "Email πριν από κάθε λήξη",
+            `Η υπενθύμιση ${BASIC_WHEN.el} παραμένει σε όλα τα πλάνα`,
             "Ποτέ ξανά χαμένη ανανέωση",
         ],
         trust: TRUST,
-        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Οι υπενθυμίσεις ανανέωσης είναι ενεργές.",
+        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Οι πλήρεις υπενθυμίσεις ανανέωσης είναι ενεργές.",
         successCta: "Ρύθμιση υπενθυμίσεων",
     },
     pdf_preview: {
@@ -162,33 +163,17 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
     },
     token_topup: {
         headline: "Συνεχίστε τις αναλύσεις AI",
-        body: "Εξαντλήθηκαν τα AI tokens του μήνα. Αναβαθμίστε το πλάνο σας ή προσθέστε tokens για να συνεχίσετε.",
-        primaryCta: "Συνέχεια με περισσότερα tokens",
+        body: "Έχετε φτάσει το μηνιαίο όριο ανάλυσης του πλάνου σας. Το όριο ξαναρχίζει την 1η κάθε μήνα.",
+        primaryCta: "Δείτε τα πλάνα",
         secondaryCta: "Όχι τώρα",
         benefits: [
-            "Μηνιαία tokens που ανανεώνονται αυτόματα",
-            "Δυνατότητα αγοράς επιπλέον πακέτων",
-            "Προτεραιότητα στην ουρά ανάλυσης (Plus)",
-            "Πλήρης έλεγχος χρήσης από τον λογαριασμό σας",
+            "Το όριο ξαναρχίζει την 1η κάθε μήνα",
+            "Τα ασφαλιστήριά σας μένουν αποθηκευμένα",
+            "Δείτε ποιο πλάνο ταιριάζει στον όγκο των εγγράφων σας",
         ],
         trust: TRUST,
-        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Τα AI tokens σας ανανεώθηκαν.",
+        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Μπορείτε να συνεχίσετε την ανάλυση.",
         successCta: "Συνέχεια στην ανάλυση",
-    },
-    claims_preparation_assistant: {
-        headline: "Οδηγός προετοιμασίας ζημιάς",
-        body: "Αν χρειαστεί να κάνετε δήλωση ζημιάς, έχετε έναν οδηγό βήμα-βήμα με βάση το ασφαλιστήριό σας: τι να ετοιμάσετε, προθεσμίες και ποιον να ενημερώσετε.",
-        primaryCta: "Άνοιγμα οδηγού ζημιάς",
-        secondaryCta: "Όχι τώρα",
-        benefits: [
-            "Βήμα-βήμα τι χρειάζεται για τη δήλωση",
-            "Προθεσμίες και στοιχεία επικοινωνίας από το ασφαλιστήριό σας",
-            "Λίστα εγγράφων που συνήθως ζητούνται",
-            "Ρωτήστε τον ασφαλιστή ή τον σύμβουλό σας όποτε θέλετε",
-        ],
-        trust: TRUST,
-        successMessage: "Η αναβάθμιση ολοκληρώθηκε. Ο οδηγός προετοιμασίας ζημιάς είναι διαθέσιμος.",
-        successCta: "Άνοιγμα οδηγού",
     },
     partner_offers: {
         headline: "Παροχές συνεργατών με το Family",

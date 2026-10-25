@@ -227,12 +227,8 @@ const REGISTRY: Record<string, RegistryEntry> = {
             getChurnDay7Email({ name: "Νίκος", language: "el", expiringPolicies: 0, openGaps: 0 }),
             getChurnDay7Email({ name: "Νίκος", language: "en", expiringPolicies: 0, openGaps: 0 }),
         ],
-        knownDefect:
-            "Says «Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια» / 'We found nothing that needs " +
-            "action' when openGaps === 0 — but its producer (churn-prevention.service.ts) counts " +
-            "GapInstance rows with no analysis state, so a never-analysed portfolio gets the same " +
-            "sentence. Same defect class as P1-02's tile; churn-prevention was outside that brief " +
-            "(reported in its P1-02 report). Fix the producer+template, then DELETE this entry.",
+        // The «Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια» all-clear was removed (PW-CONTENT-02, review pass 7):
+        // the template now says «Δεν έχουμε κάτι νέο να σας δείξουμε». The known-defect pin is deleted as its comment required.
     },
     "churn-prevention.ts#getChurnDay14Email": {
         render: () => [

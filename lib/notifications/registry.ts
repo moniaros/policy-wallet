@@ -672,8 +672,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
     risk_level_changed: {
         businessEvent: "A specific risk changed status",
         copy: {
-            title: { el: "Άλλαξε η εικόνα κινδύνου σας", en: "Your risk picture changed" },
-            message: { el: "Ένας κίνδυνος στην εικόνα σας άλλαξε κατάσταση.", en: "A risk in your picture changed status." },
+            title: { el: "Άλλαξε η κατάσταση ενός κινδύνου", en: "A risk changed status" },
+            message: { el: "Ένας κίνδυνος άλλαξε κατάσταση.", en: "A risk changed status." },
         },
         triggerCondition: "diffVersions() reports a transition other than into protection_gap",
         category: "risk",

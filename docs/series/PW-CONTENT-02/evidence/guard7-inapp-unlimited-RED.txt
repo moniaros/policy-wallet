@@ -1,0 +1,52 @@
+(node:28253) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:28255) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/plan-gating-parity.test.ts (16 tests | 1 failed) 97ms
+     × no source file under app/, components/ or lib/ carries the promise 92ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H-019: Family only until PW-ENTITLE-01) > no source file under app/, components/ or lib/ carries the promise
+AssertionError: an unbacked promise is back:
+app/(protected)/agent/pricing/AgentPricingClient.tsx:111  "Largest AI budget (25M tokens/month)",
+app/(protected)/agent/pricing/AgentPricingClient.tsx:119  "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)",
+app/(protected)/wallet/[id]/AIUsageWidget.tsx:29  // retired, so it rendered «0 / Απεριόριστες αναλύσεις» — a counter with
+components/settings/sections/PlanSection.tsx:271  tier — "unlimited analyses" is true, and this is what runs
+lib/i18n/translations/el.ts:3421  analysesUnlimited: 'Απεριόριστες αναλύσεις εγγράφων με AI',
+lib/i18n/translations/el.ts:3455  noPaidFeatures: 'Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.',
+lib/marketing/limit-statement.ts:9  * (plan-defaults.ts). «Απεριόριστες αναλύσεις» and «μηνιαίο όριο επεξεργασίας»: expected [ …(7) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(protected)/agent/pricing/AgentPricingClient.tsx:111  \"Largest AI budget (25M tokens/month)\",",
++   "app/(protected)/agent/pricing/AgentPricingClient.tsx:119  \"Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)\",",
++   "app/(protected)/wallet/[id]/AIUsageWidget.tsx:29  // retired, so it rendered «0 / Απεριόριστες αναλύσεις» — a counter with",
++   "components/settings/sections/PlanSection.tsx:271  tier — \"unlimited analyses\" is true, and this is what runs",
++   "lib/i18n/translations/el.ts:3421  analysesUnlimited: 'Απεριόριστες αναλύσεις εγγράφων με AI',",
++   "lib/i18n/translations/el.ts:3455  noPaidFeatures: 'Το δωρεάν πρόγραμμα δεν περιλαμβάνει αναλύσεις AI.',",
++   "lib/marketing/limit-statement.ts:9  * (plan-defaults.ts). «Απεριόριστες αναλύσεις» and «μηνιαίο όριο επεξεργασίας»",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:246:72
+    244|         const files = IN_APP_ROOTS.flatMap(inAppFiles).map((path) => (…
+    245|         const bad = inAppOffenders(files)
+    246|         expect(bad, `an unbacked promise is back:\n${bad.join('\n')}`)…
+       |                                                                        ^
+    247|     })
+    248|     it('probe: the detector turns red on the removed string', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  00:22:16
+   Duration  623ms (transform 53ms, setup 125ms, import 44ms, tests 97ms, environment 287ms)
+

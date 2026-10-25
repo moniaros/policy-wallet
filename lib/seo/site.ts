@@ -55,11 +55,10 @@ function envOrUndefined(value: string | undefined): string | undefined {
 export const siteConfig = {
     name: "PolicyWallet",
     /**
-     * One-line definition used for snippets and AI extraction (AEO). This is
-     * the ONE place the category label lives — visitor-facing copy renders
-     * the plain-language CATEGORY sentence from lib/marketing/positioning.ts
-     * instead. EL is authoritative; EN must carry the identical meaning
-     * («προσωπική ανάλυση ρίσκου» ↔ "personal risk intelligence").
+     * One-line definition used for snippets and AI extraction (AEO). It states
+     * the ONE positioning line of lib/marketing/positioning.ts
+     * (CATEGORY_NAME_INLINE) and must stay aligned with it. EL is
+     * authoritative; EN must carry the identical meaning.
      */
     definition: {
         // Gap findings are a Family output and this sentence ships inside the
@@ -68,21 +67,22 @@ export const siteConfig = {
         // in platform voice, in the sentence AI engines quote verbatim (IDD;
         // SEO review 2026-10 S1). The product finds and explains; the
         // ασφαλιστής advises.
-        el: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει τις ασφάλειές σας και δείχνει πού είστε καλυμμένοι και πού όχι — και, με το Family, ποια κενά βρέθηκαν και τι να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-        en: "PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your insurance and shows where you are covered and where you are not — and, with Family, which gaps were found and what to ask your insurance agent. We do not sell insurance and we take no commission.",
+        el: "Το PolicyWallet είναι πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων για την ελληνική αγορά. Διαβάζει τα ασφαλιστήριά σας και εξηγεί τι αναφέρουν — και, με το Family, ποια κενά βρέθηκαν και τι να ρωτήσετε τον ασφαλιστή σας. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+        en: "PolicyWallet is a platform for organising and understanding insurance policies in the Greek market. It reads your policies and explains what they say — and, with Family, which gaps were found and what to ask your insurance agent. We do not sell insurance and we take no commission.",
     },
     // App-wide fallback meta (root layout). Kept in step with the home meta:
     // no "fix first" (a Plus output) and no free-fusion.
     description: {
-        el: "Ανεξάρτητος έλεγχος ρίσκου με AI: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Στα ελληνικά και στα αγγλικά.",
-        en: "Independent risk check powered by AI: see where you are covered and where the gaps are. We do not sell insurance. Greek and English.",
+        el: "Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων: διαβάζουμε τα ασφαλιστήριά σας και εξηγούμε τι γράφουν. Δεν πουλάμε ασφάλειες. Στα ελληνικά και στα αγγλικά.",
+        en: "A platform for organising and understanding insurance policies: we read your policies and explain what they say. We do not sell insurance. Greek and English.",
     },
     // The product domain is policywallet.gr — a .com address here is rendered
     // publicly on /contact and in JSON-LD, and is not a mailbox we control.
     contactEmail: "info@policywallet.gr",
     careersEmail: "careers@policywallet.gr",
+    // No phone: support is email only (owner decision 2026-10-22). `contactPhone` was
+    // removed with its env var, so no page, JSON-LD node or placeholder can show one.
     /** Real values only — placeholders are never rendered. */
-    contactPhone: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_PHONE),
     address: {
         streetAddress: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_STREET),
         addressLocality: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_CITY),

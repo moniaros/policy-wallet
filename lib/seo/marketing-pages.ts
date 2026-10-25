@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { ogImagesFor, siteConfig, twitterImagesFor } from "@/lib/seo/site"
+import { FREE_UP_TO } from "@/lib/marketing/limit-statement"
 
 /**
  * Registry of unique metadata for every public marketing page.
@@ -75,7 +76,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // "Free basic summary" — the meta must not fuse Plus-only outputs
         // (gaps, fix-first) with the free offer in one extractable span.
         description:
-            "Οργανώστε τα ασφαλιστήριά σας και διαβάστε τις καλύψεις, τα ποσά και τις ημερομηνίες τους σε απλά ελληνικά. Δωρεάν πλάνο για έως 3 ασφαλιστήρια.",
+            `Οργανώστε τα ασφαλιστήριά σας και διαβάστε τις καλύψεις, τα ποσά και τις ημερομηνίες τους σε απλά ελληνικά. Δωρεάν πλάνο για ${FREE_UP_TO.el}.`,
         keywords: [
             "έλεγχος ασφάλισης",
             "ανάλυση ασφαλιστηρίου AI",
@@ -84,9 +85,9 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         ],
         breadcrumb: "Προϊόν",
         en: {
-            title: "AI insurance check: coverages and gaps",
+            title: "Your policies, in plain language",
             description:
-                "Organise policies from different insurers and read their cover, amounts and dates in plain language. Start with a free plan for up to 3 policies.",
+                `Organise policies from different insurers and read their cover, amounts and dates in plain language. Start with a free plan for ${FREE_UP_TO.en}.`,
             breadcrumb: "Product",
         },
     },
@@ -94,13 +95,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/pricing",
         title: "Τιμές και δυνατότητες συνδρομών PolicyWallet",
         description:
-            "Συγκρίνετε το δωρεάν και τα πληρωμένα πλάνα: αριθμό ασφαλιστηρίων, δυνατότητες και όρια επεξεργασίας. Δείτε τις τρέχουσες τιμές πριν επιλέξετε.",
+            "Συγκρίνετε το δωρεάν και τα πληρωμένα πλάνα του PolicyWallet: αριθμό ασφαλιστηρίων και δυνατότητες ανά πλάνο. Δείτε τις τρέχουσες τιμές πριν επιλέξετε.",
         keywords: ["τιμές PolicyWallet", "συνδρομή PolicyWallet"],
         breadcrumb: "Τιμές",
         en: {
             title: "PolicyWallet subscription prices and features",
             description:
-                "Compare free and paid PolicyWallet plans, including policy limits, features and processing allowances. Check the current prices before choosing.",
+                "Compare free and paid PolicyWallet plans, including the number of policies and the features of each plan. Check the current prices before choosing.",
             breadcrumb: "Pricing",
         },
     },
@@ -130,7 +131,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Ο φάκελος στο συρτάρι, η ασφαλιστική σας, ο ασφαλιστής σας ή το PolicyWallet; Δείτε σε έναν καθαρό πίνακα τι κάνει το καθένα και τι δεν κάνει για εσάς.",
         keywords: [
             "σύγκριση ασφαλιστικών εργαλείων",
-            "ανεξάρτητος έλεγχος ασφάλισης",
+            "οργάνωση ασφαλιστηρίων",
             "PolicyWallet σύγκριση",
         ],
         breadcrumb: "Σύγκριση",
@@ -160,11 +161,11 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // The mailbox must match the one shown on the page and in the
         // Organization JSON-LD — a SERP snippet advertising a dead inbox is a
         // support black hole.
-        description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
+        description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Η υποστήριξη γίνεται μέσω email, στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
         breadcrumb: "Επικοινωνία",
         en: {
             title: "Contact us: support and partnerships",
-            description: `Send us a message about support, pricing or partnerships. We reply Monday–Friday 09:00–18:00 at ${siteConfig.contactEmail}. We will be happy to help.`,
+            description: `Send us a message about support, pricing or partnerships, in Greek or English. Support is by email, at ${siteConfig.contactEmail}. We will be happy to help.`,
             breadcrumb: "Contact",
         },
     },
@@ -233,13 +234,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/cyber",
         title: "Ασφάλιση για κινδύνους στο διαδίκτυο",
         description:
-            "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και πού έχετε κενά.",
+            "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και τι εξαιρεί.",
         keywords: ["κυβερνοασφάλεια", "ασφάλιση cyber"],
         breadcrumb: "Κυβερνοασφάλεια",
         en: {
             title: "Cyber insurance: ransomware, interruption",
             description:
-                "Coverage for ransomware, data breaches and business interruption. See exactly what your cyber policy includes, what it excludes and where your gaps are.",
+                "Coverage for ransomware, data breaches and business interruption. See exactly what your cyber policy includes and what it excludes, in plain language.",
             breadcrumb: "Cyber",
         },
     },
@@ -333,13 +334,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/boat",
         title: "Ασφάλεια σκάφους: αστική ευθύνη στη θάλασσα",
         description:
-            "Η αστική ευθύνη σκάφους αναψυχής είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε κάλυψη σκάφους και μηχανής, επιθαλάσσια αρωγή και όρια πριν σαλπάρετε.",
+            "Δείτε τι καλύπτει το ασφαλιστήριο του σκάφους σας: κάλυψη σκάφους και μηχανής, επιθαλάσσια αρωγή και όρια, ώστε να ξέρετε τι ισχύει πριν σαλπάρετε.",
         keywords: ["ασφάλεια σκάφους", "αστική ευθύνη σκάφους", "ασφάλιση σκάφους αναψυχής"],
         breadcrumb: "Σκάφος",
         en: {
             title: "Boat insurance: liability in Greek waters",
             description:
-                "Liability insurance is mandatory for pleasure craft in Greek waters. Review hull and engine cover, sea assistance and limits before you set sail.",
+                "See what your boat policy covers: hull and engine cover, sea assistance and limits, so you know what applies before you set sail with PolicyWallet.",
             breadcrumb: "Boat",
         },
     },
@@ -361,13 +362,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/business",
         title: "Ασφάλεια επιχείρησης: πολυκάλυψη για ΜμΕ",
         description:
-            "Στέγη, εξοπλισμός, εμπορεύματα, διακοπή εργασιών και αστική ευθύνη σε μία εικόνα. Η AI χαρτογραφεί τα ασφαλιστήρια της επιχείρησής σας και δείχνει τα κενά.",
+            "Στέγη, εξοπλισμός, εμπορεύματα, διακοπή εργασιών και αστική ευθύνη σε μία εικόνα. Η AI διαβάζει τα ασφαλιστήρια της επιχείρησής σας και δείχνει τι αναφέρουν.",
         keywords: ["ασφάλεια επιχείρησης", "πολυασφαλιστήριο επιχείρησης", "ασφάλιση καταστήματος"],
         breadcrumb: "Επιχείρηση",
         en: {
             title: "Business insurance: multi-cover for SMEs",
             description:
-                "Premises, equipment, stock, business interruption and liability in one picture. AI maps your company's policies and shows where the gaps are.",
+                "Premises, equipment, stock, business interruption and liability in one picture. AI reads your company's policies and shows what they say, in plain language.",
             breadcrumb: "Business",
         },
     },

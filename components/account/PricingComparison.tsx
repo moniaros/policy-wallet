@@ -5,7 +5,10 @@ import { motion } from 'framer-motion'
 import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { usePlanFacts } from '@/components/monetization/PlanFactsProvider'
+import { trialDisclosure } from '@/lib/pricing/trial-disclosure'
+import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
 import { formatEur } from '@/lib/pricing/pricing-view-model'
+import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
@@ -27,7 +30,7 @@ interface PlanTier {
     annual?: {
         price: Record<string, string>
         period: Record<string, string>
-        savings: Record<string, string>
+        savings: Record<string, string> | null
     }
     icon: any
     features: Array<{ name: string; included: boolean }>
@@ -43,6 +46,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     const { tierPricing, freePolicyLimit, plusPolicyLimit } = usePlanFacts()
     const starterFacts = tierPricing('plus')
     const plusFacts = tierPricing('pro')
+    const proTrialDays = plusFacts.trialDays
+    // The Family ceiling comes from the same entitlement source as the other two (it said ∞).
+    const proPolicyLimit = DEFAULT_ENTITLEMENT_LIMITS.pro.policies
     const asCount = (limit: number | null) => (limit == null ? '∞' : String(limit))
     const bothLangs = (value: string) => ({ el: value, en: value })
 
@@ -73,23 +79,23 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 { name: copy.features.basicAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
-                { name: copy.features.emailNotifications[language], included: false },
+                { name: copy.features.reminderEmail30[language], included: true },
             ]
         },
         {
-            // "Starter" (code key `plus`): organizer tier — more policies + basic
-            // reminders, NO deep AI (that unlocks at Plus / code `pro`).
+            // Plus (code key `plus`): more policies + the full reminder ladder, NO deep
+            // AI (that is Family, code key `pro`).
             id: 'ph-plus',
             ...copy.tiers.plus,
             price: bothLangs(formatEur(starterFacts.monthlyEur)),
             annual: copy.tiers.plus.annual
-                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)) }
+                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)), savings: annualSavingsLabel(starterFacts.monthlyEur, starterFacts.annualEur) }
                 : undefined,
             icon: Zap,
             features: [
                 { name: copy.features.policyLimit[language].replace('{count}', asCount(plusPolicyLimit)), included: true },
                 { name: copy.features.documentStorage[language], included: true },
-                { name: copy.features.emailNotifications[language], included: true },
+                { name: copy.features.reminderLadder[language], included: true },
                 { name: copy.features.basicInsights[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
                 { name: copy.features.interactiveQA[language], included: false },
@@ -100,7 +106,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.pro,
             price: bothLangs(formatEur(plusFacts.monthlyEur)),
             annual: copy.tiers.pro.annual
-                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)) }
+                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)), savings: annualSavingsLabel(plusFacts.monthlyEur, plusFacts.annualEur) }
                 : undefined,
             icon: Star,
             // The highlighted tier must be the one that actually carries the
@@ -111,22 +117,24 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             // as the recommendation.
             popular: true,
             features: [
-                { name: copy.features.unlimitedPolicies[language], included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', asCount(proPolicyLimit)), included: true },
+                { name: copy.features.advancedAI[language], included: true },
+                { name: copy.features.interactiveQA[language], included: true },
+                { name: copy.features.reminderLadder[language], included: true },
                 { name: copy.features.advancedAnalytics[language], included: true },
-                { name: copy.features.prioritySupport[language], included: true },
                 { name: copy.features.agentCollaboration[language], included: true },
-                { name: copy.features.digitalWallet[language], included: true },
             ]
         }
     ]
 
     const comparisonFeatures = [
-        { name: copy.features.policyLimitLabel[language], free: asCount(freePolicyLimit), plus: asCount(plusPolicyLimit), pro: "∞" },
+        { name: copy.features.policyLimitLabel[language], free: asCount(freePolicyLimit), plus: asCount(plusPolicyLimit), pro: asCount(proPolicyLimit) },
         { name: copy.features.advancedAI[language], free: false, plus: false, pro: true },
         { name: copy.features.automaticGapDetection[language], free: false, plus: false, pro: true },
         { name: copy.features.interactiveQA[language], free: false, plus: false, pro: true },
-        { name: copy.features.digitalWallet[language], free: false, plus: false, pro: true },
-        { name: copy.features.prioritySupport[language], free: false, plus: false, pro: true },
+        { name: copy.features.reminderEmail30[language], free: true, plus: true, pro: true },
+        { name: copy.features.reminderLadder[language], free: false, plus: true, pro: true },
+        { name: copy.features.prioritySupport[language], free: true, plus: true, pro: true },
         { name: copy.features.advancedAnalytics[language], free: false, plus: false, pro: true },
         { name: copy.features.agentCollaboration[language], free: false, plus: false, pro: true },
     ]
@@ -160,9 +168,6 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             }`}
                     >
                         {copy.billing.annual[language]}
-                        <span className="absolute -top-3 -right-3 bg-primary text-primary-foreground text-kicker font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
-                            -20%
-                        </span>
                     </button>
 
                     {/* Animated Background */}
@@ -202,9 +207,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 : 'bg-muted/40 border-border hover:border-primary/40'
                                 }`}
                         >
-                            {tier.id === 'ph-pro' && (
+                            {tier.id === 'ph-pro' && proTrialDays > 0 && (
                                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-kicker font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
-                                    {copy.trial.badge[language]}
+                                    {copy.trial.badge[language].replace('{days}', String(proTrialDays))}
                                 </div>
                             )}
 
@@ -260,6 +265,11 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 ))}
                             </div>
 
+                            {tier.id === 'ph-pro' && (() => {
+                                const trial = trialDisclosure(proTrialDays, billingPeriod === 'annual' ? plusFacts.annualEur : plusFacts.monthlyEur, billingPeriod)
+                                return trial ? <p className="mb-3 text-center text-xs text-muted-foreground">{trial[language]}</p> : null
+                            })()}
+
                             <button
                                 onClick={() => selectPlan(tier.id)}
                                 disabled={isNeutral || !!loadingPlanId}
@@ -278,8 +288,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ? copy.cta.basePlan[language]
                                         : loadingPlanId === tier.id
                                             ? copy.cta.processing[language]
-                                            : (tier.id === 'ph-pro'
-                                                ? copy.trial.cta[language]
+                                            : (tier.id === 'ph-pro' && proTrialDays > 0
+                                                ? copy.trial.cta[language].replace('{days}', String(proTrialDays))
                                                 : copy.cta.upgrade[language])}
                             </button>
                         </motion.div>

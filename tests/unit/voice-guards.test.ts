@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { POSITIONING_BANNED, SUPPORT_BANNED, IN_APP_SUPPORT_BANNED, REMINDER_PLUS, REMINDER_PLUS_EXEMPT } from '../measure/content-02-patterns'
 
 /**
  * PW-VOICE-01 — the §7 guards, in one file so their universe is stated once.
@@ -262,5 +263,166 @@ describe('length-budget-guard and new-string-guard', () => {
         r.over = r.over.filter((o) => !exemptions.some((e) => o.startsWith(`${e.locator}:`) && o.includes(e.text.slice(0, 40))))
         expect(r.over, `over the 15 % budget:\n${r.over.join('\n')}`).toEqual([])
         expect(r.unreviewedNew, `new strings not reviewed in docs/content/corpus-additions.json:\n${r.unreviewedNew.slice(0, 20).join('\n')}`).toEqual([])
+    })
+})
+
+/**
+ * PW-CONTENT-02 — the two PUBLIC-SITE guards that the corpus-wide arms above cannot be.
+ *
+ * Universe: every file of the public marketing surface, ENUMERATED from the tree
+ * (not a list of known files): app/(public), app/auth, components/landing|public|pricing,
+ * src/design-system, lib/marketing|landing|product|seo|guides|glossary, the public pricing
+ * content, the root layout, /llms.txt, and every static asset under public/ that carries
+ * text (manifest.json, *.svg, *.txt, *.json). A retired positioning line survived 2026-10-21
+ * in a static SVG that nothing referenced and in a PWA manifest no source scan reaches.
+ *
+ *  - POSITIONING LINT (H-022): one positioning line,
+ *    «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». The risk-intelligence / risk-check /
+ *    «αν είστε καλυμμένοι» family is a verdict claim about the user's protection and is banned.
+ *    Probe: tests/fixtures/guard-probes/voice-positioning-variant.ts.txt.
+ *  - LOCALE NUMBER FORMAT (A4): Greek money reads «35.000 €»; English reads «€35,000».
+ *    A Greek literal with a prefixed «€», an English literal with Greek grouping, and the
+ *    in-app `formatEur` on a public route are all findings. The corpus arm above only caught
+ *    English thousands separators inside Greek text — so «€4.99» in Greek passed.
+ *    Probe: tests/fixtures/guard-probes/voice-number-literal.tsx.txt.
+ */
+const PUBLIC_DIRS = ['app/(public)', 'app/auth', 'components/landing', 'components/public', 'components/pricing', 'src/design-system', 'lib/marketing', 'lib/landing', 'lib/product', 'lib/seo', 'lib/guides', 'lib/glossary', 'lib/email', 'lib/notifications']
+const PUBLIC_FILES = ['lib/pricing/public-pricing-content.ts', 'lib/pricing/pricing-view-model.ts', 'app/layout.tsx', 'app/llms.txt/route.ts']
+function walkAll(dir: string, exts: RegExp): string[] {
+    if (!existsSync(dir)) return []
+    return readdirSync(dir).flatMap((name) => {
+        const p = join(dir, name)
+        if (EXCLUDE.test(p + '/')) return []
+        return statSync(p).isDirectory() ? walkAll(p, exts) : exts.test(name) ? [p] : []
+    })
+}
+// lib/i18n/*.ts modules that PUBLIC code imports (how-it-works, presentation, homepage-panels, …) are public marketing copy.
+// The el/en bundles under lib/i18n/translations and the app's own modules (prevention, …) are the app's: the in-app arms scan those.
+const PUBLIC_NON_I18N = [...PUBLIC_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...PUBLIC_FILES.filter(existsSync)]
+const PUBLIC_I18N = readdirSync('lib/i18n').filter((n) => /\.tsx?$/.test(n)).map((n) => join('lib/i18n', n)).filter((f) => {
+    const mod = f.replace(/\.tsx?$/, '').replace(/\\/g, '/')
+    return PUBLIC_NON_I18N.some((g) => readFileSync(g, 'utf-8').includes(`@/${mod}"`))
+})
+const PUBLIC_CODE = [...PUBLIC_NON_I18N, ...PUBLIC_I18N]
+const PUBLIC_STATIC = walkAll('public', /\.(svg|json|txt|webmanifest)$/)
+function positioningOffenders(path: string, text: string): string[] {
+    return text.split('\n').flatMap((line, i) => (POSITIONING_BANNED.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+function stringLiterals(src: string): string[] {
+    return src.match(/"(?:\\.|[^"\\\n])*"|`(?:\\.|[^`\\])*`|'(?:\\.|[^'\\\n])*'/g) || []
+}
+const greekShare = (s: string) => {
+    const letters = s.match(/[A-Za-zͰ-Ͽἀ-῿]/g) || []
+    return letters.length ? (s.match(/[Ͱ-Ͽἀ-῿]/g) || []).length / letters.length : 0
+}
+function numberOffenders(path: string, text: string): string[] {
+    const bad: string[] = []
+    if (!path.endsWith('pricing-view-model.ts') && /\bformatEur\b/.test(text)) bad.push(`${path}  imports the in-app formatEur — public prices go through formatPlanPrice`)
+    for (const lit of stringLiterals(text)) {
+        const greek = greekShare(lit) >= 0.5
+        if (greek && /€\s?\d/.test(lit)) bad.push(`${path}  Greek literal with prefixed €: ${lit.slice(0, 80)}`)
+        // a literal with no letters at all (a table cell: "40.000 €") is language-neutral — only prose is classified
+        if (!greek && /[A-Za-z]/.test(lit) && /€\s?\d{1,3}\.\d{3}(?!\d)|\d{1,3}\.\d{3}\s?€/.test(lit)) bad.push(`${path}  English literal with Greek grouping: ${lit.slice(0, 80)}`)
+    }
+    return bad
+}
+
+describe('PW-CONTENT-02 positioning lint — one line, no protection-verdict variants (H-022)', () => {
+    it('the public universe is large enough to mean something', () => {
+        expect(PUBLIC_CODE.length).toBeGreaterThan(150)
+        expect(PUBLIC_STATIC.some((f) => f.endsWith('manifest.json'))).toBe(true)
+    })
+    it('no retired positioning variant on a public route, in metadata, or in a static asset', () => {
+        const bad = [
+            ...PUBLIC_CODE.flatMap((f) => positioningOffenders(f, code(readFileSync(f, 'utf-8')))),
+            ...PUBLIC_STATIC.flatMap((f) => positioningOffenders(f, readFileSync(f, 'utf-8'))),
+        ]
+        expect(bad, `positioning-variant hits (metric M-P) = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — the retired variants turn it red (18 lines)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-positioning-variant.ts.txt', 'utf-8')
+        expect(positioningOffenders('probe', code(probe)).length).toBe(18)
+    })
+})
+
+describe('PW-CONTENT-02 locale number format — Greek «35.000 €», English «€35,000» (A4)', () => {
+    it('no public source mis-formats money (metric M-F)', () => {
+        const bad = PUBLIC_CODE.flatMap((f) => numberOffenders(f, code(readFileSync(f, 'utf-8'))))
+        expect(bad, `hand-formatted money literals = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — a prefixed Greek euro, Greek grouping in English, and formatEur all turn it red', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-number-literal.tsx.txt', 'utf-8')
+        const found = numberOffenders('probe', code(probe)).join('\n')
+        expect(found).toMatch(/imports the in-app formatEur/)
+        expect(found).toMatch(/Greek literal with prefixed €/)
+        expect(found).toMatch(/English literal with Greek grouping/)
+    })
+})
+
+/**
+ * PW-CONTENT-02 (owner decision 2026-10-22) — support is EMAIL ONLY. There is no phone
+ * support, no chat and no service hours, so a public route may not promise any of them:
+ * a «dedicated» tier, a phone line or placeholder, an answering-hours window, "24/7".
+ * Same universe as the positioning lint above. Insurer helplines inside policy content
+ * (a claims number the document prints) are not a PolicyWallet promise and live outside
+ * this universe (lib/insurance, lib/insurers, the wallet).
+ * Probe: tests/fixtures/guard-probes/voice-support-claim.ts.txt.
+ */
+function supportOffenders(path: string, text: string): string[] {
+    // A phone-number INPUT (type="tel", e.g. the sign-in field's format hint) is the visitor's own number, not a support promise.
+    return text.split('\n').flatMap((line, i) => (SUPPORT_BANNED.test(line) && !/type="tel"/.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+describe('PW-CONTENT-02 support lint — email only, no phone, chat, hours or «dedicated»', () => {
+    it('no public route, metadata or static asset promises phone/chat/hours support', () => {
+        const bad = [
+            ...PUBLIC_CODE.flatMap((f) => supportOffenders(f, code(readFileSync(f, 'utf-8')))),
+            ...PUBLIC_STATIC.flatMap((f) => supportOffenders(f, readFileSync(f, 'utf-8'))),
+        ]
+        expect(bad, `support claims PolicyWallet does not offer = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — each line of the probe turns it red (19 lines)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-support-claim.ts.txt', 'utf-8')
+        expect(supportOffenders('probe', code(probe)).length).toBe(19)
+    })
+})
+
+/**
+ * PW-CONTENT-02 (fresh adversarial review, CRITICAL C1) — a renewal reminder is not a Plus
+ * feature. Every plan receives the 30-day email (`BASIC_MILESTONES`, renewal.service.ts);
+ * only the longer 90…3-day ladder is Plus and Family. Public PROSE (product steps, guides,
+ * glossary) said «από το πλάνο Plus» on eleven lines the pricing-content guard cannot see,
+ * and the /product page contradicted its own /pricing. Same public universe as above.
+ * Probe: tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt.
+ */
+function reminderOffenders(path: string, text: string): string[] {
+    // a line that says "earlier" / names the 90-day rung attributes only the longer ladder to Plus — that part is true
+    return text.split('\n').flatMap((line, i) => (REMINDER_PLUS.test(line) && !REMINDER_PLUS_EXEMPT.test(line) ? [`${path}:${i + 1}  ${line.trim().slice(0, 110)}`] : []))
+}
+describe('PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only feature', () => {
+    it('no public prose attributes a renewal reminder to Plus', () => {
+        const bad = PUBLIC_CODE.flatMap((f) => reminderOffenders(f, code(readFileSync(f, 'utf-8'))))
+        expect(bad, `reminder attributed to the wrong plan = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
+    })
+    it('probe — each probe line turns it red (6 lines, both word orders)', () => {
+        const probe = readFileSync('tests/fixtures/guard-probes/voice-reminder-attribution.ts.txt', 'utf-8')
+        expect(reminderOffenders('probe', code(probe)).length).toBe(6)
+    })
+})
+
+
+/**
+ * The support lint also covers the IN-APP and EMAIL surfaces (owner: "public routes, in-app, and in
+ * email templates"). Enumerated from the tree: the el/en bundles, help and plan copy, the account and
+ * monetization components, the protected routes' plan screens, and every email template.
+ * An insurer helpline printed from a policy is not in this universe (wallet / lib/insurance).
+ */
+const IN_APP_SUPPORT_DIRS = ['lib/i18n/translations', 'lib/email', 'lib/monetization', 'components/account', 'components/monetization', 'components/settings', 'app/(protected)/upgrade', 'app/(protected)/account', 'app/(protected)/agent/pricing', 'app/(protected)/help']
+const IN_APP_SUPPORT_FILES = ['lib/help-content.ts', 'lib/subscription-copy.ts']
+describe('PW-CONTENT-02 support lint — in-app and email surfaces', () => {
+    const files = [...IN_APP_SUPPORT_DIRS.flatMap((d) => walkAll(d, /\.tsx?$/)), ...IN_APP_SUPPORT_FILES.filter(existsSync)]
+    it('the universe is non-trivial', () => expect(files.length).toBeGreaterThan(40))
+    it('no in-app string or email template promises phone/chat/hours/dedicated support', () => {
+        const bad = files.flatMap((f) => code(readFileSync(f, 'utf-8')).split('\n').flatMap((line, i) => (IN_APP_SUPPORT_BANNED.test(line) ? [`${f}:${i + 1}  ${line.trim().slice(0, 110)}`] : [])))
+        expect(bad, `in-app/email support claims = ${bad.length}:\n${bad.join('\n')}`).toEqual([])
     })
 })

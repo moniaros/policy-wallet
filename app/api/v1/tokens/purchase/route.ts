@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     if (tier === "free") {
         return createApiError(
             "FORBIDDEN",
-            "Token purchases are only available for paid plans. Please upgrade to Essential or Professional.",
+            "Token purchases are only available on paid plans (Plus or Family). Please upgrade.",
             403
         )
     }

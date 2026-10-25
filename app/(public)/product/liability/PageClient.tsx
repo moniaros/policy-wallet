@@ -95,7 +95,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-6">
-                            {t("Ελέγξτε αν το ασφαλιστήριο κατοικίας περιλαμβάνει αστική ευθύνη. Με το Family μπορείτε να δείτε πιθανές κοινές καλύψεις· ο ασφαλιστής σας θα εξηγήσει αν συμπληρώνουν η μία την άλλη.", "Check whether your home policy includes liability cover. Family can show possible overlaps; your adviser can explain whether the policies complement one another.")}
+                            {t("Ελέγξτε αν το ασφαλιστήριο κατοικίας περιλαμβάνει αστική ευθύνη. Δείτε πιθανές κοινές καλύψεις μεταξύ των ασφαλιστηρίων σας· ο ασφαλιστής σας θα εξηγήσει αν συμπληρώνουν η μία την άλλη.", "Check whether your home policy includes liability cover. You can see possible overlaps between your policies; your adviser can explain whether the policies complement one another.")}
                         </p>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Αν ένας διαθέσιμος έλεγχος εντοπίσει σχετικό σημείο, το εμφανίζουμε για επιβεβαίωση. Αν δεν εμφανιστεί κάτι, δεν σημαίνει ότι η κάλυψη είναι πλήρης.", "If an available check identifies a relevant point, we show it for confirmation. No finding does not mean cover is complete.")}

@@ -48,7 +48,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-brand-accent" /></div>
                                 <div>
-                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Υποχρεωτική αστική ευθύνη", "Mandatory third-party liability")}</h3>
+                                    <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Αστική ευθύνη", "Third-party liability")}</h3>
                                     <p className="text-[#475569] dark:text-slate-300">{t("Δείτε τα όρια για σωματικές βλάβες και υλικές ζημιές τρίτων και βεβαιωθείτε ότι το ασφαλιστήριο είναι σε ισχύ πριν βγείτε από το λιμάνι.", "See your limits for third-party bodily injury and property damage, and confirm the policy is in force before you leave port.")}</p>
                                 </div>
                             </li>

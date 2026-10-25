@@ -23,6 +23,8 @@ import { CATEGORY_NAME, PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/mark
 import { ProductFaqList } from "./ProductFaqList"
 import { ProductPageView } from "./ProductPageView"
 import { ProductScrollButton } from "./ProductScrollButton"
+import { DELETION_ON_REQUEST, FREE_PLAN_LIMIT } from "@/lib/marketing/limit-statement"
+import { HOME_REVIEW_LINE } from "@/lib/marketing/reading-demo"
 
 // Static stat tile — the JS count-up animation was dropped per the brand
 // doc's motion-restraint rules (decorative, 30ms interval).
@@ -96,8 +98,8 @@ export function ProductSections({ language }: { language: Language }) {
                         The reassurance the visitor actually needs is the price. */}
                     <p className="mt-4 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                         {t(
-                            "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.",
-                            "Free for 3 policies. No card."
+                            `${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα.`,
+                            `${FREE_PLAN_LIMIT.en}. No card.`
                         )}
                     </p>
                 </div>
@@ -155,7 +157,7 @@ export function ProductSections({ language }: { language: Language }) {
                             {[
                                 t("Συγκεντρώνουμε τα βασικά στοιχεία του ασφαλιστηρίου", "We bring together the key details in your policy"),
                                 t("Πιθανές κοινές καλύψεις σε κάθε πλάνο· επιπλέον έλεγχοι με το Family", "Possible overlapping cover on every plan; additional checks with Family"),
-                                t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus", "We warn you before something runs out — from the Plus plan"),
+                                t("Υπενθύμιση πριν λήξει κάτι· πιο νωρίς στα Plus και Family", "A reminder before something runs out; earlier on Plus and Family"),
                                 // `agentCollaboration` is false on free AND on
                                 // Starter, true only on pro — the plan displayed
                                 // as Family. /pricing's own comparison
@@ -179,8 +181,8 @@ export function ProductSections({ language }: { language: Language }) {
                     <div
                         role="img"
                         aria-label={t(
-                            "Παράδειγμα: τρία ασφαλιστήρια με τις ημερομηνίες λήξης τους, και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
-                            "Example: three policies with their end dates, and a note that the home is insured for less than it would cost to rebuild."
+                            "Παράδειγμα: τρία ασφαλιστήρια με τις ημερομηνίες λήξης τους, και ένα σημείο που χρειάζεται έλεγχο στο ασφαλιστήριο κατοικίας.",
+                            "Example: three policies with their end dates, and one point to check in the home policy."
                         )}
                         className="relative"
                     >
@@ -255,14 +257,12 @@ export function ProductSections({ language }: { language: Language }) {
                             <div className="rounded-xl bg-[#29685B] px-4 py-3.5 text-body-sm leading-snug text-white">
                                 <p className="mb-0.5 flex items-center gap-2 font-bold">
                                     <Sparkles aria-hidden className="h-3.5 w-3.5" />
-                                    {t("Τι βρήκαμε", "What we found")}
+                                    {t("Για έλεγχο", "To check")}
                                 </p>
-                                <p className="text-white/80">
-                                    {t(
-                                        "Το σπίτι σας είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
-                                        "Your home is insured for less than it would cost to rebuild it."
-                                    )}
-                                </p>
+                                {/* A document-reading output (covered / excluded / to check), never a
+                                    verdict about the visitor's own protection: the same «review» line
+                                    the homepage reading demo shows, from the same source. */}
+                                <p className="text-white/80">{pick(HOME_REVIEW_LINE, language)}</p>
                             </div>
                         </div>
 
@@ -382,8 +382,8 @@ export function ProductSections({ language }: { language: Language }) {
                     </h2>
                     <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
-                            CTA_REASSURANCE.el,
-                            "Free for 3 policies. No card. Delete everything whenever you want."
+                            `${FREE_PLAN_LIMIT.el}. Χωρίς κάρτα. ${DELETION_ON_REQUEST.el}`,
+                            `${FREE_PLAN_LIMIT.en}. No card. ${DELETION_ON_REQUEST.en}`
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

@@ -1,3 +1,5 @@
+import { BASIC_WHEN, LADDER_LIST } from "@/lib/renewals/reminder-copy"
+import { DEFAULT_ENTITLEMENT_LIMITS } from "@/lib/pricing/plan-defaults"
 
 export interface ArticleSection {
     heading?: string;
@@ -86,21 +88,21 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'premium-features': {
             id: 'premium-features',
             title: 'Understanding Paid Plan Benefits',
-            subtitle: 'Unlock full AI analysis and more policy storage with the paid plans.',
+            subtitle: 'See what each paid plan adds: more policy storage, and the full AI analysis on Family.',
             readTime: '5 min',
             category: 'Features',
             sections: [
                 {
                     heading: 'AI Gap Analysis',
-                    text: 'The core benefit of the paid plans is the deep-dive analysis. Our AI doesn\'t just read your policy; it understands it. It compares your coverage against standard industry benchmarks to find "Gaps" - risks you are exposed to but not covered for.',
+                    text: 'The full AI analysis is on the Family plan. It reads each policy against the checks we have written for its type of insurance and lists findings to review with your insurance advisor.',
                 },
                 {
                     heading: 'More Policy Storage',
-                    text: 'The free plan includes 3 policies with the full AI analysis. Plus allows up to 10 and Family up to 25 — including past/expired policies for historical review. Analyses are unlimited on every plan.',
+                    text: `The free plan includes ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} policies with a basic summary. Plus allows up to ${DEFAULT_ENTITLEMENT_LIMITS.plus.policies} and Family up to ${DEFAULT_ENTITLEMENT_LIMITS.pro.policies} — including past/expired policies for historical review.`,
                 },
                 {
-                    heading: 'Priority Support',
-                    text: 'Paid plans include priority support by email. For questions about your coverage, you can also ask the AI directly on any policy page, or share the policy with your insurance advisor and review it together.',
+                    heading: 'Support',
+                    text: 'Support is by email, on every plan. For questions about your coverage, the Family plan also lets you ask the AI directly on a policy page and share the policy with your insurance advisor to review it together.',
                 }
             ]
         },
@@ -137,9 +139,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Notification types',
                     text: 'We send notifications for critical events to keep you protected.',
                     list: [
-                        'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15 and 7 days on paid plans',
-                        'Payment confirmations',
-                        'Security alerts (new device logins)',
+                        `Renewal reminders — one email ${BASIC_WHEN.en} on the free plan; ${LADDER_LIST.en} on paid plans`,
                         'AI Analysis results'
                     ]
                 },
@@ -196,17 +196,13 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             category: 'Billing & Subscriptions',
             sections: [
                 {
-                    heading: 'Access Billing Settings',
-                    text: 'Go to "Account" -> "Billing". Here you will see your current plan and registered card.',
+                    heading: 'Open the billing page',
+                    text: 'Go to Settings -> Plan & billing -> "Open billing page". The button appears once your subscription has started. It opens Stripe\'s secure billing page.',
                 },
                 {
-                    heading: 'Add New Card',
-                    text: 'Click "Add Payment Method". Enter your new card details. We support Visa, Mastercard, and American Express. Your card data is encrypted and handled by Stripe; strictly speaking, we never see your full card number.',
+                    heading: 'Update your card there',
+                    text: 'Card details are entered on Stripe\'s page, not in PolicyWallet; we never see your full card number. What you can change on that page depends on how Stripe\'s billing page is set up for the account.',
                 },
-                {
-                    heading: 'Set as Default',
-                    text: 'Once added, click the three dots next to your new card and select "Set as Default". Your next invoice will be charged to this card.',
-                }
             ]
         }
     },
@@ -278,21 +274,21 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'premium-features': {
             id: 'premium-features',
             title: 'Κατανόηση των προνομίων των πληρωμένων πλάνων',
-            subtitle: 'Αποκτήστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα.',
+            subtitle: 'Δείτε τι προσθέτει κάθε πληρωμένο πλάνο: περισσότερος χώρος ασφαλιστηρίων και, με το Family, η πλήρης ανάλυση AI.',
             readTime: '5 λεπτά',
             category: 'Δυνατότητες',
             sections: [
                 {
                     heading: 'Ανάλυση Κενών με AI',
-                    text: 'Το βασικό πλεονέκτημα των πληρωμένων πλάνων είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.',
+                    text: 'Η πλήρης ανάλυση AI είναι στο πλάνο Family. Διαβάζει κάθε ασφαλιστήριο με βάση τους ελέγχους που έχουμε γράψει για τον κλάδο του και σας δείχνει ευρήματα για να τα δείτε με τον ασφαλιστή σας.',
                 },
                 {
                     heading: 'Περισσότερος χώρος ασφαλιστηρίων',
-                    text: 'Το δωρεάν πλάνο περιλαμβάνει 3 ασφαλιστήρια με πλήρη ανάλυση AI. Το Plus επιτρέπει έως 10 και το Family έως 25 — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο.',
+                    text: `Το δωρεάν πλάνο περιλαμβάνει ${DEFAULT_ENTITLEMENT_LIMITS.free.policies} ασφαλιστήρια με βασική σύνοψη. Το Plus επιτρέπει έως ${DEFAULT_ENTITLEMENT_LIMITS.plus.policies} και το Family έως ${DEFAULT_ENTITLEMENT_LIMITS.pro.policies} — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.`,
                 },
                 {
-                    heading: 'Προτεραιότητα Υποστήριξης',
-                    text: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email. Για ερωτήσεις σχετικά με την κάλυψή σας, μπορείτε επίσης να ρωτήσετε απευθείας την AI στη σελίδα κάθε ασφαλιστηρίου, ή να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.',
+                    heading: 'Υποστήριξη',
+                    text: 'Η υποστήριξη γίνεται μέσω email, σε όλα τα πλάνα. Για ερωτήσεις σχετικά με την κάλυψή σας, το Family σάς επιτρέπει να ρωτάτε απευθείας την AI στη σελίδα του ασφαλιστηρίου και να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο, για να το εξετάσετε μαζί του.',
                 }
             ]
         },
@@ -329,9 +325,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Τύποι Ειδοποιήσεων',
                     text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.',
                     list: [
-                        'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15 και 7 ημέρες στα πληρωμένα πλάνα',
-                        'Επιβεβαιώσεις πληρωμής',
-                        'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)',
+                        `Υπενθυμίσεις ανανέωσης — ένα email ${BASIC_WHEN.el} στο δωρεάν πλάνο· ${LADDER_LIST.el} στα πληρωμένα πλάνα`,
                         'Αποτελέσματα Ανάλυσης AI'
                     ]
                 },
@@ -380,16 +374,12 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             category: 'Χρεώσεις & Συνδρομές',
             sections: [
                 {
-                    heading: 'Πρόσβαση στις Ρυθμίσεις Χρέωσης',
-                    text: 'Μεταβείτε στο "Λογαριασμός" -> "Χρέωση". Εδώ θα δείτε το τρέχον πλάνο σας και την καταχωρημένη κάρτα.',
+                    heading: 'Ανοίξτε τη σελίδα χρέωσης',
+                    text: 'Μεταβείτε στις Ρυθμίσεις -> Συνδρομή και χρέωση -> "Άνοιγμα σελίδας χρέωσης". Το κουμπί εμφανίζεται μόλις ξεκινήσει η συνδρομή σας. Ανοίγει την ασφαλή σελίδα χρέωσης της Stripe.',
                 },
                 {
-                    heading: 'Προσθήκη Νέας Κάρτας',
-                    text: 'Κάντε κλικ στο "Προσθήκη Μεθόδου Πληρωμής". Εισάγετε τα στοιχεία της νέας σας κάρτας. Υποστηρίζουμε Visa, Mastercard και American Express. Τα δεδομένα της κάρτας σας κρυπτογραφούνται και διαχειρίζονται από τη Stripe.',
-                },
-                {
-                    heading: 'Ορισμός ως Προεπιλογή',
-                    text: 'Μόλις προστεθεί, κάντε κλικ στις τρεις τελείες δίπλα στη νέα σας κάρτα και επιλέξτε "Ορισμός ως Προεπιλογή". Το επόμενο τιμολόγιό σας θα χρεωθεί σε αυτήν την κάρτα.',
+                    heading: 'Ενημερώστε την κάρτα εκεί',
+                    text: 'Τα στοιχεία της κάρτας εισάγονται στη σελίδα της Stripe, όχι στο PolicyWallet· δεν βλέπουμε ποτέ ολόκληρο τον αριθμό της κάρτας σας. Τι μπορείτε να αλλάξετε εκεί εξαρτάται από τη ρύθμιση της σελίδας χρέωσης της Stripe για τον λογαριασμό.',
                 }
             ]
         }

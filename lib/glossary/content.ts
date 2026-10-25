@@ -507,8 +507,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εντοπίζει τους αναγραφόμενους δικαιούχους και σας υπενθυμίζει να τους επανελέγξετε — από το πλάνο Plus.",
-            en: "In your own life policy, find the “beneficiaries” section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet surfaces the named beneficiaries and reminds you to re-check them — from the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εμφανίζει τους αναγραφόμενους δικαιούχους, ώστε να τους επανελέγξετε.",
+            en: "In your own life policy, find the “beneficiaries” section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet shows the named beneficiaries so you can re-check them.",
         },
         faq: [
             {
@@ -643,8 +643,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας υπενθυμίζει πριν ταξιδέψετε — από το πλάνο Plus.",
-            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and reminds you before you travel — from the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας στέλνει υπενθύμιση πριν τη λήξη.",
+            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and sends you a reminder before expiry.",
         },
         faq: [
             {
@@ -851,8 +851,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε — από το πλάνο Plus.",
-            en: "In your own policy, find the expiry date and check whether it mentions “automatic renewal” and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide — from the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε.",
+            en: "In your own policy, find the expiry date and check whether it mentions “automatic renewal” and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide.",
         },
         faq: [
             {
@@ -910,8 +910,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε — από το πλάνο Plus.",
-            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time — from the Plus plan.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε.",
+            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time.",
         },
         faq: [
             {

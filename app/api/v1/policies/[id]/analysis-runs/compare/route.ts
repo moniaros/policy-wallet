@@ -43,7 +43,7 @@ export const GET = withApiGuard(
         if (!allowed && !authResult.dbUser.roles?.includes("admin")) {
             return createApiError(
                 "FORBIDDEN",
-                "Analysis comparison is available on Plus and Pro plans.",
+                "Analysis comparison is available on the Family plan.",
                 403
             )
         }

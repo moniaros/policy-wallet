@@ -44,21 +44,23 @@ type LegalContent = {
     subprocessors: LegalDocument
 }
 
-export const LEGAL_CONTENT_VERSION = "GR-GA-2026.10.21"
-export const LEGAL_LAST_UPDATED = "October 21, 2026"
+export const LEGAL_CONTENT_VERSION = "GR-GA-2026.10.22"
+export const LEGAL_LAST_UPDATED = "October 22, 2026"
 
 /**
  * Current displayed revision and version for future terms/privacy consent rows.
  * Existing rows retain their recorded version; no historical consent is rewritten.
- * Prior text is archived in docs/archive/legal-content-before-2026-10-21.ts.txt.
+ * Prior text is archived in docs/archive/legal-content-before-2026-10-22.ts.txt (and -10-21 before it).
+ * LEGAL_CONTENT_VERSION (what a new consent row records) and the four literals below (what a legal page
+ * displays) are bumped TOGETHER; nothing pins them equal (QUEUE LEGAL-VERSION-SINGLE-SOURCE).
  */
 export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
-    terms: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
-    privacy: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
-    cookies: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
-    subprocessors: { version: "GR-GA-2026.10.21", lastUpdatedIso: "2026-10-21" },
+    terms: { version: "GR-GA-2026.10.22", lastUpdatedIso: "2026-10-22" },
+    privacy: { version: "GR-GA-2026.10.22", lastUpdatedIso: "2026-10-22" },
+    cookies: { version: "GR-GA-2026.10.22", lastUpdatedIso: "2026-10-22" },
+    subprocessors: { version: "GR-GA-2026.10.22", lastUpdatedIso: "2026-10-22" },
 }
 
 const EL = LEGAL_ENTITY.el
@@ -124,7 +126,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "Το δωρεάν πλάνο περιλαμβάνει έως τρία (3) ασφαλιστήρια. Κάθε ανάλυση χρησιμοποιεί μέρος του μηνιαίου ορίου επεξεργασίας του πλάνου· οι ερωτήσεις προς τον βοηθό δεν περιλαμβάνονται στο δωρεάν πλάνο. Στη σελίδα τιμών εμφανίζονται οι τρέχουσες δυνατότητες, τα όρια και οι χρεώσεις. Πριν από αγορά επιβεβαιώνετε την τελική τιμή, την περίοδο χρέωσης και τον ΦΠΑ όπου εφαρμόζεται. Οι πληρωμές συνδρομών γίνονται μέσω Stripe.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
-                        "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
+                        "Οι συνδρομές ασφαλισμένων μπορούν να ακυρωθούν οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
+                        "Οι συνδρομές ασφαλιστών ακυρώνονται με email στο info@policywallet.gr. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας και δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
                         "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
                     ],
                 },
@@ -609,7 +612,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     paragraphs: [
                         "The free plan includes up to three (3) policies. Each analysis uses part of the plan's monthly processing allowance; assistant questions are not included in the free plan. The pricing page shows current features, limits and charges. Before purchasing, you confirm the final price, billing period and VAT where applicable. Subscription payments are processed through Stripe.",
                         "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
-                        "You can cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
+                        "Policyholder subscriptions can be cancelled at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
+                        "Agent subscriptions are cancelled by email to info@policywallet.gr. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan, and you will not be charged for subsequent periods after cancelling.",
                         "If plan prices change, you will be notified in advance and the new price will apply from your next billing period.",
                     ],
                 },

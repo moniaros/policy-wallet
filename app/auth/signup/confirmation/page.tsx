@@ -16,6 +16,8 @@ import { trackLandingEvent } from "@/lib/landing/analytics"
 import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
 import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
+import { usePlanFacts } from "@/components/monetization/PlanFactsProvider"
 
 function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
     for (const audience of Object.values(publicPricingContent)) {
@@ -43,6 +45,13 @@ function SignupConfirmationContent() {
     const selectedPlan: ValidPlanId | "" = (VALID_PLAN_IDS as readonly string[]).includes(rawPlan) ? (rawPlan as ValidPlanId) : ""
     const selectedBilling: BillingPeriod | "" = searchParams.get("billing") === "annual" ? "annual" : searchParams.get("billing") === "monthly" ? "monthly" : ""
     const planDisplayName = selectedPlan ? resolvePlanDisplayName(selectedPlan, language) : null
+    // Family carries a trial: say so, with the price that follows it (PW-C02-D10).
+    const { tierPricing } = usePlanFacts()
+    const familyFacts = tierPricing("pro")
+    const selectedTrial =
+        selectedPlan === "ph-pro"
+            ? trialDisclosure(familyFacts.trialDays, selectedBilling === "annual" ? familyFacts.annualEur : familyFacts.monthlyEur, selectedBilling === "annual" ? "annual" : "monthly")
+            : null
 
     const [email, setEmail] = useState(queryEmail)
     const [isVerified, setIsVerified] = useState(false)
@@ -301,6 +310,9 @@ function SignupConfirmationContent() {
                                         {planDisplayName}
                                         {selectedBilling ? ` — ${selectedBilling === "annual" ? copy.selectedPlanBillingAnnual : copy.selectedPlanBillingMonthly}` : ""}
                                     </p>
+                                    {selectedTrial ? (
+                                        <p className="mt-g-1 text-g-caption font-semibold text-fg-primary">{selectedTrial[language]}</p>
+                                    ) : null}
                                     <p className="mt-g-1 text-g-caption text-fg-secondary">{copy.selectedPlanNote}</p>
                                 </div>
                             ) : null}

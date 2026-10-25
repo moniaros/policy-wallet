@@ -21,12 +21,12 @@ import {
 export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType }
 
 // Token budgets are the single AI meter (per-day feature counters are abuse
-// guards only). Free AND Starter (code key `plus`) are 0 — the paid-aha-loop
-// model puts ALL deep AI behind Plus (code key `pro`), so only `pro` gets a
-// budget. Parse/extraction is the one AI op free/Starter may run and is
-// exempt from this gate (policy-count-capped instead). Pro is capped at 3M so
-// worst-case provider cost stays under the plan price
-// (see docs/planning/TOKEN_ECONOMICS_2026-07.md).
+// guards only). Deep AI is Family only (code key `pro`); parse/extraction is the one AI op Free
+// and Plus run, and it is not token-gated at all (upload-time extraction calls neither
+// canUserUseTokens nor reserveTokens; the policy-count cap and a 30-a-day spend cap bound it). The figures below are the OLD fallback table; the live budgets
+// are the plan rows' (production: free 150,000, plus 600,000; pro/Family and the agent plans carry the INTERIM
+// budgets of round 6 — tests/fixtures/production-plan-rows-2026-10-22.json, QUEUE BUDGET-MEASURE). The budget resets on the SERVER'S calendar
+// month (billingMonth below), not on the subscription period.
 //
 // These are now the CODE FALLBACK of the admin-managed plan catalog: the live
 // budget comes from the plan row's entitlements.monthlyTokenBudget (see

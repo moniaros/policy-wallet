@@ -47,7 +47,7 @@ export function getAgentApprovalEmail(data: AgentApprovalEmailData) {
     <ul>
       <li><strong>Add and manage customers</strong> - Build your client portfolio</li>
       <li><strong>View customer policies</strong> - Access comprehensive policy information</li>
-      <li><strong>Analyze coverage gaps</strong> - AI-powered gap detection for your clients</li>
+      <li><strong>Read policies</strong> - AI-assisted extraction of covers, amounts and dates</li>
       <li><strong>Send questionnaires</strong> - Collect customer information efficiently</li>
       <li><strong>Track customer relationships</strong> - Manage your book of business</li>
     </ul>
@@ -175,9 +175,9 @@ export function getAgentWelcomeEmail(agentName: string) {
         Import existing clients or invite new ones to join PolicyWallet
       </p>
       
-      <p style="margin: 0 0 12px 0;"><strong>3. Explore Gap Analysis</strong></p>
+      <p style="margin: 0 0 12px 0;"><strong>3. Upload a client's policy</strong></p>
       <p style="margin: 0 0 0 0; font-size: 14px; color: #6B7280;">
-        Use our AI-powered tools to identify coverage gaps for your clients
+        See what it says: covers, amounts and dates
       </p>
     </div>
     

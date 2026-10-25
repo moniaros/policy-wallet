@@ -4,6 +4,15 @@
  * Following PolicyWallet branding guidelines
  */
 
+import { BASIC_REMINDER_LABEL, LADDER_LABEL } from '@/lib/renewals/reminder-copy'
+import { CANCEL_ANYTIME } from '@/lib/marketing/cancellation-statement'
+import { annualSavingsLabel } from '@/lib/pricing/annual-savings'
+import { DEFAULT_PLAN_FACTS } from '@/lib/pricing/plan-defaults'
+
+// The render fallback for the saving: derived from the catalog defaults, never typed.
+const factsOf = (tier: 'plus' | 'pro') => DEFAULT_PLAN_FACTS.find((p) => p.tierKey === tier)!
+const savingOf = (tier: 'plus' | 'pro') => annualSavingsLabel(factsOf(tier).monthlyEur, factsOf(tier).annualEur!)!
+
 export const subscriptionCopy = {
     // Pricing Tiers
     tiers: {
@@ -29,7 +38,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€39', en: '€39' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 4 μήνες', en: 'Save 4 months' },
+                savings: savingOf('plus'),
             },
         },
         pro: {
@@ -45,7 +54,7 @@ export const subscriptionCopy = {
             annual: {
                 price: { el: '€79', en: '€79' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 3 μήνες', en: 'Save 3 months' },
+                savings: savingOf('pro'),
             },
         },
     },
@@ -60,10 +69,6 @@ export const subscriptionCopy = {
         policyLimitLabel: {
             el: 'Όριο ασφαλιστηρίων',
             en: 'Policy limit'
-        },
-        unlimitedPolicies: {
-            el: 'Απεριόριστα ασφαλιστήρια',
-            en: 'Unlimited policies'
         },
         basicAI: {
             el: 'Βασική σύνοψη ασφαλιστηρίου από το AI',
@@ -98,8 +103,8 @@ export const subscriptionCopy = {
             en: 'Interactive AI Q&A'
         },
         prioritySupport: {
-            el: 'Υποστήριξη προτεραιότητας',
-            en: 'Priority support'
+            el: 'Υποστήριξη μέσω email',
+            en: 'Support by email'
         },
         advancedAnalytics: {
             el: 'Αναλυτικά στοιχεία',
@@ -109,9 +114,15 @@ export const subscriptionCopy = {
             el: 'Συνεργασία με σύμβουλο',
             en: 'Agent collaboration'
         },
-        digitalWallet: {
-            el: 'Ψηφιακό πορτοφόλι',
-            en: 'Digital wallet integration'
+        // Every plan gets one reminder email 30 days ahead; the 90 → 3 day ladder is
+        // Plus and Family (lib/renewals/milestones.ts, renewal.service.ts).
+        reminderEmail30: {
+            el: BASIC_REMINDER_LABEL.el,
+            en: BASIC_REMINDER_LABEL.en
+        },
+        reminderLadder: {
+            el: LADDER_LABEL.el,
+            en: LADDER_LABEL.en
         },
     },
 
@@ -123,9 +134,9 @@ export const subscriptionCopy = {
 
     // Free-trial affordances
     trial: {
-        badge: { el: '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '14-DAY FREE TRIAL' },
-        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ', en: 'START 14-DAY FREE TRIAL' },
-        startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών', en: 'Start 14-Day Free Trial' },
+        // `{days}` is the plan row's `trial_days` (what createCheckoutSession passes to Stripe), never a literal.
+        badge: { el: '{days} ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '{days}-DAY FREE TRIAL' },
+        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ {days} ΗΜΕΡΩΝ', en: 'START {days}-DAY FREE TRIAL' },
     },
 
     // Call-to-Action Buttons
@@ -251,12 +262,12 @@ export const subscriptionCopy = {
     faq: [
         {
             question: {
-                el: 'Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;',
-                en: 'Can I change plans anytime?'
+                el: 'Μπορώ να αναβαθμίσω το πλάνο μου;',
+                en: 'Can I upgrade my plan?'
             },
             answer: {
-                el: 'Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε το πλάνο σας ανά πάσα στιγμή. Οι αλλαγές θα εφαρμοστούν αμέσως.',
-                en: 'Yes, you can upgrade or downgrade your plan at any time. Changes will be applied immediately.'
+                el: 'Ναι, μπορείτε να αναβαθμίσετε το πλάνο σας οποτεδήποτε.',
+                en: 'Yes, you can upgrade your plan at any time.'
             },
         },
         {
@@ -265,8 +276,8 @@ export const subscriptionCopy = {
                 en: 'What happens if I cancel?'
             },
             answer: {
-                el: 'Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης. Τα δεδομένα σας θα διατηρηθούν για 30 ημέρες.',
-                en: 'You\'ll keep access until the end of your current billing period. Your data will be retained for 30 days.'
+                el: 'Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης.',
+                en: 'You\'ll keep access until the end of your current billing period.'
             },
         },
         {
@@ -281,14 +292,14 @@ export const subscriptionCopy = {
         },
         {
             question: {
-                el: 'Υπάρχει έκπτωση για ετήσια συνδρομή;',
-                en: 'Is there a discount for annual subscription?'
+                el: 'Πόσο κοστίζει η ετήσια συνδρομή;',
+                en: 'How much is an annual subscription?'
             },
             // {starterAnnual}/{plusAnnual} are interpolated at render time from
             // the live plan catalog (PricingComparison) — never hardcode € here.
             answer: {
-                el: 'Ναι — το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.',
-                en: 'Yes — Plus is {starterAnnual}/year and Family is {plusAnnual}/year, both discounted versus paying monthly.'
+                el: 'Το Plus κοστίζει {starterAnnual}/έτος και το Family {plusAnnual}/έτος. Πληρώνετε μία φορά τον χρόνο αντί για κάθε μήνα.',
+                en: 'Plus is {starterAnnual}/year and Family is {plusAnnual}/year. You pay once a year instead of every month.'
             },
         },
         {
@@ -320,8 +331,8 @@ export const subscriptionCopy = {
             en: 'Secure payment with Stripe'
         },
         cancelAnytime: {
-            el: 'Ακύρωση ανά πάσα στιγμή',
-            en: 'Cancel anytime'
+            el: CANCEL_ANYTIME.el,
+            en: CANCEL_ANYTIME.en
         },
         noHiddenFees: {
             el: 'Χωρίς κρυφές χρεώσεις',

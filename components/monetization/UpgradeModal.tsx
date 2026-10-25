@@ -25,6 +25,8 @@ import {
 } from "@/lib/monetization"
 import type { PlanTier } from "@/types/subscription-entitlements"
 import { formatEur } from "@/lib/pricing/pricing-view-model"
+import { annualSavingsLabel } from "@/lib/pricing/annual-savings"
+import { trialDisclosure } from "@/lib/pricing/trial-disclosure"
 import { BillingTrustBox } from "./BillingTrustBox"
 import { PlanBadge } from "./PlanBadge"
 import { usePlanFacts } from "./PlanFactsProvider"
@@ -34,8 +36,6 @@ const MODAL_COPY = {
     annual: { el: "Ετήσια", en: "Annual" },
     perMonth: { el: "/μήνα", en: "/month" },
     perYear: { el: "/έτος", en: "/year" },
-    savings: { el: "2 μήνες δωρεάν", en: "2 months free" },
-    trial: { el: "14 ημέρες δωρεάν δοκιμή", en: "14-day free trial" },
     currentPlan: { el: "Τρέχον πλάνο", en: "Current plan" },
     recommendedTag: { el: "Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία", en: "Recommended · Most popular · Best value" },
     // The TIER NAME is not written here. It used to be — «Plus» for code key
@@ -176,6 +176,11 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
     const suffix = billingPeriod === "annual" ? pick(MODAL_COPY.perYear, language) : pick(MODAL_COPY.perMonth, language)
     const plusPrice = billingPeriod === "annual" ? PLUS.annualEur : PLUS.monthlyEur
     const starterPrice = billingPeriod === "annual" ? STARTER.annualEur : STARTER.monthlyEur
+    // A saving is derived from the two prices (H-021), and shown only for the period it applies to.
+    const plusSaving = billingPeriod === "annual" ? annualSavingsLabel(PLUS.monthlyEur, PLUS.annualEur) : null
+    const starterSaving = billingPeriod === "annual" ? annualSavingsLabel(STARTER.monthlyEur, STARTER.annualEur) : null
+    // Length from the plan row, price of the chosen period, conversion and the way out (PW-C02-D10).
+    const plusTrial = trialDisclosure(PLUS.trialDays, plusPrice, billingPeriod)
     const isRedirecting = redirectingPlan !== null
 
     return (
@@ -234,11 +239,6 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                             }`}
                         >
                             {period === "monthly" ? pick(MODAL_COPY.monthly, language) : pick(MODAL_COPY.annual, language)}
-                            {period === "annual" && (
-                                <span className="ml-1.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-kicker font-black uppercase tracking-wider text-primary dark:bg-primary/20 dark:text-mint">
-                                    {pick(MODAL_COPY.savings, language)}
-                                </span>
-                            )}
                         </button>
                     ))}
                 </div>
@@ -254,10 +254,14 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                     {pick(MODAL_COPY.plusPrefix, language).replace("{plan}", planTierName("pro", language))} {formatEur(plusPrice)}{suffix}
                 </button>
-                {PLUS.trialDays > 0 && (
+                {plusTrial && (
                     <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
-                        {pick(MODAL_COPY.trial, language)}
+                        {pick(plusTrial, language)}
                     </p>
+                )}
+
+                {plusSaving && (
+                    <p className="mt-1.5 text-center text-xs text-muted-foreground">{pick(plusSaving, language)}</p>
                 )}
 
                 {/* Secondary CTA — Plus (cheaper entry) */}
@@ -271,6 +275,10 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                     {pick(MODAL_COPY.starterPrefix, language).replace("{plan}", planTierName("plus", language))} {formatEur(starterPrice)}{suffix}
                 </button>
+
+                {starterSaving && (
+                    <p className="mt-1.5 text-center text-xs text-muted-foreground">{pick(starterSaving, language)}</p>
+                )}
 
                 {/* Tertiary — dismiss */}
                 <button

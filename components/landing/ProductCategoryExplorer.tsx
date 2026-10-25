@@ -1,11 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
-import {
-    getProductCategory,
-    productCategories,
-    type ProductCategoryId,
-} from "@/lib/product/catalog"
+import { productCategories, type ProductCategoryId } from "@/lib/product/catalog"
 
 interface ProductCategoryExplorerProps {
     currentCategoryId: ProductCategoryId
@@ -26,7 +22,6 @@ export function ProductCategoryExplorer({
 }: ProductCategoryExplorerProps) {
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
-    const currentCategory = getProductCategory(currentCategoryId)
 
     return (
         <section className="bg-neutral-50 dark:bg-slate-900 py-20 px-6 lg:px-12">
@@ -56,78 +51,52 @@ export function ProductCategoryExplorer({
                     </Link>
                 </div>
 
-                <div
-                    className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+                {/* TITLES ONLY. Each /product/{category} page used to re-list all 16
+                    categories with their full descriptions — sixteen description
+                    blocks on seventeen pages per locale (metric M-X1). The
+                    descriptions live on /product alone; here a category is a
+                    label, its tag and a link. The current one is not a link. */}
+                <ul
+                    className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
                     data-testid="product-category-explorer"
                 >
                     {productCategories.map((category) => {
                         const Icon = category.icon
                         const isCurrent = category.id === currentCategoryId
-
-                        if (isCurrent) {
-                            return (
-                                <div
-                                    key={category.id}
-                                    aria-current="page"
-                                    className={`flex min-h-[220px] flex-col rounded-2xl border p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${category.surface} ${category.border}`}
-                                >
-                                    <div className="mb-5 flex items-start justify-between gap-3">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                            <Icon className="h-5 w-5 text-neutral-900" />
-                                        </div>
-                                        <span className="rounded-full bg-brand-green px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
-                                            {t("Τρέχουσα κατηγορία", "Current category")}
-                                        </span>
-                                    </div>
-
-                                    <h3 className="text-title font-semibold tracking-tight text-neutral-900">
-                                        {t(category.labelEl, category.labelEn)}
-                                    </h3>
-                                    <p className="mt-3 text-body font-semibold leading-snug text-neutral-900">
-                                        {t(category.headlineEl, category.headlineEn)}
-                                    </p>
-                                    <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
-                                        {t(category.descEl, category.descEn)}
-                                    </p>
-                                    <div className="mt-5 text-body font-semibold text-[#29685B]">
-                                        {t("Τη βλέπετε τώρα", "You're here")}
-                                    </div>
-                                </div>
-                            )
-                        }
-
-                        return (
-                            <Link
-                                key={category.id}
-                                href={localizeHref(category.href, locale)}
-                                className={`group flex min-h-[220px] flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
-                            >
-                                <div className="mb-5 flex items-start justify-between gap-3">
-                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                        <Icon className="h-5 w-5 text-neutral-900" />
-                                    </div>
-                                    <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
-                                        {t(category.tagEl, category.tagEn)}
+                        const body = (
+                            <>
+                                <span className="flex min-w-0 items-center gap-3">
+                                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/85 shadow-sm">
+                                        <Icon aria-hidden className="h-4.5 w-4.5 text-neutral-900" />
                                     </span>
-                                </div>
-
-                                <h3 className="text-title font-semibold tracking-tight text-neutral-900">
-                                    {t(category.labelEl, category.labelEn)}
-                                </h3>
-                                <p className="mt-3 text-body font-semibold leading-snug text-neutral-900">
-                                    {t(category.headlineEl, category.headlineEn)}
-                                </p>
-                                <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
-                                    {t(category.descEl, category.descEn)}
-                                </p>
-                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-neutral-900 transition-all duration-150 group-hover:gap-3">
-                                    {t("Δείτε την κατηγορία", "See this category")}
-                                    <ArrowRight aria-hidden className="h-4 w-4" />
-                                </div>
-                            </Link>
+                                    <span className="min-w-0 text-body font-semibold leading-snug text-neutral-900 [overflow-wrap:anywhere]">
+                                        {t(category.labelEl, category.labelEn)}
+                                    </span>
+                                </span>
+                                <span className={`pw-pill self-start ${category.tagBg}`}>
+                                    {isCurrent ? t("Τη βλέπετε τώρα", "You're here") : t(category.tagEl, category.tagEn)}
+                                </span>
+                            </>
+                        )
+                        const box = `flex min-h-11 flex-col gap-2 rounded-xl border px-4 py-3 ${category.surface} ${category.border}`
+                        return (
+                            <li key={category.id}>
+                                {isCurrent ? (
+                                    <div aria-current="page" className={`${box} ring-2 ring-brand-green`}>
+                                        {body}
+                                    </div>
+                                ) : (
+                                    <Link
+                                        href={localizeHref(category.href, locale)}
+                                        className={`${box} transition-colors duration-150 hover:border-neutral-400`}
+                                    >
+                                        {body}
+                                    </Link>
+                                )}
+                            </li>
                         )
                     })}
-                </div>
+                </ul>
             </div>
         </section>
     )

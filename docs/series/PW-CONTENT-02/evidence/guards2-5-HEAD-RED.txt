@@ -1,0 +1,179 @@
+
+ RUN  v4.1.11 /private/tmp/claude-501/scratch/headtree
+
+(node:64042) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:64044) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64045) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/cta-reassurance-single-source.test.ts (8 tests | 1 failed) 130ms
+     × no source file hand-types it (nor a monthly-cap phrase) 77ms
+ ❯ tests/unit/voice-guards.test.ts (14 tests | 2 failed) 1757ms
+     × no retired positioning variant on a public route, in metadata, or in a static asset 14ms
+     × no public source mis-formats money (metric M-F) 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/cta-reassurance-single-source.test.ts > the free-plan limit is typed once, in lib/marketing/limit-statement.ts > no source file hand-types it (nor a monthly-cap phrase)
+AssertionError: a free-limit promise is hand-typed; import FREE_PLAN_LIMIT:
+app/auth/signup/SignupForm.tsx:182  "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+app/auth/signup/SignupForm.tsx:183  "Free for 3 policies. No card. Delete everything whenever you want.",
+app/(public)/product/ProductSections.tsx:99  "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.",
+app/(public)/product/ProductSections.tsx:100  "Free for 3 policies. No card."
+app/(public)/product/ProductSections.tsx:386  "Free for 3 policies. No card. Delete everything whenever you want."
+components/landing/LoBPageShell.tsx:78  : t("Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 3 policies. U
+lib/product/lob-faqs.ts:41  el: "Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει.
+lib/product/lob-faqs.ts:42  en: "You send us the policy and we read it for you: what it covers, what it does not, and 
+lib/product/lob-faqs.ts:347  el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απ
+lib/product/lob-faqs.ts:348  en: "You send us the policy and we read the schedule of items, the values, the deductible 
+lib/marketing/positioning.ts:372  el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Αναβάθμιση όποτε τη χρειαστείτε.",
+lib/marketing/positioning.ts:373  en: "Free for 3 policies. No card required. Upgrade when you need to.",
+lib/landing/content.ts:157  el: "Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια, με μηνιαίο όριο επεξεργασίας. Οι λει
+lib/landing/content.ts:158  en: "The free plan includes up to 3 policies, with a monthly processing allowance. Feature: expected [ …(14) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/auth/signup/SignupForm.tsx:182  \"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.\",",
++   "app/auth/signup/SignupForm.tsx:183  \"Free for 3 policies. No card. Delete everything whenever you want.\",",
++   "app/(public)/product/ProductSections.tsx:99  \"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.\",",
++   "app/(public)/product/ProductSections.tsx:100  \"Free for 3 policies. No card.\"",
++   "app/(public)/product/ProductSections.tsx:386  \"Free for 3 policies. No card. Delete everything whenever you want.\"",
++   "components/landing/LoBPageShell.tsx:78  : t(\"Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.\", \"Free for 3 policies. U",
++   "lib/product/lob-faqs.ts:41  el: \"Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει.",
++   "lib/product/lob-faqs.ts:42  en: \"You send us the policy and we read it for you: what it covers, what it does not, and ",
++   "lib/product/lob-faqs.ts:347  el: \"Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απ",
++   "lib/product/lob-faqs.ts:348  en: \"You send us the policy and we read the schedule of items, the values, the deductible ",
++   "lib/marketing/positioning.ts:372  el: \"Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Αναβάθμιση όποτε τη χρειαστείτε.\",",
++   "lib/marketing/positioning.ts:373  en: \"Free for 3 policies. No card required. Upgrade when you need to.\",",
++   "lib/landing/content.ts:157  el: \"Το δωρεάν πλάνο περιλαμβάνει έως 3 ασφαλιστήρια, με μηνιαίο όριο επεξεργασίας. Οι λει",
++   "lib/landing/content.ts:158  en: \"The free plan includes up to 3 policies, with a monthly processing allowance. Feature",
++ ]
+
+ ❯ tests/unit/cta-reassurance-single-source.test.ts:121:115
+    119|                     .flatMap((line, i) => (HAND_TYPED_LIMIT.test(line)…
+    120|             )
+    121|         expect(offenders, "a free-limit promise is hand-typed; import …
+       |                                                                                                                   ^
+    122|     })
+    123|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 positioning lint — one line, no protection-verdict variants (H-022) > no retired positioning variant on a public route, in metadata, or in a static asset
+AssertionError: positioning-variant hits (metric M-P) = 22:
+app/(public)/solutions/agents/faqs.ts:41  el: "Όχι. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια — πληρωνόμαστε μόνο από συνδρομές. Η ίδια ανεξάρτη
+app/(public)/solutions/agents/faqs.ts:42  en: "No. We sell no insurance and take no commission — we are paid only by subscriptions. The same independent
+lib/landing/content.ts:199  "ανεξάρτητος έλεγχος ρίσκου",
+lib/landing/content.ts:205  twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
+lib/landing/content.ts:218  "independent risk check",
+lib/landing/content.ts:223  "We read your insurance and tell you where you are covered and where you are not — and, with Family, which gap
+lib/landing/content.ts:224  twitterTitle: "PolicyWallet | An independent risk check",
+lib/landing/content.ts:225  twitterDescription: "We do not sell insurance. We tell you what you are not covered for.",
+lib/seo/marketing-pages.ts:133  "ανεξάρτητος έλεγχος ασφάλισης",
+lib/seo/og-card.tsx:22  headline: "Σας λέμε αν είστε καλυμμένοι.",
+lib/seo/og-card.tsx:27  headline: "We tell you if you are covered.",
+lib/seo/site.ts:71  el: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει 
+lib/seo/site.ts:72  en: "PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your i
+lib/seo/site.ts:77  el: "Ανεξάρτητος έλεγχος ρίσκου με AI: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Σ
+lib/seo/site.ts:78  en: "Independent risk check powered by AI: see where you are covered and where the gaps are. We do not sell in
+lib/guides/content.ts:2379  el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δή
+lib/guides/content.ts:2380  en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadli
+lib/pricing/public-pricing-content.ts:291  el: "Σχεδιασμένα για χαρτοφυλάκιο πολλών πελατών, ανανεώσεις και συνεργασία ομάδας — με την ίδια ανεξάρτητη αν
+lib/pricing/public-pricing-content.ts:292  en: "Built for a many-client portfolio, renewals, and team collaboration — with the same independent risk anal
+app/layout.tsx:31  default: "PolicyWallet — Δείτε αν είστε καλυμμένοι",
+public/brand/og-template.svg:17  <text x="80" y="560" font-family="Inter, system-ui" font-size="26" fill="#4A6660">Δεν αξιολογούμε συμβόλαια. Α
+public/manifest.json:4  "description": "Ανεξάρτητος έλεγχος ρίσκου: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλει: expected [ …(22) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(public)/solutions/agents/faqs.ts:41  el: \"Όχι. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια — πληρωνόμαστε μόνο από συνδρομές. Η ίδια ανεξάρτη",
++   "app/(public)/solutions/agents/faqs.ts:42  en: \"No. We sell no insurance and take no commission — we are paid only by subscriptions. The same independent",
++   "lib/landing/content.ts:199  \"ανεξάρτητος έλεγχος ρίσκου\",",
++   "lib/landing/content.ts:205  twitterTitle: \"PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου\",",
++   "lib/landing/content.ts:218  \"independent risk check\",",
++   "lib/landing/content.ts:223  \"We read your insurance and tell you where you are covered and where you are not — and, with Family, which gap",
++   "lib/landing/content.ts:224  twitterTitle: \"PolicyWallet | An independent risk check\",",
++   "lib/landing/content.ts:225  twitterDescription: \"We do not sell insurance. We tell you what you are not covered for.\",",
++   "lib/seo/marketing-pages.ts:133  \"ανεξάρτητος έλεγχος ασφάλισης\",",
++   "lib/seo/og-card.tsx:22  headline: \"Σας λέμε αν είστε καλυμμένοι.\",",
++   "lib/seo/og-card.tsx:27  headline: \"We tell you if you are covered.\",",
++   "lib/seo/site.ts:71  el: \"Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει ",
++   "lib/seo/site.ts:72  en: \"PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your i",
++   "lib/seo/site.ts:77  el: \"Ανεξάρτητος έλεγχος ρίσκου με AI: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Σ",
++   "lib/seo/site.ts:78  en: \"Independent risk check powered by AI: see where you are covered and where the gaps are. We do not sell in",
++   "lib/guides/content.ts:2379  el: \"Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας ασφαλιστήριο: η προθεσμία δή",
++   "lib/guides/content.ts:2380  en: \"In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadli",
++   "lib/pricing/public-pricing-content.ts:291  el: \"Σχεδιασμένα για χαρτοφυλάκιο πολλών πελατών, ανανεώσεις και συνεργασία ομάδας — με την ίδια ανεξάρτητη αν",
++   "lib/pricing/public-pricing-content.ts:292  en: \"Built for a many-client portfolio, renewals, and team collaboration — with the same independent risk anal",
++   "app/layout.tsx:31  default: \"PolicyWallet — Δείτε αν είστε καλυμμένοι\",",
++   "public/brand/og-template.svg:17  <text x=\"80\" y=\"560\" font-family=\"Inter, system-ui\" font-size=\"26\" fill=\"#4A6660\">Δεν αξιολογούμε συμβόλαια. Α",
++   "public/manifest.json:4  \"description\": \"Ανεξάρτητος έλεγχος ρίσκου: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλει",
++ ]
+
+ ❯ tests/unit/voice-guards.test.ts:333:98
+    331|             ...PUBLIC_STATIC.flatMap((f) => positioningOffenders(f, re…
+    332|         ]
+    333|         expect(bad, `positioning-variant hits (metric M-P) = ${bad.len…
+       |                                                                                                  ^
+    334|     })
+    335|     it('probe — the retired variants turn it red (4 lines)', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 locale number format — Greek «35.000 €», English «€35,000» (A4) > no public source mis-formats money (metric M-F)
+AssertionError: hand-formatted money literals = 12:
+app/(public)/product/fine-art/PageClient.tsx  Greek literal with prefixed €: "Συνολική αξία €28.000 · Σε ισχύ"
+app/(public)/solutions/agents/AgentsSolutionPageClient.tsx  imports the in-app formatEur — public prices go through formatPlanPrice
+components/landing/LoBPageShell.tsx  imports the in-app formatEur — public prices go through formatPlanPrice
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Άρθρο 4 — Νοσοκομειακή περίθαλψη: έως €500.000 ανά έτος…"
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Νοσοκομειακή περίθαλψη: έως €500.000 τον χρόνο."
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Ασφαλιζόμενο κεφάλαιο: €180.000…"
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Αστική ευθύνη προς τρίτους: €100.000…"
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Αν τα €180.000 φτάνουν για ανακατασκευή εξαρτάται από το ακίνητό σας. Χρειάζετα
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Αστική ευθύνη: έως €100.000."
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Ίδιες ζημιές: με απαλλαγή €500…"
+lib/marketing/reading-demo.ts  Greek literal with prefixed €: "Ίδιες ζημιές: καλύπτονται, με απαλλαγή €500."
+lib/guides/content.ts  Greek literal with prefixed €: "Παράδειγμα: ένα σπίτι κοστίζει €200.000 να ξαναχτιστεί, αλλά είναι ασφαλισμένο : expected [ …(12) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(public)/product/fine-art/PageClient.tsx  Greek literal with prefixed €: \"Συνολική αξία €28.000 · Σε ισχύ\"",
++   "app/(public)/solutions/agents/AgentsSolutionPageClient.tsx  imports the in-app formatEur — public prices go through formatPlanPrice",
++   "components/landing/LoBPageShell.tsx  imports the in-app formatEur — public prices go through formatPlanPrice",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Άρθρο 4 — Νοσοκομειακή περίθαλψη: έως €500.000 ανά έτος…\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Νοσοκομειακή περίθαλψη: έως €500.000 τον χρόνο.\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Ασφαλιζόμενο κεφάλαιο: €180.000…\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Αστική ευθύνη προς τρίτους: €100.000…\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Αν τα €180.000 φτάνουν για ανακατασκευή εξαρτάται από το ακίνητό σας. Χρειάζετα",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Αστική ευθύνη: έως €100.000.\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Ίδιες ζημιές: με απαλλαγή €500…\"",
++   "lib/marketing/reading-demo.ts  Greek literal with prefixed €: \"Ίδιες ζημιές: καλύπτονται, με απαλλαγή €500.\"",
++   "lib/guides/content.ts  Greek literal with prefixed €: \"Παράδειγμα: ένα σπίτι κοστίζει €200.000 να ξαναχτιστεί, αλλά είναι ασφαλισμένο ",
++ ]
+
+ ❯ tests/unit/voice-guards.test.ts:344:90
+    342|     it('no public source mis-formats money (metric M-F)', () => {
+    343|         const bad = PUBLIC_CODE.flatMap((f) => numberOffenders(f, code…
+    344|         expect(bad, `hand-formatted money literals = ${bad.length}:\n$…
+       |                                                                                          ^
+    345|     })
+    346|     it('probe — a prefixed Greek euro, Greek grouping in English, and …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 19 passed (22)
+   Start at  23:20:58
+   Duration  2.15s (transform 58ms, setup 129ms, import 129ms, tests 1.89s, environment 331ms)
+

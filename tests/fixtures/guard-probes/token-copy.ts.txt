@@ -1,0 +1,12 @@
+// Probe for tests/unit/no-token-copy-customer-facing.test.ts — each line shows a customer reading "tokens".
+export const A = { el: "Χρήση tokens AI", en: "AI Token Usage" }
+export const B = "Your AI token limit has been reached. Upgrade or buy credits to continue."
+export const C = `Μηνιαία tokens που ανανεώνονται αυτόματα`
+export const D = `Used ${n} tokens this month`
+export const E = "Buy credits to continue"
+export const F = () => <p>Your remaining tokens</p>
+export const G = "Αγοράστε πιστώσεις για να συνεχίσετε"
+export const H = () => <p>Διαθέσιμες πιστώσεις</p>
+export const I = "Credit Balance: 20 credits"
+export const J = "Το όριο ανανεώνεται κάθε μήνα"
+export const K = "The limit renews every month"

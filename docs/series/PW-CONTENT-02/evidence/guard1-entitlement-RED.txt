@@ -1,0 +1,190 @@
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:52144) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:52146) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/plan-gating-parity.test.ts (12 tests | 3 failed) 77ms
+     × policyholder pricing: tags present and every rendered value equals planClaim() 3ms
+     × agent pricing: tags present and every rendered value equals planClaim() 0ms
+     × no source file under app/, components/ or lib/ carries the promise 71ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 — every public capability claim equals what the code enforces > policyholder pricing: tags present and every rendered value equals planClaim()
+AssertionError: public pricing states what the code does not enforce:
+card free «3 ασφαλιστήρια»: no `claim` tag
+card free «Ανάλυση εγγράφων, εντός του ορίου του πλάνου»: no `claim` tag
+card free «Εντοπισμός διπλών καλύψεων»: no `claim` tag
+card free «Ημερομηνία ανανέωσης»: no `claim` tag
+card free «Υπενθυμίσεις ανανέωσης»: no `claim` tag
+card plus «Έως 10 ασφαλιστήρια»: no `claim` tag
+card plus «Ανάλυση εγγράφων, εντός του ορίου του πλάνου»: no `claim` tag
+card plus «Εντοπισμός διπλών καλύψεων»: no `claim` tag
+card plus «Υπενθυμίσεις ανανέωσης (email)»: no `claim` tag
+card plus «Ανάλυση από πολλές ασφαλιστικές»: no `claim` tag
+card pro «Έως 25 ασφαλιστήρια»: no `claim` tag
+card pro «Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις»: no `claim` tag
+card pro «Εντοπισμός κενών & διπλών καλύψεων»: no `claim` tag
+card pro «Ανάλυση από πολλές ασφαλιστικές»: no `claim` tag
+card pro «Υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς»: no `claim` tag
+row «Αριθμός ασφαλιστηρίων»: no `claim` tag
+row «Βασική σύνοψη ασφαλιστηρίου»: no `claim` tag
+row «Πλήρης ανάλυση AI»: no `claim` tag
+row «Ερωτήσεις στην τεχνητή νοημοσύνη»: no `claim` tag
+row «Εντοπισμός κενών κάλυψης»: no `claim` tag
+row «Εντοπισμός διπλών καλύψεων»: no `claim` tag
+row «Υπενθυμίσεις ανανέωσης (email)»: no `claim` tag
+row «Υπενθυμίσεις & εξαγωγή αναφοράς»: no `claim` tag
+row «Συνεργασία με σύμβουλο»: no `claim` tag: expected [ …(24) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "card free «3 ασφαλιστήρια»: no `claim` tag",
++   "card free «Ανάλυση εγγράφων, εντός του ορίου του πλάνου»: no `claim` tag",
++   "card free «Εντοπισμός διπλών καλύψεων»: no `claim` tag",
++   "card free «Ημερομηνία ανανέωσης»: no `claim` tag",
++   "card free «Υπενθυμίσεις ανανέωσης»: no `claim` tag",
++   "card plus «Έως 10 ασφαλιστήρια»: no `claim` tag",
++   "card plus «Ανάλυση εγγράφων, εντός του ορίου του πλάνου»: no `claim` tag",
++   "card plus «Εντοπισμός διπλών καλύψεων»: no `claim` tag",
++   "card plus «Υπενθυμίσεις ανανέωσης (email)»: no `claim` tag",
++   "card plus «Ανάλυση από πολλές ασφαλιστικές»: no `claim` tag",
++   "card pro «Έως 25 ασφαλιστήρια»: no `claim` tag",
++   "card pro «Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις»: no `claim` tag",
++   "card pro «Εντοπισμός κενών & διπλών καλύψεων»: no `claim` tag",
++   "card pro «Ανάλυση από πολλές ασφαλιστικές»: no `claim` tag",
++   "card pro «Υπενθυμίσεις, οδηγός ζημιάς & εξαγωγή αναφοράς»: no `claim` tag",
++   "row «Αριθμός ασφαλιστηρίων»: no `claim` tag",
++   "row «Βασική σύνοψη ασφαλιστηρίου»: no `claim` tag",
++   "row «Πλήρης ανάλυση AI»: no `claim` tag",
++   "row «Ερωτήσεις στην τεχνητή νοημοσύνη»: no `claim` tag",
++   "row «Εντοπισμός κενών κάλυψης»: no `claim` tag",
++   "row «Εντοπισμός διπλών καλύψεων»: no `claim` tag",
++   "row «Υπενθυμίσεις ανανέωσης (email)»: no `claim` tag",
++   "row «Υπενθυμίσεις & εξαγωγή αναφοράς»: no `claim` tag",
++   "row «Συνεργασία με σύμβουλο»: no `claim` tag",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:202:97
+    200|     it.each(['policyholder', 'agent'] as const)('%s pricing: tags pres…
+    201|         const bad = claimOffenders(publicPricingContent[audience] as u…
+    202|         expect(bad, `public pricing states what the code does not enfo…
+       |                                                                                                 ^
+    203|     })
+    204|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 — every public capability claim equals what the code enforces > agent pricing: tags present and every rendered value equals planClaim()
+AssertionError: public pricing states what the code does not enforce:
+card agent-free «10 πελάτες»: no `claim` tag
+card agent-free «5 AI αναλύσεις / μήνα»: no `claim` tag
+card agent-free «Βασική εικόνα πελατών»: no `claim` tag
+card agent-free «Προσθήκη πολλών πελατών μαζί»: no `claim` tag
+card agent-free «Αυτοματισμοί ανανέωσης»: no `claim` tag
+card agent-starter «100 πελάτες»: no `claim` tag
+card agent-starter «50 αναλύσεις τον μήνα»: no `claim` tag
+card agent-starter «Όλοι οι πελάτες σε μία οθόνη»: no `claim` tag
+card agent-starter «Λίστα με ό,τι λήγει»: no `claim` tag
+card agent-starter «Προσθήκη έως 100 πελατών μαζί»: no `claim` tag
+card agent-starter «Ερωτηματολόγια πελατών (5 πρότυπα)»: no `claim` tag
+card agent-pro «500 πελάτες»: no `claim` tag
+card agent-pro «150 αναλύσεις τον μήνα»: no `claim` tag
+card agent-pro «Ομάδα έως 3 ασφαλιστές»: no `claim` tag
+card agent-pro «Προτάσεις επιπλέον κάλυψης ανά πελάτη»: no `claim` tag
+card agent-pro «Οι αναλύσεις σας τρέχουν πρώτες»: no `claim` tag
+card agent-pro «Παρακολούθηση προμηθειών»: no `claim` tag
+card agent-agency «Απεριόριστοι πελάτες»: no `claim` tag
+card agent-agency «400 αναλύσεις τον μήνα»: no `claim` tag
+card agent-agency «Απεριόριστη ομάδα»: no `claim` tag
+card agent-agency «Απεριόριστη μαζική εισαγωγή πελατών»: no `claim` tag
+card agent-agency «Αποκλειστική υποστήριξη»: no `claim` tag
+row «Πελάτες»: no `claim` tag
+row «Όλοι οι πελάτες σε μία οθόνη»: no `claim` tag
+row «Αναλύσεις AI ανά μήνα»: no `claim` tag
+row «Λίστα με ό,τι λήγει»: no `claim` tag
+row «Μαζική αποστολή ασφαλιστηρίων»: no `claim` tag
+row «Ερωτηματολόγια πελατών»: no `claim` tag
+row «Μέλη ομάδας»: no `claim` tag: expected [ …(29) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "card agent-free «10 πελάτες»: no `claim` tag",
++   "card agent-free «5 AI αναλύσεις / μήνα»: no `claim` tag",
++   "card agent-free «Βασική εικόνα πελατών»: no `claim` tag",
++   "card agent-free «Προσθήκη πολλών πελατών μαζί»: no `claim` tag",
++   "card agent-free «Αυτοματισμοί ανανέωσης»: no `claim` tag",
++   "card agent-starter «100 πελάτες»: no `claim` tag",
++   "card agent-starter «50 αναλύσεις τον μήνα»: no `claim` tag",
++   "card agent-starter «Όλοι οι πελάτες σε μία οθόνη»: no `claim` tag",
++   "card agent-starter «Λίστα με ό,τι λήγει»: no `claim` tag",
++   "card agent-starter «Προσθήκη έως 100 πελατών μαζί»: no `claim` tag",
++   "card agent-starter «Ερωτηματολόγια πελατών (5 πρότυπα)»: no `claim` tag",
++   "card agent-pro «500 πελάτες»: no `claim` tag",
++   "card agent-pro «150 αναλύσεις τον μήνα»: no `claim` tag",
++   "card agent-pro «Ομάδα έως 3 ασφαλιστές»: no `claim` tag",
++   "card agent-pro «Προτάσεις επιπλέον κάλυψης ανά πελάτη»: no `claim` tag",
++   "card agent-pro «Οι αναλύσεις σας τρέχουν πρώτες»: no `claim` tag",
++   "card agent-pro «Παρακολούθηση προμηθειών»: no `claim` tag",
++   "card agent-agency «Απεριόριστοι πελάτες»: no `claim` tag",
++   "card agent-agency «400 αναλύσεις τον μήνα»: no `claim` tag",
++   "card agent-agency «Απεριόριστη ομάδα»: no `claim` tag",
++   "card agent-agency «Απεριόριστη μαζική εισαγωγή πελατών»: no `claim` tag",
++   "card agent-agency «Αποκλειστική υποστήριξη»: no `claim` tag",
++   "row «Πελάτες»: no `claim` tag",
++   "row «Όλοι οι πελάτες σε μία οθόνη»: no `claim` tag",
++   "row «Αναλύσεις AI ανά μήνα»: no `claim` tag",
++   "row «Λίστα με ό,τι λήγει»: no `claim` tag",
++   "row «Μαζική αποστολή ασφαλιστηρίων»: no `claim` tag",
++   "row «Ερωτηματολόγια πελατών»: no `claim` tag",
++   "row «Μέλη ομάδας»: no `claim` tag",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:202:97
+    200|     it.each(['policyholder', 'agent'] as const)('%s pricing: tags pres…
+    201|         const bad = claimOffenders(publicPricingContent[audience] as u…
+    202|         expect(bad, `public pricing states what the code does not enfo…
+       |                                                                                                 ^
+    203|     })
+    204|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H-019: Family only until PW-ENTITLE-01) > no source file under app/, components/ or lib/ carries the promise
+AssertionError: an unbacked promise is back:
+lib/i18n/translations/el.ts:2505  freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',
+lib/i18n/translations/en.ts:2471  freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lib/i18n/translations/el.ts:2505  freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.',",
++   "lib/i18n/translations/en.ts:2471  freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:245:72
+    243|         const files = IN_APP_ROOTS.flatMap(inAppFiles).map((path) => (…
+    244|         const bad = inAppOffenders(files)
+    245|         expect(bad, `an unbacked promise is back:\n${bad.join('\n')}`)…
+       |                                                                        ^
+    246|     })
+    247|     it('probe: the detector turns red on the removed string', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 9 passed (12)
+   Start at  23:13:11
+   Duration  414ms (transform 42ms, setup 63ms, import 32ms, tests 77ms, environment 182ms)
+

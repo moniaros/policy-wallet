@@ -60,7 +60,7 @@ const NEUTRAL_CONFIG = {
 const COPY = {
     whyItMatters: { en: 'Why this matters', el: 'Γιατί έχει σημασία' },
     whatWeChecked: { en: 'What we checked', el: 'Τι ελέγξαμε' },
-    plusFeature: { en: 'Full analysis available on Plus/Pro', el: 'Πλήρης ανάλυση διαθέσιμη σε Plus/Pro' },
+    plusFeature: { en: 'Full analysis available on Family', el: 'Πλήρης ανάλυση διαθέσιμη στο Family' },
 } as const
 
 export function InsightCard({ insight, onAction, language = 'el', collapsed = false }: InsightCardProps) {

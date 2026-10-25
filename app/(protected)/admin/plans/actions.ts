@@ -12,6 +12,7 @@ import { PLAN_CATALOG_CACHE_TAG } from "@/lib/pricing/plan-catalog"
 const PLAN_FACT_PATHS = [
     "/pricing",
     "/en/pricing",
+    "/auth/signup/confirmation",
     "/upgrade",
     "/agent/pricing",
     "/admin/plans",

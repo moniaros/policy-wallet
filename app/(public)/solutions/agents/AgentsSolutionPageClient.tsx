@@ -9,7 +9,7 @@ import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { AGENT_FAQS } from "./faqs"
 import { productCategories } from "@/lib/product/catalog"
 import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
-import { formatEur } from "@/lib/pricing/pricing-view-model"
+import { formatPlanPrice } from "@/lib/pricing/format-plan-price"
 
 // The solo agent is the majority reader of this page — the pricing section
 // must answer "how much for me?" without scrolling to the footer band.
@@ -98,11 +98,13 @@ export default function AgentSolutionsPage() {
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
-                                        // The expiring-policies list is gated to Agent
-                                        // Starter+ in the pricing matrix — the feature
-                                        // names the plan, same rule as the consumer side.
-                                        "Στείλτε στον πελάτη μια υπενθύμιση με το όνομά του, πριν λήξει το ασφαλιστήριό του — από το Agent Starter.",
-                                        "Send your client a reminder with their name on it, before their policy runs out — from Agent Starter."
+                                        // Sending reminders is the `renewalAutomation` entitlement
+                                        // (sendBatchRenewalReminder, renewals/actions.ts): Agent Pro
+                                        // and Agency. It said "from Agent Starter" until 2026-10-21
+                                        // (PW-CONTENT-02, E36) — Starter has the expiring-policies
+                                        // LIST, not the send.
+                                        "Στείλτε στον πελάτη μια υπενθύμιση με το όνομά του, πριν λήξει το ασφαλιστήριό του — από το Agent Pro.",
+                                        "Send your client a reminder with their name on it, before their policy runs out — from Agent Pro."
                                     )}
                                 </p>
                             </div>
@@ -119,8 +121,9 @@ export default function AgentSolutionsPage() {
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
-                                        "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία, έτοιμη για εκτύπωση.",
-                                        "Hand your client a clear report carrying your own details, ready to print."
+                                        // Branded reports are Agent Pro and Agency (`brandedReport`; the route answers 403 below Pro).
+                                        "Δώστε στον πελάτη μια καθαρή αναφορά με τα δικά σας στοιχεία, έτοιμη για εκτύπωση — από το Agent Pro.",
+                                        "Hand your client a clear report carrying your own details, ready to print — from Agent Pro."
                                     )}
                                 </p>
                             </div>
@@ -162,7 +165,7 @@ export default function AgentSolutionsPage() {
                                 {t("Δίνετε την αναφορά", "You hand over the report")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελάτη.", "A clear report with your name on it, ready to hand to your client.")}
+                                {t("Καθαρή αναφορά με το όνομά σας, έτοιμη να τη δώσετε στον πελάτη (από το Agent Pro).", "A clear report with your name on it, ready to hand to your client (from Agent Pro).")}
                             </p>
                         </div>
                     </div>
@@ -184,8 +187,8 @@ export default function AgentSolutionsPage() {
                         {AGENT_STARTER ? (
                             <p className="mb-6 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    `Δουλεύετε μόνοι σας; Ξεκινάτε δωρεάν, και το ${AGENT_STARTER.displayName} κοστίζει ${formatEur(AGENT_STARTER.monthlyEur)}/μήνα.`,
-                                    `Working on your own? You start free, and ${AGENT_STARTER.displayName} is ${formatEur(AGENT_STARTER.monthlyEur)}/month.`
+                                    `Δουλεύετε μόνοι σας; Ξεκινάτε δωρεάν, και το ${AGENT_STARTER.displayName} κοστίζει ${formatPlanPrice(AGENT_STARTER.monthlyEur, "el")}/μήνα.`,
+                                    `Working on your own? You start free, and ${AGENT_STARTER.displayName} is ${formatPlanPrice(AGENT_STARTER.monthlyEur, "en")}/month.`
                                 )}
                             </p>
                         ) : null}

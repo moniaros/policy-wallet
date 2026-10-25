@@ -91,7 +91,7 @@ describe("(b) the card keeps the price and drops the offer", () => {
 
     it("still states the price — the price is true, the offer is not", () => {
         const plus = blocked().find((p) => p.key === "plus")
-        expect(plus!.pricing.monthly.amount).toBe("€4.99")
+        expect(plus!.pricing.monthly.value).toBe(4.99)
     })
 
     it("when the deployment CAN charge, nothing is marked", () => {
@@ -118,7 +118,7 @@ describe("(b) the card keeps the price and drops the offer", () => {
         const { container } = cardFor(plus)
         expect(container.querySelector("button")).toBeNull()
         expect(container.querySelector('[data-checkout-unavailable="sandbox_in_production"]')).not.toBeNull()
-        expect(screen.getByText("€4.99")).toBeTruthy()
+        expect(screen.getByText("4,99 €")).toBeTruthy()
         // Our problem, not the reader's: no Stripe, no keys, no modes.
         expect(container.textContent).not.toMatch(/stripe|sandbox|test mode/i)
     })

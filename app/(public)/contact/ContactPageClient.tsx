@@ -1,7 +1,7 @@
 "use client"
 
 import { FormEvent, useState } from "react"
-import { Clock3, Mail, MapPin, Phone, Send } from "lucide-react"
+import { LifeBuoy, Mail, MapPin, Send } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { hasCompleteAddress, siteConfig } from "@/lib/seo/site"
 
@@ -38,7 +38,6 @@ type SubjectValue = (typeof SUBJECT_OPTIONS)[number]["value"]
 interface ContactFormState {
     name: string
     email: string
-    phone: string
     subject: SubjectValue | ""
     message: string
 }
@@ -49,7 +48,6 @@ type ContactErrors = Partial<Record<ContactField, string>>
 const INITIAL_FORM: ContactFormState = {
     name: "",
     email: "",
-    phone: "",
     subject: "",
     message: "",
 }
@@ -64,7 +62,6 @@ const COPY = {
     },
     name: { el: "Ονοματεπώνυμο", en: "Full name" },
     email: { el: "Email", en: "Email" },
-    phone: { el: "Τηλέφωνο (προαιρετικό)", en: "Phone (optional)" },
     subject: { el: "Θέμα", en: "Subject" },
     subjectPlaceholder: { el: "Διαλέξτε θέμα", en: "Choose a subject" },
     message: { el: "Μήνυμα", en: "Message" },
@@ -89,7 +86,6 @@ const COPY = {
     },
     errEmail: { el: "Γράψτε το email σας.", en: "Please write your email." },
     errEmailInvalid: { el: "Αυτό το email δεν φαίνεται σωστό.", en: "That email does not look right." },
-    errPhone: { el: "Αυτό το τηλέφωνο δεν φαίνεται σωστό.", en: "That phone number does not look right." },
     errSubject: { el: "Διαλέξτε θέμα.", en: "Please choose a subject." },
     errMessage: { el: "Γράψτε μας το μήνυμά σας.", en: "Please write your message." },
     errMessageShort: {
@@ -97,10 +93,9 @@ const COPY = {
         en: "Please write a little more — at least 20 characters.",
     },
     detailsTitle: { el: "Πώς αλλιώς να μας βρείτε", en: "Other ways to reach us" },
-    phoneLabel: { el: "Τηλέφωνο", en: "Phone" },
     addressLabel: { el: "Διεύθυνση", en: "Address" },
-    hoursLabel: { el: "Ώρες που απαντάμε", en: "When we answer" },
-    hoursValue: { el: "Δευτέρα – Παρασκευή, 09:00 – 18:00", en: "Monday – Friday, 09:00 – 18:00" },
+    supportLabel: { el: "Υποστήριξη", en: "Support" },
+    supportValue: { el: "Υποστήριξη μέσω email", en: "Support by email" },
 } as const
 
 export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" }) {
@@ -117,15 +112,12 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
     const validate = (values: ContactFormState): ContactErrors => {
         const next: ContactErrors = {}
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        const phonePattern = /^\+?[0-9()\-\s]{7,20}$/
 
         if (!values.name.trim()) next.name = t("errName")
         else if (values.name.trim().length < 2) next.name = t("errNameShort")
 
         if (!values.email.trim()) next.email = t("errEmail")
         else if (!emailPattern.test(values.email.trim())) next.email = t("errEmailInvalid")
-
-        if (values.phone.trim() && !phonePattern.test(values.phone.trim())) next.phone = t("errPhone")
 
         if (!values.subject) next.subject = t("errSubject")
 
@@ -173,7 +165,6 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                 body: JSON.stringify({
                     name: form.name.trim(),
                     email: form.email.trim(),
-                    phone: form.phone.trim(),
                     subject: form.subject,
                     message: form.message.trim(),
                     website_url: honeypot,
@@ -293,27 +284,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                 </label>
                             </div>
 
-                            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <label className="block">
-                                    <span className="mb-2 block text-body-sm font-medium text-[#0F172A] dark:text-white">
-                                        {t("phone")}
-                                    </span>
-                                    <input
-                                        type="tel"
-                                        autoComplete="tel"
-                                        value={form.phone}
-                                        onChange={(event) => setField("phone", event.target.value)}
-                                        className={fieldClass(Boolean(errors.phone))}
-                                        aria-invalid={Boolean(errors.phone)}
-                                        aria-describedby={errors.phone ? "contact-phone-error" : undefined}
-                                    />
-                                    {errors.phone ? (
-                                        <p id="contact-phone-error" className="mt-1 text-body-sm text-[#B91C1C] dark:text-red-300">
-                                            {errors.phone}
-                                        </p>
-                                    ) : null}
-                                </label>
-
+                            <div className="mb-4 grid grid-cols-1 gap-4">
                                 <label className="block">
                                     <span className="mb-2 block text-body-sm font-medium text-[#0F172A] dark:text-white">
                                         {t("subject")}
@@ -400,16 +371,6 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                     </div>
                                 </div>
 
-                                {siteConfig.contactPhone ? (
-                                    <div className="flex items-start gap-3">
-                                        <Phone aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
-                                        <div>
-                                            <p className="font-medium text-[#0F172A] dark:text-white">{t("phoneLabel")}</p>
-                                            <p>{siteConfig.contactPhone}</p>
-                                        </div>
-                                    </div>
-                                ) : null}
-
                                 {hasCompleteAddress() ? (
                                     <div className="flex items-start gap-3">
                                         <MapPin aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
@@ -425,10 +386,10 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                 ) : null}
 
                                 <div className="flex items-start gap-3">
-                                    <Clock3 aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
+                                    <LifeBuoy aria-hidden className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-brand-accent" />
                                     <div>
-                                        <p className="font-medium text-[#0F172A] dark:text-white">{t("hoursLabel")}</p>
-                                        <p>{t("hoursValue")}</p>
+                                        <p className="font-medium text-[#0F172A] dark:text-white">{t("supportLabel")}</p>
+                                        <p>{t("supportValue")}</p>
                                     </div>
                                 </div>
                             </div>

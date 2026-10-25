@@ -72,7 +72,7 @@ function vapidAuthorization(endpoint: string): string {
     const privateKey = process.env.VAPID_PRIVATE_KEY
     if (!publicKey || !privateKey) throw new Error("VAPID keys are not configured")
 
-    const subject = process.env.VAPID_SUBJECT || "mailto:support@policywallet.gr"
+    const subject = process.env.VAPID_SUBJECT || "mailto:info@policywallet.gr"
     const audience = new URL(endpoint).origin
 
     const header = b64url(Buffer.from(JSON.stringify({ typ: "JWT", alg: "ES256" })))

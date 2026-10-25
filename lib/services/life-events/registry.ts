@@ -351,8 +351,8 @@ export const LIFE_EVENT_REGISTRY: LifeEventDefinition[] = [
         kind: "acquisition",
         label: { en: "Bought a boat", el: "Αγορά σκάφους" },
         description: {
-            en: "Third-party liability is compulsory for recreational craft, and salvage and wreck removal are frequently the largest costs after an incident.",
-            el: "Η αστική ευθύνη είναι υποχρεωτική για σκάφη αναψυχής, και η ναυαγιαίρεση με την ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν.",
+            en: "Third-party liability covers damage your boat causes to others, and salvage and wreck removal are frequently the largest costs after an incident.",
+            el: "Η αστική ευθύνη καλύπτει ζημιές που προκαλεί το σκάφος σας σε τρίτους, και η ναυαγιαίρεση με την ανέλκυση είναι συχνά τα μεγαλύτερα κόστη μετά από συμβάν.",
         },
         contextDelta: [
             { column: "ownsBoat", factor: "boat", operation: "set", value: true },

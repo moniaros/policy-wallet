@@ -105,7 +105,7 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         priorityQueue: false,
         savingsReportExport: false,
     },
-    // "Plus" (displayed) = €39/yr (€4.99/mo). Ten policies, full analysis.
+    // "Plus" (displayed) = €39/yr (€4.99/mo). Ten policies, no full analysis (that is Family).
     // (Code key stays `plus`; the display name moved from "Starter" to "Plus".)
     plus: {
         policies: 10,
@@ -130,7 +130,12 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         aiAnalysisPerMonth: null,
         questionsPerDay: null,
         gapAnalysisPerDay: null,
-        monthlyTokenBudget: 1_500_000,
+        // INTERIM (round 7, FINAL until BUDGET-MEASURE): (25 policies × 253,200 batch path (R_max 151,200 + the
+        // ungated upload extraction 102,000; policyholder runs are not independently verified) + ~100 questions × the 15,000-token headroom the Q&A gate asks for,
+        // app/(protected)/wallet/actions.ts:1778) × 1.1 = 8,613,000 → 8,700,000. Replace with a measured budget
+        // (QUEUE BUDGET-MEASURE: its A_p95 must include the ungated scan/upload extraction and the verification
+        // actuals); Q&A can starve analyses until QA-BUDGET-SPLIT ships.
+        monthlyTokenBudget: 8_700_000,
         notifications: true,
         advancedAnalytics: true,
         agentCollaboration: true,
@@ -145,16 +150,22 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
 // ── Agent entitlement fallbacks ──────────────────────────────────────
 
 export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits> = {
-    // A free agent tier funded at 500,000 tokens was drawing 3.3× what the
-    // free consumer gets and 83% of what a PAYING €39/yr consumer gets. The
-    // free tier's job is to demonstrate the product, not to underwrite a book
-    // of business for nothing — so it now sits on ph-free's basis (150,000)
-    // with its five analyses.
+    // AGENT BUDGETS — INTERIM (H-027, owner 2026-10-23, round 7: FINAL until BUDGET-MEASURE). The PUBLISHED analysis
+    // count is the cap and the token budget is a safety rail that must never bind before it. Sized for the
+    // cache-miss path with verification on: R_max (151,200: the 8-rule branch, token-budget-estimator.ts) + the
+    // scan/upload extraction (102,000, recorded on the same row, not gated) + the verification extraction (102,000,
+    // independent-verification.ts) = 355,200 per analysis, × the published count × 1.1:
+    //   agent_free 5 → 1,953,600 → 2,000,000 · agent_starter 50 → 19,536,000 → 19,600,000
+    //   agent_pro 150 → 58,608,000 → 58,700,000 · agency 400 → 156,288,000 → 156,300,000
+    // tests/unit/budget-reaches-published-count.test.ts enforces it. These are ESTIMATE-based and are to be
+    // replaced by MEASURED budgets before GA: ((N−1)·A_p95 + R)·1.1 (QUEUE BUDGET-MEASURE, a GA blocker).
+    // (Earlier: a 500,000-token free agent drew 3.3× a free consumer; the free tier's job is to
+    // demonstrate the product — its five analyses are now funded, not just promised.)
     agent_free: {
         maxCustomers: 10,
         maxPoliciesPerCustomer: 5,
         aiAnalysesPerMonth: 5,
-        monthlyTokenBudget: 150_000,
+        monthlyTokenBudget: 2_000_000,
         collaborationThreads: true,
         questionnaireTemplates: 0,
         brandedPortal: false,
@@ -180,7 +191,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: 100,
         maxPoliciesPerCustomer: 20,
         aiAnalysesPerMonth: 50,
-        monthlyTokenBudget: 1_600_000,
+        monthlyTokenBudget: 19_600_000,
         collaborationThreads: true,
         questionnaireTemplates: 5,
         brandedPortal: true,
@@ -206,7 +217,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: 500,
         maxPoliciesPerCustomer: null,
         aiAnalysesPerMonth: 150,
-        monthlyTokenBudget: 4_500_000,
+        monthlyTokenBudget: 58_700_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,
@@ -232,7 +243,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: null,
         maxPoliciesPerCustomer: null,
         aiAnalysesPerMonth: 400,
-        monthlyTokenBudget: 12_000_000,
+        monthlyTokenBudget: 156_300_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,
@@ -282,7 +293,7 @@ export const DEFAULT_TRIAL_DAYS_BY_PLAN: Record<string, number> = {
 export const DEFAULT_TOKEN_LIMITS: Record<PlanTier, number | null> = {
     free: 150_000,
     plus: 600_000,
-    pro: 1_500_000,
+    pro: 8_700_000,
 }
 
 // ── Canonical plan rows (synthetic catalog + seed source) ────────────

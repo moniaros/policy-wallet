@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   title: {
     // The fallback a page inherits when it sets no title of its own — it must
     // carry the CURRENT positioning, not the retired "digital wallet" frame.
-    default: "PolicyWallet — Δείτε αν είστε καλυμμένοι",
+    default: "PolicyWallet — Τα ασφαλιστήριά σας, με απλά λόγια",
     template: "%s | PolicyWallet",
   },
   description: siteConfig.description.el,

@@ -1,0 +1,107 @@
+
+ RUN  v4.1.11 /private/tmp/claude-501/scratch/prevtree-r3
+
+(node:72356) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:72360) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:72359) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/plan-gating-parity.test.ts (21 tests | 2 failed) 134ms
+     × agent pricing: tags present and every rendered value equals planClaim() 3ms
+     × no source file under app/, components/ or lib/ carries the promise 124ms
+ ❯ tests/unit/voice-guards.test.ts (21 tests | 1 failed) 2040ms
+     × no public prose attributes a renewal reminder to Plus 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 — every public capability claim equals what the code enforces > agent pricing: tags present and every rendered value equals planClaim()
+AssertionError: public pricing states what the code does not enforce:
+card agent-free «Βασική εικόνα πελατών»: claim:null needs an UNTAGGED_OK reason
+card agent-starter «Όλοι οι πελάτες σε μία οθόνη»: claim:null needs an UNTAGGED_OK reason
+card agent-starter «Λίστα με ό,τι λήγει»: claim:null needs an UNTAGGED_OK reason
+row «Όλοι οι πελάτες σε μία οθόνη»: claim:null needs an UNTAGGED_OK reason
+row «Λίστα με ό,τι λήγει»: claim:null needs an UNTAGGED_OK reason: expected [ …(5) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "card agent-free «Βασική εικόνα πελατών»: claim:null needs an UNTAGGED_OK reason",
++   "card agent-starter «Όλοι οι πελάτες σε μία οθόνη»: claim:null needs an UNTAGGED_OK reason",
++   "card agent-starter «Λίστα με ό,τι λήγει»: claim:null needs an UNTAGGED_OK reason",
++   "row «Όλοι οι πελάτες σε μία οθόνη»: claim:null needs an UNTAGGED_OK reason",
++   "row «Λίστα με ό,τι λήγει»: claim:null needs an UNTAGGED_OK reason",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:216:97
+    214|     it.each(['policyholder', 'agent'] as const)('%s pricing: tags pres…
+    215|         const bad = claimOffenders(publicPricingContent[audience] as u…
+    216|         expect(bad, `public pricing states what the code does not enfo…
+       |                                                                                                 ^
+    217|     })
+    218|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/plan-gating-parity.test.ts > PW-CONTENT-02 A1 — no in-app string promises a free full analysis (H-019: Family only until PW-ENTITLE-01) > no source file under app/, components/ or lib/ carries the promise
+AssertionError: an unbacked promise is back:
+lib/monetization/upgrade-copy.el.ts:171  "Προτεραιότητα στην ουρά ανάλυσης (Plus)",
+lib/monetization/upgrade-copy.en.ts:156  "Priority analysis queue (Plus)",
+lib/subscription-copy.ts:65  el: 'Απεριόριστα ασφαλιστήρια',
+lib/subscription-copy.ts:66  en: 'Unlimited policies'
+lib/subscription-copy.ts:114  en: 'Digital wallet integration': expected [ …(5) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lib/monetization/upgrade-copy.el.ts:171  \"Προτεραιότητα στην ουρά ανάλυσης (Plus)\",",
++   "lib/monetization/upgrade-copy.en.ts:156  \"Priority analysis queue (Plus)\",",
++   "lib/subscription-copy.ts:65  el: 'Απεριόριστα ασφαλιστήρια',",
++   "lib/subscription-copy.ts:66  en: 'Unlimited policies'",
++   "lib/subscription-copy.ts:114  en: 'Digital wallet integration'",
++ ]
+
+ ❯ tests/unit/plan-gating-parity.test.ts:262:72
+    260|         const files = IN_APP_ROOTS.flatMap(inAppFiles).map((path) => (…
+    261|         const bad = inAppOffenders(files)
+    262|         expect(bad, `an unbacked promise is back:\n${bad.join('\n')}`)…
+       |                                                                        ^
+    263|     })
+    264|     it('probe: the detector turns red on every probe line — Greek form…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/voice-guards.test.ts > PW-CONTENT-02 plan-attribution lint — reminders are not a Plus-only feature > no public prose attributes a renewal reminder to Plus
+AssertionError: reminder attributed to the wrong plan = 2:
+lib/i18n/how-it-works.ts:6  adviser: "Συζήτηση με τον ασφαλιστή σας", expiry: "Ημερομηνίες λήξης", reminders: "Υπενθυμίσεις με Plus",
+lib/i18n/how-it-works.ts:11  adviser: "Discuss with your adviser", expiry: "Expiry dates", reminders: "Reminders with Plus",: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lib/i18n/how-it-works.ts:6  adviser: \"Συζήτηση με τον ασφαλιστή σας\", expiry: \"Ημερομηνίες λήξης\", reminders: \"Υπενθυμίσεις με Plus\",",
++   "lib/i18n/how-it-works.ts:11  adviser: \"Discuss with your adviser\", expiry: \"Expiry dates\", reminders: \"Reminders with Plus\",",
++ ]
+
+ ❯ tests/unit/voice-guards.test.ts:404:98
+    402|     it('no public prose attributes a renewal reminder to Plus', () => {
+    403|         const bad = PUBLIC_CODE.flatMap((f) => reminderOffenders(f, co…
+    404|         expect(bad, `reminder attributed to the wrong plan = ${bad.len…
+       |                                                                                                  ^
+    405|     })
+    406|     it('probe — each probe line turns it red (4 lines)', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 39 passed (42)
+   Start at  01:18:41
+   Duration  2.54s (transform 98ms, setup 147ms, import 245ms, tests 2.17s, environment 348ms)
+

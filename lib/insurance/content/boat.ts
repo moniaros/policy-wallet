@@ -22,8 +22,8 @@ export const boatContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για τα σκάφη αναψυχής στα ελληνικά ύδατα — χωρίς αυτήν ο απόπλους είναι ήδη παράβαση, ανεξάρτητα από ζημιά.',
-            en: 'Third-party liability insurance is compulsory for pleasure craft in Greek waters — without it, sailing is already a breach, regardless of any damage.',
+            el: 'Η αστική ευθύνη καλύπτει ζημιές σε τρίτους από το σκάφος σας. Δείτε τα όρια του ασφαλιστηρίου σας και ποιες περιπτώσεις εξαιρούνται.',
+            en: 'Third-party liability covers damage your boat causes to others. Check your policy\'s limits and which cases are excluded.',
         },
         {
             el: 'Τα όρια πλόων είναι από τα λιγότερο προσεγμένα σημεία: αν βγείτε εκτός της περιοχής που ορίζει το ασφαλιστήριο, ενδέχεται να μην ισχύει τίποτα από όσα πληρώνετε.',

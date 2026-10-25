@@ -60,7 +60,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/40 flex justify-between items-center">
                                 <div>
                                     <p className="font-bold text-amber-900 dark:text-amber-200 text-sm">{t("Έκπτωση ΕΝΦΙΑ", "ENFIA discount")}</p>
-                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Λείπει κάλυψη πλημμύρας", "Flood cover is missing")}</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Η πλημμύρα δεν αναφέρεται στο δείγμα", "Flood is not listed in the sample")}</p>
                                 </div>
                                 <Shield className="w-6 h-6 text-amber-500" />
                             </div>

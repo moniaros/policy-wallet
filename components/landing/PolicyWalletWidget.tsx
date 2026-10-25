@@ -49,8 +49,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
         {
             Icon: Home,
             name: t("Σπίτι", "Home"),
-            note: t("Λείπει κάλυψη πλημμύρας", "Flood cover is missing"),
-            status: t("Κενό", "Gap"),
+            note: t("Η πλημμύρα δεν αναφέρεται στο ασφαλιστήριο", "Flood is not listed in the policy"),
+            status: t("Για έλεγχο", "To check"),
             type: "gap" as const,
         },
         {
@@ -71,8 +71,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
     // gap is a Family job, and this mock sits beside a free-tier
     // promise.
     const alternative = t(
-        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το ασφαλιστήριο λήγει σε 14 μέρες.",
-        "Example result with Family: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
+        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία αναφέρουν καλύψεις, ενώ το ασφαλιστήριο του σπιτιού δεν αναφέρει πλημμύρα και λήγει σε 14 μέρες.",
+        "Example result with Family: car and health list their covers, while the home policy does not list flood and runs out in 14 days.",
     )
 
     // Entrance transitions are cosmetic. Everything is readable at rest, so
@@ -105,7 +105,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <div className="mb-4 flex items-center justify-between gap-3">
                             <div className="min-w-0">
                                 <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
-                                    {t("Η εικόνα ρίσκου σας", "Your risk picture")}
+                                    {t("Τα ασφαλιστήριά σας με μια ματιά", "Your policies at a glance")}
                                 </p>
                                 <p className="text-micro text-muted-foreground dark:text-slate-400">
                                     {t("3 ασφαλιστήρια, 1 κενό", "3 policies, 1 gap")}
@@ -187,12 +187,12 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-status-warning" />
                             <div className="min-w-0 flex-1">
                                 <p className="text-caption font-semibold text-status-warning">
-                                    {t("Βρήκαμε ένα κενό", "We found a gap")}
+                                    {t("Για έλεγχο", "To check")}
                                 </p>
                                 <p className="text-micro leading-snug text-status-warning">
                                     {t(
-                                        "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
-                                        "Your home is not covered for flooding.",
+                                        "Το ασφαλιστήριο δεν αναφέρει κάλυψη πλημμύρας. Ρωτήστε τον ασφαλιστή σας.",
+                                        "The policy does not list flood cover. Ask your insurance adviser.",
                                     )}
                                 </p>
                             </div>

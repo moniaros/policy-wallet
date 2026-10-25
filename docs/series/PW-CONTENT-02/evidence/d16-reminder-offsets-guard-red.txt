@@ -1,0 +1,65 @@
+
+ RUN  v4.1.11 /Users/yannismoniaros/Workspace/policywallet/policy-wallet
+
+(node:67733) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:67735) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/reminder-offsets-from-scheduler.test.ts (3 tests | 1 failed) 75ms
+     × no source file types a reminder offset 74ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/reminder-offsets-from-scheduler.test.ts > reminder offsets are composed from the scheduler constants (PW-C02-D16) > no source file types a reminder offset
+AssertionError: expected [ …(27) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "app/(public)/product/marketing-content.ts: Σας ειδοποιούμε με email πριν λήξει κάτι — 30 ημέρες πριν σε όλα τα πλάνα, νωρίτερα με το Plus — και όταν βρού",
++   "app/(public)/product/marketing-content.ts: We email you before something runs out — 30 days ahead on every plan, earlier with Plus — and when we find som",
++   "components/landing/ServicesGrid.tsx: Σας ειδοποιούμε με email πριν λήξει κάτι — 30 ημέρες πριν σε όλα τα πλάνα, νωρίτερα με το Plus — και όταν βρού",
++   "components/landing/ServicesGrid.tsx: We email you before something runs out — 30 days ahead on every plan, earlier with Plus — and when we find som",
++   "lib/guides/content.ts: Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το ",
++   "lib/guides/content.ts: Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the Family plan — AI questio",
++   "lib/guides/content.ts: Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις από τις 90 ημέρες πριν στα πληρωμένα πλάνα.",
++   "lib/guides/content.ts: Expiry and renewal dates, with reminders from 90 days out on paid plans.",
++   "lib/guides/content.ts: Με το Family, βλέπετε ευρήματα προς έλεγχο, κάνετε ερωτήσεις για τα έγγραφα και μοιράζεστε στοιχεία με ασφαλισ",
++   "lib/help-content.ts: Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15, 7 και 3 ημέρες στα πληρ",
++   "lib/landing/content.ts: Δείτε πότε λήγουν τα ασφαλιστήριά σας και πάρτε υπενθύμιση πριν λήξουν· με το Plus, από 90 ημέρες πριν. Όταν α",
++   "lib/monetization/upgrade-copy.el.ts: Σε όλα τα πλάνα λαμβάνετε μία υπενθύμιση 30 ημέρες πριν τη λήξη. Με το Plus λαμβάνετε υπενθυμίσεις από 90 έως ",
++   "lib/monetization/upgrade-copy.el.ts: Υπενθυμίσεις στις 90, 60, 30, 15, 7 και 3 ημέρες πριν τη λήξη",
++   "lib/monetization/upgrade-copy.el.ts: Η υπενθύμιση 30 ημέρες πριν παραμένει σε όλα τα πλάνα",
++   "lib/monetization/upgrade-copy.en.ts: On every plan you get one reminder 30 days before expiry. With Plus you get reminders from 90 to 3 days ahead.",
++   "lib/monetization/upgrade-copy.en.ts: Reminders at 90, 60, 30, 15, 7 and 3 days before expiry",
++   "lib/monetization/upgrade-copy.en.ts: The 30-day reminder stays on every plan",
++   "lib/pricing/public-pricing-content.ts: Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)",
++   "lib/pricing/public-pricing-content.ts: Renewal reminder 30 days ahead (email)",
++   "lib/pricing/public-pricing-content.ts: Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
++   "lib/pricing/public-pricing-content.ts: Renewal reminders from 90 to 3 days ahead (email)",
++   "lib/subscription-copy.ts: Υπενθύμιση ανανέωσης 30 ημέρες πριν (email)",
++   "lib/subscription-copy.ts: Renewal reminder 30 days ahead (email)",
++   "lib/subscription-copy.ts: Υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν (email)",
++   "lib/subscription-copy.ts: Renewal reminders from 90 to 3 days ahead (email)",
++   "lib/subscription-limits.ts: Οι υπενθυμίσεις ανανέωσης από 90 έως 3 ημέρες πριν είναι διαθέσιμες στα πλάνα Plus και Family.",
++   "lib/subscription-limits.ts: Renewal reminders from 90 to 3 days ahead are available on the Plus and Family plans.",
++ ]
+
+ ❯ tests/unit/reminder-offsets-from-scheduler.test.ts:56:21
+     54|         expect(files.length).toBeGreaterThan(500)
+     55|         const bad = files.flatMap((f) => typedOffsets(readFileSync(f, …
+     56|         expect(bad).toEqual([])
+       |                     ^
+     57|     })
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  19:22:54
+   Duration  352ms (transform 22ms, setup 59ms, import 11ms, tests 75ms, environment 151ms)
+

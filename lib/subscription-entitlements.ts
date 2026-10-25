@@ -130,7 +130,7 @@ export function isSubscriptionLive(subscription: {
  * still carrying the legacy informational entitlements shape therefore
  * behave exactly as before the admin-managed catalog.
  */
-function resolveB2cPlanLimits(
+export function resolveB2cPlanLimits(
     plan: { tierKey?: string | null; name?: string | null; entitlements?: unknown } | null | undefined
 ): { tier: PlanTier; limits: EntitlementLimits } {
     const tier = isB2cTierKey(plan?.tierKey) ? plan!.tierKey as PlanTier : normalizeTier(plan?.name)
@@ -138,7 +138,7 @@ function resolveB2cPlanLimits(
     return { tier, limits: parsed.success ? parsed.data : ENTITLEMENT_LIMITS[tier] }
 }
 
-function resolveAgentPlanLimits(
+export function resolveAgentPlanLimits(
     plan: { tierKey?: string | null; name?: string | null; entitlements?: unknown } | null | undefined
 ): { tier: AgentTier; limits: AgentEntitlementLimits } {
     const tier = isAgentTierKey(plan?.tierKey) ? plan!.tierKey as AgentTier : normalizeAgentTier(plan?.name)

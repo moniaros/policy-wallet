@@ -1,0 +1,33 @@
+// ONE-OFF (not CI): the budget guard + rows-parse checks, run against the DEV database rows read through Prisma.
+import { describe, it, expect } from 'vitest'
+import { config } from 'dotenv'
+import { readFileSync } from 'node:fs'
+config({ path: '.env', override: true })
+
+describe('dev plan rows (after the updatePlan writes)', () => {
+    it('all seven parse through the strict schemas and the real resolvers; budgets equal the code defaults and the fixture', async () => {
+        expect(process.env.DIRECT_URL).toContain('lzqvtvjggylcujenlelh')
+        const { db } = await import('@/lib/db')
+        const { EntitlementLimitsSchema, AgentEntitlementLimitsSchema } = await import('@/lib/pricing/entitlement-schema')
+        const { resolveB2cPlanLimits, resolveAgentPlanLimits } = await import('@/lib/subscription-entitlements')
+        const { DEFAULT_ENTITLEMENT_LIMITS, DEFAULT_AGENT_ENTITLEMENT_LIMITS } = await import('@/lib/pricing/plan-defaults')
+        const fx = JSON.parse(readFileSync('tests/fixtures/production-plan-rows-2026-10-22.json', 'utf-8'))
+        const rows = await db.plan.findMany()
+        expect(rows.length).toBe(7)
+        for (const r of rows) {
+            const ent = r.entitlements as Record<string, unknown>
+            const agent = r.planType === 'agent'
+            const parsed = (agent ? AgentEntitlementLimitsSchema : EntitlementLimitsSchema).safeParse(ent)
+            expect(parsed.success, `${r.id} strict parse`).toBe(true)
+            const SENTINEL = 123_456_789
+            const res = agent
+                ? resolveAgentPlanLimits({ tierKey: r.tierKey, name: r.name, entitlements: { ...ent, monthlyTokenBudget: SENTINEL } })
+                : resolveB2cPlanLimits({ tierKey: r.tierKey, name: r.name, entitlements: { ...ent, monthlyTokenBudget: SENTINEL } })
+            expect(res.limits.monthlyTokenBudget, `${r.id} row used, not fallback`).toBe(SENTINEL)
+            const fxKey = r.id === 'agent-agency' ? 'agency' : r.id
+            expect(ent, `${r.id} equals the fixture blob`).toEqual(fx.rawEntitlements[fxKey])
+            const def: any = agent ? (DEFAULT_AGENT_ENTITLEMENT_LIMITS as any)[r.tierKey!] : (DEFAULT_ENTITLEMENT_LIMITS as any)[r.tierKey!]
+            expect(def.monthlyTokenBudget, `${r.id} code default budget`).toBe(ent.monthlyTokenBudget)
+        }
+    }, 60_000)
+})

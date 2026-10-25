@@ -5,7 +5,7 @@ import { CookieSettingsButton } from "@/components/compliance/CookieSettingsButt
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
-import { CATEGORY, CATEGORY_NAME } from "@/lib/marketing/positioning"
+import { CATEGORY, CATEGORY_NAME_INLINE } from "@/lib/marketing/positioning"
 import { productCategories } from "@/lib/product/catalog"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { getSocialProfiles, siteConfig } from "@/lib/seo/site"
@@ -289,7 +289,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     {/* Category identity line — the one place EVERY page names
                         the category and decodes it in the same breath. */}
                     <p className="mb-2 font-semibold text-neutral-900 dark:text-white">
-                        PolicyWallet — {t("η", "the")} {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}.{" "}
+                        PolicyWallet — {t(CATEGORY_NAME_INLINE.el, `a ${CATEGORY_NAME_INLINE.en}`)}.{" "}
                         <span className="font-normal text-muted-foreground dark:text-slate-400">
                             {t(CATEGORY.el, CATEGORY.en)}
                         </span>

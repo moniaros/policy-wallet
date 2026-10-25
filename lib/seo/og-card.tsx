@@ -19,13 +19,13 @@ import { CATEGORY, CATEGORY_NAME } from "@/lib/marketing/positioning"
 
 const COPY = {
     el: {
-        headline: "Σας λέμε αν είστε καλυμμένοι.",
-        sub: `Η ${CATEGORY_NAME.el}. Διαβάζουμε τα ασφαλιστήρια που ήδη έχετε — δεν πουλάμε ασφάλειες.`,
+        headline: "Τα ασφαλιστήριά σας, με απλά λόγια.",
+        sub: `${CATEGORY_NAME.el}. Διαβάζουμε τα ασφαλιστήρια που ήδη έχετε — δεν πουλάμε ασφάλειες.`,
         chips: ["Ανεξάρτητοι", "Χωρίς προμήθεια", "EL / EN"],
     },
     en: {
-        headline: "We tell you if you are covered.",
-        sub: `The ${CATEGORY_NAME.en}. We read the insurance you already own — we do not sell it.`,
+        headline: "Your policies, in plain language.",
+        sub: `${CATEGORY_NAME.en}. We read the insurance you already own — we do not sell it.`,
         chips: ["Independent", "No commission", "EL / EN"],
     },
 } as const

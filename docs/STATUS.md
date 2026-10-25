@@ -1,33 +1,33 @@
 # Status
 
 ## Current phase
-Mobile public-menu duplicate correction — 23 October 2026. Shipped via PR #411 as `91579018`; dev, protected preview and live verification passed. Prior homepage release: PR #408, application `95c8670a`.
+PW-CONTENT-02 (public site: say only what is true, say it once) built on `pw-customer`, PR #410 (ready for review, DO NOT MERGE until Eli does) into `NEW-UI` — 24 October 2026, owner decisions applied. **NO-GO, not merged:** merging deploys to production. Last non-production preview (of `24e8fd43`, round 5): https://policy-wallet-qm2seq76t-moniaros-projects.vercel.app (SSO-gated; which Supabase project it reaches is unverified — treat as PRODUCTION). Round-7 preview (of `d8fa8f58`, journey-checked read-only 2026-10-24): https://policy-wallet-4u22f4abk-moniaros-projects.vercel.app
 
 ## Done
-- Menu release: CI `39981645626`, deploy `39983054320`, Vercel `dpl_HKWEuSk7XJyDE33p7sRUF3fxqsQU` READY. Ten preview and ten live menu journeys passed; existing browser tab refreshed.
-- Mobile menu: “Για ασφαλιστές” appears once under Products in both languages; desktop direct access remains. Ten local browser cases passed (320/390/430/600/1280px, Greek/English), including Escape/focus restoration and menu-close navigation. All 7,874 unit tests and the required local guardrails passed.
-- Added actual app previews for policyholders/agents, an enlarged reading demo, four photographic category links, guide/glossary cards and three trust explanations.
-- Preserved forest/mint branding, light video hero, four-step section, reviewed bilingual facts and auth/payment restrictions. Independent visual review: PASS.
-- API auth, lint, i18n/UTF-8, types, 7,874 tests and build passed. Dev/prod: 88 migrations, none pending; no DB/catalogue changes.
-- Exact preview and live: seven responsive/language/theme cases, 35 axe scans per environment, no findings; 22 destinations, no-JS fallback, keyboard/replay, signup handoff and live video loop verified.
-- Production CI 39647092968 and deploy 39648473964 succeeded. Vercel `dpl_HYmFCK1UwbyAR5cSd8vqvDMD6pi9` Ready.
+- Merged NEW-UI (#411 mobile public menu `91579018`, #412 its release record) into `pw-customer` on 2026-10-24; production already runs it. NEW-UI's own status section (menu release, withdrawal-flow risk: paid checkout stays withheld until statutory online withdrawal is built) is in git history at `origin/NEW-UI:docs/STATUS.md`.
+- Public claims equal enforced code and the **production plan rows** (H-021 closed: the defaults equal them and they parse — `plan-defaults-match-production-rows`, `production-rows-parse-as-entitlements`). Agent caps published 5 / 50 / 150 / 400.
+- Annual saving computed from prices; Family trial disclosed from the plan row on every selling surface and the Stripe hosted checkout; no token/credits copy; no unbounded-Q&A copy; cancel claims always carry "access continues to the end of the paid period" (one source); reminder offsets composed from the scheduler's constants. Each guard shown red first (`docs/series/PW-CONTENT-02/evidence/`).
+- **Round 7:** FINAL interim token budgets in code, fixture and guard — Family 8,700,000; agents 2.0M / 19.6M / 58.7M / 156.3M (cache-miss path, verification on); all seven raw production blobs parse (flag R). Budget sizing is closed: BUDGET-MEASURE replaces every interim value before GA.
+- **Round 6:** **Terms §5 applied** (agents cancel by email to info@policywallet.gr) with all five legal versions bumped to `GR-GA-2026.10.22`; Terms §12 EN/GR mismatch opened as GA blocker H-035 with a drafted fix.
+- Reviews of every unreviewed delta ended `CRITICAL: 0` (history in `docs/series/PW-CONTENT-02/RESULT.md` §8–§13); the commit after the round-7 review changed docs/tests/comments only. 710 test files / ~7,960 tests, every CI guardrail green locally.
 
-## In progress
-- No remaining menu-fix work. The separate `pw-customer` / PR #410 content work is not included.
+## In progress / Blocked (merge blockers, owner)
+- **Done 2026-10-24:** budgets written to production and re-read (D30); `PREVENTION_PERSONALIZATION_ENABLED` = 0 (MCP); H-025 closed and COPY approved in full (owner-attested); checklist items 1–4 ticked.
+- **Done 2026-10-24:** journey check approved (item 11); renewal cron confirmed enabled (item 9, owner-attested + MCP-verified); Brevo (item 8) ticked owner-attested, SPF fix queued (BREVO-SPF); snapshot, dev and guardrail points done (D31); NEW-UI (#411, #412) already merged into the branch (`c95c2e8f`).
+- **Done 2026-10-24:** final review of the tip (item 10) → `CRITICAL: 0 / IMPORTANT: 6 / MINOR: 9` (RESULT.md §14); CI on PR #410 green after re-running one timing-flaky test (`voice-guards` length-budget); H-011 closed (verified in code); SEC-01 check inconclusive (drains endpoint 404), stays open.
+- **Open before the merge button (Eli):** read RESULT.md §14, especially I-1 (production plan rows were written ahead of the code: Agent Free's write is inert until the merge, Family's `8.7M` is visible in the deployed token card until the merge); then the deploy steps in GO-CHECKLIST.
+- The Stripe live portal/webhook/trial reminder are in «Before switching production to live Stripe keys» (GA blocker, not a merge blocker; D28).
 
-## Blocked
-- No design release blocker. Paid checkout remains restricted pending statutory online withdrawal. Optional Kilo review lacked credits; CI payment journey skipped without its E2E database secret.
+- **Production SQL needs the owner's approval per call** (`execute_sql` is `ask`; migration, edge-function, branch, project and `npx prisma` tools are denied in `.claude/settings.json`).
 
 ## Top risks ranked
-1. Online withdrawal needs declaration, confirmation and durable receipt before paid consumer checkout.
-2. Provider/retention evidence, protected deletion copy and regulatory perimeter remain separate follow-ups.
-3. Existing production session-pool configuration remains an infrastructure follow-up.
+1. **Broken / insecure (gates launch, GA):** BUDGET-MEASURE (token budgets are estimate-based; the scan/upload extraction and verification draw on the same row); H-035 Terms §12; `/api/v1/policies/share` skips the Family entitlement (PW-ENTITLE-01 item 2, security-reviewer); the live checkout grants the trial to every checkout (PW-ENTITLE-01 item 1); no subscription-start or trial-ending email (H-032); dead token top-up route still sells packs.
+2. **Paid consumer checkout must not open until the statutory online withdrawal function exists** (declaration, confirmation, durable receipt; `docs/audits/public-language-legal-2026-10-21.md`; carried from NEW-UI's STATUS, restored here after the review found it dropped; not yet in the live-Stripe gate G1–G4).
+3. The boat-liability rule vs ν. 4926/2022 still in the in-app domain model.
+4. Previews reach the production database until a staging Supabase project is wired (blocks PW-ASSET-01).
+**UI/UX (does not gate):** dead verdict components still importable; demo dates/k-M amounts hand-typed.
 
 ## Next 3 actions
-1. Complete the consumer withdrawal flow before enabling payments.
-2. Resolve provider/retention evidence and protected deletion copy.
-3. Address production pool configuration and provision payment-journey test infrastructure.
-
-Evidence: [five homepage extensions](audits/homepage-five-panels-2026-10-21.md), [four steps](audits/homepage-steps-2026-10-21.md).
-
-Menu evidence: [duplicate correction](audits/mobile-menu-duplicate-2026-10-23.md).
+1. Item 10 review result and a green CI run on PR #410; Eli answers the review's open points.
+2. Eli merges PR #410; then the view-only post-deploy check when deploy.yml has finished.
+3. Queue: BUDGET-MEASURE, H-035 legal commit, PW-ENTITLE-01, PW-CLAIMREG-01.

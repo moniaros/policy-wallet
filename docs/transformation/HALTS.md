@@ -831,6 +831,8 @@ preserves the IP in its pre-change record and would otherwise look like an unexa
 `docs/STATUS.md` reads **contained, not closed**, and stays that way until the drain question is
 answered by a human. The agent does not close this.
 
+**Check 2026-10-24 (owner asked for a read-only listing through the Vercel MCP): INCONCLUSIVE, SEC-01 stays open.** `list_drains` (`GET /v1/drains`) returned `404 not_found` on every scope tried: team `team_QzKsHlvajknceItFyQlikMk2` (by id and by slug `moniaros-projects`) and project `policy-wallet` (`prj_J0YkE21dIhru7WXpSUEMmKQ8H5FG`). The same 404 on all three scopes means the endpoint is not reachable through this MCP and credential, not that the list is empty; it is not evidence that no drain exists. `get_project` works (so the scope is right). The dashboard check above (project Settings → Log Drains, and the team-level drains list) is still the only way to answer it. No fallback to the CLI was tried, because the instruction was MCP only.
+
 
 ---
 
@@ -853,7 +855,14 @@ Full assessment: `docs/growth/STEP0_ASSESSMENT.md`. Queue: `docs/growth/QUEUE-GR
 
 ---
 
-## H-011 — A document reaches a model provider before anyone consents. CLAUDE.md says this cannot happen.
+## H-011 — CLOSED 2026-10-24 (verified in code): a document reaches a model provider before anyone consents. CLAUDE.md says this cannot happen.
+
+**Closure (2026-10-24, read-only check at `fd92773b`; owner asked for closure only if verifiable in code).** Every path in the table below now reads consent before the document is touched:
+- Agent scan `parsePolicyPdfWithGemini`: `app/(protected)/agent/actions.ts:1386-1388` returns `AI_CONSENT_REQUIRED` / `AGENT_ATTESTATION_REQUIRED` **before** `formData.get("file")` at `:1390`; the provider call is `:1501`. This is option 2 (owner decision D1: the agent's recorded consent plus a per-scan mandate attestation), `scanPolicyForResolution` (`:1524`) delegates to it at `:1530`; the only client caller of either is `components/agent/UploadPolicyModal.tsx:305` (via `scanPolicyForResolution`), and `AddCustomerModal` no longer calls the scan (the halt's `:113` reference is stale).
+- Upload extract: `app/api/policies/extract/route.ts:140-144`, before the body is read.
+- Deep pipeline: `lib/services/analysis/policy-analysis-orchestrator.service.ts:389-391` (owner's consent, not the initiator's).
+- The halt's "also missing" item exists: `tests/unit/ai-processing-consent-gate.test.ts:462-` (source guard, cases at `:772-800`) enumerates every `.extractPolicyData(` / `.askQuestion(` / `.classifyDocument(` caller under `app/` and `lib/` from the filesystem, requires a consent read first in the same function, rejects stale exemptions and runs against a committed probe; behavioural cases at `:417-440` pin the agent scan's order. `npx vitest --run tests/unit/ai-processing-consent-gate.test.ts` → 18 passed.
+- Not verified: the text below still describes the state on 2026-08-27; the commit that changed the agent scan was not traced.
 
 **Raised 2026-08-27, found while wiring the extra-documents feature. Verified in code, not inferred.**
 
@@ -909,3 +918,315 @@ indistinguishable from an oversight, which is why this is a halt rather than a b
 **No test pins "consent is checked before the request body is read."** The ordering in
 `extract/route.ts` is correct today and held only by a comment at `:124`. A guard that enumerates
 every path reaching a provider — rather than the two currently known — would have caught this one.
+
+---
+
+# PW-CUSTOMER · PW-ASSET-01 — Step 0 halts (2026-10-21)
+
+Raised by `step0-investigator` for `docs/series/PW-ASSET-01/STEP0.md`. Run-plan decision ids (`docs/series/00-RUN-PLAN.md` §4) are given where one applies. Build does not start until each is answered in place.
+
+## H-012 — Approve the `insured_assets` migration shape, after a production profile nobody here can run · **run-plan H4**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **the whole PW-ASSET-01 build**
+
+The migration (three tables: `insured_assets`, `policy_insured_assets`, `asset_match_suggestions`; nothing on `policies` or `gap_instances`; ENABLE-RLS-no-policies like `wallet_memberships`; fully reversible by DROP) is written in STEP0.md §3.1 and **not applied**.
+
+What could not be done: production was not reachable from the Step 0 session (no prod credential in `.env`; MCP-only writes per memory). The dev profile (STEP0 §2.9) shows ≤ 10 vehicle assets and **zero** ambiguous matches, so dev proves nothing about the backfill's hard cases. D-034 recorded two production wallets (3 and 1 policies) in Aug 2026.
+
+**Ask:** (1) run the read-only profile SELECTs from STEP0 §2.9 against prod and paste the output under this halt; (2) approve or amend the SQL. If prod holds a row the backfill cannot place deterministically (two policies, same owner, same plate modulo separators — a *prompt* case with nobody online to answer), say whether the backfill may leave it **unlinked** (recommended; reversible) or must wait.
+
+## H-013 — This series reopens the asset reframe that D-034 deferred; its reopen trigger has not fired
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: nothing technically; **blocks the record**
+
+D-034 (2026-08-26) deferred the asset-first wallet and set a trigger — `duplicate-identity-row > 0` on a real-user capture on a line with an identifier. The dev database has 0 duplicate plate groups and 0 duplicate address groups; no capture in the repo records the trigger firing. PW-ASSET-01 reopens the reframe on the 21 Oct customer assessment (Dislike 4 / ask 2), which is a legitimate product reason but a different one.
+
+**Ask:** add a DECISIONS.md entry that supersedes D-034 on product grounds, so a later reader does not find a live decision and a live series that contradict each other. One sentence is enough.
+
+## H-014 — "An RLS test suite … run as every role" cannot be red: there are no RLS policies anywhere, by design
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **the acceptance criterion and the security review's brief**
+
+Verified: ten tables carry `ENABLE ROW LEVEL SECURITY`; **zero** `CREATE POLICY` statements exist in any migration; dev `pg_policies` for `public` = 0; every RLS table is owned by `postgres`, which is the role the app connects as, and RLS does not apply to the owner without `FORCE`. `anon`/`authenticated` have no schema USAGE and PostgREST exposes only `graphql_public` (`docs/audits/prod-default-privileges-not-revocable.md`). No `supabase.from(<table>)` read exists in `app/` or `lib/`.
+
+So authorization is enforced in code — `computePolicyAccess`, the single-path guard, the HTTP cross-tenant spec — and a per-role RLS suite would pass vacuously.
+
+**Ask:** replace the criterion with one of: (a) *"the new tables carry the same ENABLE-RLS posture; `policy-authorization-single-path` enumerates the new server actions; `cross-tenant-authorization.spec.ts` gains the asset routes and proves denial over HTTP for a stranger agent and a stranger policyholder"* (recommended; what can actually go red); or (b) write real per-role policies for the three new tables and run them as `authenticated` — which would be the first such policies in the schema and would protect a path nothing uses. The security reviewer's brief should name which.
+
+## H-015 — The Greek noun for "the thing you insure", and status words that agree with it
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: **every customer-facing string in the series**
+
+`LEXICON.md` has no row for this concept. The repo already uses «περιουσιακό στοιχείο» (`el.ts:467` `newAsset`, `RiskGraphPanel.tsx:135`) — accurate, long, and wrong for a dog or a person. The customer thinks «το Yaris», «το σπίτι», «ο Μαξ». Existing status words are neuter for «το ασφαλιστήριο» (`el.ts:2444-2456`); «ΛΗΓΜΕΝΟ» beside «η κατοικία» is ungrammatical.
+
+**Ask:** (1) the section/heading noun — candidates: «Τα πράγματά σας» (plain), «Αντικείμενα», «Περιουσιακά στοιχεία» (formal), or per-type headings only («Οχήματα», «Κατοικίες», «Κατοικίδια») with no umbrella noun; (2) whether asset status renders as a **verb phrase** that needs no agreement («Σε ισχύ έως 14/3», «Έληξε στις …», «Δεν διαβάστηκε η λήξη») — recommended; (3) the prompt copy «Ανήκει στο {label};» with Ναι / Όχι, άλλο / Νέο. One LEXICON row results.
+
+## H-016 — Person-type assets: owner-created only, never extracted, never auto-matched · **run-plan H5; extends H-010**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the `person` and `business` values of `insured_assets.type`
+
+The extraction carries **no insured-person field** (H-010, open; D-035 established `insured.name` is the policyholder read off the document). Grouping health and life policies "by person" would therefore have to guess, and a wrong guess puts someone's health policy under another person's name — Art. 9 data misattributed. The dev profile has 2 of 45 rows with an insured name.
+
+**Ask:** confirm the design's choice — `person` and `business` assets exist only when the owner creates them and assigns policies by hand (`origin='owner'`, `match_source='owner_assigned'`); the matcher never proposes them; health/life/pension/cyber/business/other policies stay «Χωρίς αντικείμενο» until the owner acts. If you instead want extraction of an insured-person name, that is H-010's schema change and needs its lawful basis stated first.
+
+## H-017 — Do plan limits or pricing move from policies to assets? · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: nothing in the build; **blocks the data model only if the answer is yes**
+
+`subscription-entitlements.ts:253-286` meters `maxPoliciesPerCustomer`; nothing meters assets. The run plan lists "whether pricing moves from policy count to assets" under H3. If it does, `asset.count` becomes a billable quantity and needs the same canonical-row discipline as `monthly_token_usage`.
+
+**Ask:** confirm **no entitlement or price reads asset counts in PW-ASSET-01** (recommended — reversible, and the plans table is a publication channel). If yes later, it is its own series.
+
+## H-018 — Item 5's "status per asset" contradicts ASSET-REFRAME-SPEC §2.4 "a group has no lifecycle"
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: `lib/assets/asset-status.ts`
+
+The spec (retained by D-034) says one expired policy on a car with two live ones "must not render the car as live, and must not render it as expired either". The series asks for «καλύπτεται έως 14/3» per asset. STEP0 §3.5 reconciles them as a **summary with its denominator** — «Σε ισχύ έως 14/3 · 2 από 3 ασφαλιστήρια», `in_force` only on a *readable* end date, every nested policy keeping its own status and link.
+
+**Ask:** approve that reading, so the spec's §2.4 is amended to "a group has no lifecycle of its own; it may state the dated facts of its members with the denominator visible", or reject it and the strip shows per-policy chips instead of a per-asset word.
+
+---
+
+# PW-CUSTOMER · PW-CONTENT-02 — Step 0 halts (2026-10-21)
+
+Raised by `step0-investigator` for `docs/series/PW-CONTENT-02/STEP0.md`. Run-plan decision ids (`docs/series/00-RUN-PLAN.md` §4) are given where one applies. Build item 1 proceeds without these: it only REMOVES claims that are false against enforced code (D1, copy follows code). New wording waits.
+
+## H-019 — CLOSED 2026-10-21: public copy reflects enforced code (full analysis = Family only). Four written sources disagree about who gets the full analysis · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the wording of PW-CONTENT-02 item 1; the in-app free-trial line (out of series scope)
+
+1. **H-009, CLOSED 2026-08-25** (this file, line 638): "deep analysis sits on **both** paid tiers".
+2. **Code** enforces **Family only**: `lib/monetization/feature-gates.ts:93` (`requiredPlan: "pro"`), orchestrator `:640-655` blocks Free and Plus with `free_tier_ai_locked`. The comment there admits the two decisions disagree.
+3. **Run plan H3** says a "depth-based paywall (one free lifetime full analysis)" was already agreed. **Nothing implements it**: nothing writes `users.trial_analysis_used_at`.
+4. **Live in-app copy** already promises (3) to every Free user on every policy: `el.ts:2505` «Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το ασφαλιστήριο.», rendered at `AnalysisCard.tsx:737-746`, confirmed in `docs/evidence/policy-detail-mobile/data/free/free-motor-active-390.json`. The run is then refused.
+
+Public /pricing meanwhile marks «Πλήρης ανάλυση AI» ✓ on Free, Plus and Family (`public-pricing-content.ts:196-202`).
+
+**Ask:** name the enforced rule. Until answered, PW-CONTENT-02 sets the public table to what the code enforces today (Free ✗, Plus ✗, Family ✓). The in-app trial line is a broken claim on an authenticated surface and needs its own fix (honour it or remove it). It's flagged here, not fixed by this series.
+
+## H-020 — CLOSED 2026-10-21: publish NO analysis limit. «Απεριόριστες αναλύσεις» vs «μηνιαίο όριο επεξεργασίας»: no monthly analysis number exists to publish · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: Build item 2 (the one shared limit sentence)
+
+`aiAnalysisPerMonth` is null on every B2C tier. Free and Plus are limited by the policy cap (3/10) and a 30-uploads/day spend cap (`extract/route.ts:239-251`). Family deep runs are gated by a 1,500,000-token monthly budget. A run is estimated at 142,800–151,200 tokens (1–8 active rules, `token-budget-estimator.ts`), so the analysis count varies with actual usage. `plan-defaults.ts:85-87` says the token budget "must never be shown, named, or implied", yet `/account` shows it (`el.ts:3455-3457`).
+
+**Ask:** which sentence is true and publishable? (a) policy cap only, plus «έως 30 αρχεία την ημέρα» as a fair-use line (recommended; both are enforced numbers); (b) an approximate count of full analyses for Family (an estimate, so it needs a `docs/content/CLAIMS.md` row and wording that says so); (c) no limit sentence for Free/Plus at all. Whichever you pick also decides whether the in-app «Μηνιαίο όριο επεξεργασίας AI» stays.
+
+## H-021 — CLOSED 2026-10-21 (partial evidence, see answer): production is the source of truth. Dev and production differ on the claim being fixed; confirm production's values
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the baseline for E18 / M-E
+
+`PREVENTION_PERSONALIZATION_ENABLED` decides whether Free/Plus extraction draws the monthly token budget (`policy-analysis-orchestrator.service.ts:408-415`). Local `.env.local` = `1`; production = `0` per `docs/audits/prevention-production-release-2026-10-02.md:63`. So dev shows a Free monthly limit that production, as recorded, doesn't have. Production `plans` rows were last read 2026-09-06 (BL-01). Dev rows equal the code defaults exactly.
+
+**Ask:** (1) confirm the current production value of `PREVENTION_PERSONALIZATION_ENABLED`; (2) paste a read-only `SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;` from production under this halt. If either differs from dev, measurements run with the production values (fixture F8).
+
+## H-022 — CLOSED 2026-10-21: positioning = «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». Positioning default, the agent row, and funding vs commission · **run-plan H3 (packaging language)**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: Build items 3 and 5 wording
+
+1. **Positioning.** `CATEGORY_NAME` moved today (`27cea6cb`) to «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων», but `siteConfig.definition` (JSON-LD, FAQ, /company, llms.txt), the root meta, the OG image headline «Σας λέμε αν είστε καλυμμένοι.», `twitter:title`, `manifest.json` and SEO keywords still say «ανάλυσης ρίσκου / έλεγχος ρίσκου / αν είστε καλυμμένοι». Confirm the default line. Removing «ανεξάρτητος έλεγχος ρίσκου» from keywords is an SEO trade. Approve it or say which keyword survives.
+2. **Agent row.** The series suggests «δεν πληρωνόμαστε από ασφαλιστικές». That is a FUNDING claim. The repo retired funding claims on purpose because one "becomes false the day an institution pays for an embedded deployment" (`positioning.ts:242-245`, `lib/landing/content.ts:117-121`), and `/solutions/synergates` sells to institutions. The surviving claim is the commission one («δεν παίρνουμε προμήθεια»). Which does the row use? (`app/(public)/solutions/agents/faqs.ts:41` already says «πληρωνόμαστε μόνο από συνδρομές» against that rule.)
+3. **Revenue.** `partner_referrals` records referral use per vendor. Does any partner referral earn PolicyWallet money? If yes, «Τα έσοδά μας προέρχονται από συνδρομές» (`content.ts:122`) and the compare note «Έσοδα από συνδρομές» are false.
+
+## H-023 — CLOSED 2026-10-21: copy reflects code (exclusions are shown on every plan). Are exclusions meant to be Family-only? The code shows them on every plan · **run-plan H3**
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: the /compare row «Βοηθά να βρείτε τι εξαιρείται»
+
+Upload-time extraction stores `acordData.exclusions` for every tier, and `ExclusionsCard` renders it with no gate (`PolicyDetailsClientView.tsx:370-374, 1042`). /compare says PolicyWallet does this «Ναι, με το Family» (`positioning.ts:487-496`); its English twin says "Shows you what is NOT covered", which is gap detection, a different claim. H3 asks "whether exclusions and gaps stay Family-only", but exclusions aren't Family-only today.
+
+**Ask:** is the public cell wrong (→ «Ναι», split the EN into the gap row), or do you intend to gate exclusions (a product change outside this series)? Under D1 the cell becomes «Ναι» unless you say otherwise.
+
+## H-024 — CLOSED 2026-10-21 for the boat sentence (removed); operational facts stay FLAGGED. Operational and legal facts no source in the repo can settle
+
+date: 2026-10-21 · raised_by: step0-investigator · blocks: rows E15, E35 and two category claims; nothing else
+
+- /pricing FAQ «μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε οποτεδήποτε από τις ρυθμίσεις λογαριασμού». Downgrade runs through the Stripe Customer Portal (`account/actions.ts:80`). Does the production portal configuration allow plan switching?
+- /contact «Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00» (`marketing-pages.ts:163`) and Agency «Αποκλειστική υποστήριξη». Are both operationally true?
+- `/product/boat` «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα.» Step 0 found **no official source**. Secondary sources (nextdeal.gr, insurancedaily.gr, accessed 2026-10-21) tie the duty to vessel type and length (Law 4256/2014; Ministerial Decision 3131/1999). Supply an official source for a `CLAIMS.md` row, or the sentence is qualified or removed.
+- Travel «Τουλάχιστον 30.000 €» Schengen minimum (`lib/product/lob-faqs.ts:264`) has no `CLAIMS.md` row. Supply the source or accept removal.
+
+Stripe note, so the series' halt clause isn't re-raised: Stripe holds no entitlements. Checkout builds `price_data` from the plan row (`lib/billing.ts:96-116`). The deprecated `scripts/setup-billing-catalog.ts` carries stale prices that nothing reads. No code-vs-Stripe entitlement contradiction exists in the repo.
+
+## PW-CONTENT-02 — answers (2026-10-21, Eli; recorded in DECISIONS.md)
+
+- **H-019 answer:** public copy reflects enforced code (full analysis = Family only; Free ✗, Plus ✗). Intended future policy: Free = 1 lifetime full analysis; Plus and Family = full analysis on all policies. Opened as **PW-ENTITLE-01** (stub in QUEUE.md). Not implemented here. The in-app Free line is removed (amendment A1), not honoured.
+- **H-020 answer:** publish no analysis limit. «μηνιαίο όριο επεξεργασίας» and any monthly-cap wording leave B2C copy. The policy cap («3 ασφαλιστήρια») stays: it is an enforced number, not an analysis limit.
+- **H-021 answer:** production is the source of truth. Evidence taken this session: Vercel production env `PREVENTION_PERSONALIZATION_ENABLED` = `0` (read via `vercel env pull`, file deleted). Live `/pricing` (policywallet.gr, 2026-10-21) renders €4.99 / €39 / €8.99 / €79 / €29 / €199, equal to dev rows and code defaults. **Production `plans.entitlements` were NOT read** (the credential pull was blocked by the permission classifier; no prod DB credential in session): E-row verdicts use dev rows = code defaults. Local `.env.local` aligned to `0` before baselines.
+- **H-022 answer:** positioning = «Πλατφόρμα οργάνωσης και κατανόησης ασφαλιστηρίων». All other variants removed from public routes and metadata (including «ανεξάρτητος έλεγχος ρίσκου» keywords: the SEO trade is accepted). Agent row deleted (A5), so the funding-vs-commission wording question is moot for it; `faqs.ts:41` «πληρωνόμαστε μόνο από συνδρομές» is still a retired funding claim and is removed in build. Partner-referral revenue question (item 3) remains OPEN and unanswered; the existing «Έσοδα από συνδρομές» claims are untouched.
+- **H-023 answer:** copy reflects code. The code shows exclusions on every plan, so the /compare cell is corrected to match. Gating exclusions is a packaging change deferred to H3.
+- **H-024 answer:** boat-liability sentence removed until the specific article of ν. 4926/2022 (ΦΕΚ Α' 82/20.4.2022) is cited from the official text and the sentence rewritten to the law's actual scope. Operational facts (Stripe portal downgrade, support hours 09:00–18:00, Agency «Αποκλειστική υποστήριξη», Schengen €30.000 source) were not answered: **left flagged, not changed, not asserted as verified.**
+
+
+## PW-CONTENT-02 — owner round 2026-10-22 (Eli)
+
+Decisions are in `docs/transformation/DECISIONS.md` (PW-CONTENT-02 round 2). Status of the six halts:
+
+- **H-019** closed. **H-020** closed. **H-023** closed.
+- **H-021 — CLOSED 2026-10-22 (PW-C02-D13); was: OPEN, MERGE BLOCKER.** The owner read the production rows; the guard now passes against them (see the section below). Historic text:  Production `plans.entitlements` have not been read. The entitlement-claim guard is verified against dev rows = code defaults ONLY, not against production. Eli to paste the production rows (`SELECT id, price, annual_price, trial_days, is_public, entitlements FROM plans ORDER BY plan_type, sort_order;`); until then nothing here claims the public site matches production entitlements. Standing rule from the owner: never `vercel env pull` again (denied in `.claude/settings.json`); ask for any production value.
+- **H-022** — tagline «Τα ασφαλιστήριά σας, με απλά λόγια» APPROVED for root title, OG headline and home Twitter title. Item 3 (partner-referral revenue) stays unconfirmed: see **H-025**.
+- **H-024** — resolved or removed item by item: Schengen €30.000 kept and sourced (Regulation (EC) 810/2009, Art. 15(3), CLAIMS C18); support is **email only** (no phone, no hours, no «Αποκλειστική υποστήριξη» — removed everywhere); Stripe portal downgrade claim REMOVED (the portal has no configuration in test mode, 0 of 0, and the app has no in-app downgrade flow); the boat sentence stays removed until the cited article of ν. 4926/2022.
+
+## H-025 — Public "no commission" claims: confirm they are true before they stay · CLOSED 2026-10-24
+
+**Owner decision 2026-10-24 (Eli): no partner referral, affiliate or lead arrangement earns PolicyWallet money. The no-commission claims listed below are true and stay as written; C-37's commission sentence is approved.** Owner-attested, not repo evidence; if an arrangement is ever signed, this halt reopens and every claim below is removed with no replacement wording. The original entry follows.
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 · blocks: nothing in the build; **needs Eli**
+
+Owner instruction: *do not change any no-commission claim.* None was changed in wording (two nearby FUNDING claims, «Πληρωνόμαστε μόνο από …», were removed earlier under H-022). Whether any partner referral earns PolicyWallet money (`partner_referrals`) is unconfirmed; if it does, every line below is false. File:line references (el and en twins listed together; regenerated from the tree at the last commit of 2026-10-22):
+
+- `app/(public)/company/CompanyPageClient.tsx`: 139, 140
+- `app/(public)/product/marketing-content.ts`: 87, 88
+- `app/(public)/solutions/agents/faqs.ts`: 41, 42
+- `app/(public)/trust/TrustSections.tsx`: 91, 92
+- `components/landing/PartnersSections.tsx`: 127, 128
+- `lib/glossary/content.ts`: 1242, 1243
+- `lib/guides/content.ts`: 1898, 1899, 2172, 2173, 2245
+- `lib/landing/content.ts`: 123, 124
+- `lib/legal/legal-content.ts`: 109, 594
+- `lib/marketing/positioning.ts`: 258, 259, 266, 267
+- `lib/product/lob-faqs.ts`: 42, 43, 65, 66, 88, 89, 111, 112, 157, 158, 203, 204, 233, 234, 256, 257, 279, 280, 302, 303, 322, 323, 368, 369, 391, 392
+- `lib/seo/og-card.tsx`: 24, 29
+- `lib/seo/site.ts`: 70, 71
+
+Related FUNDING-adjacent claims («Τα έσοδά μας προέρχονται από συνδρομές», «Nobody pays us…», compare note «Έσοδα από συνδρομές») — also false if referrals earn money; not changed:
+
+- `app/(public)/company/CompanyPageClient.tsx`: 139, 140
+- `app/(public)/trust/TrustSections.tsx`: 91, 92
+- `components/landing/WhyDifferent.tsx`: 54, 55
+- `lib/guides/content.ts`: 2173
+- `lib/landing/content.ts`: 123, 124
+- `lib/legal/legal-content.ts`: 594
+- `lib/marketing/positioning.ts`: 484
+
+**Ask:** confirm "no commission, revenue from subscriptions only" is true today, or tell me which claims to remove.
+
+## H-026 — Contact addresses found across the site · resolved in code, listed for the record
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02
+
+All PUBLIC support contact points use `info@policywallet.gr` (`siteConfig.contactEmail`, `lib/seo/site.ts:81`: /contact, Organization JSON-LD, the Help CTA, email footers and the agent emails). Other addresses found:
+
+| Address | Where | Disposition |
+|---|---|---|
+| `support@policywallet.gr` | `lib/push/web-push.ts` (default VAPID subject), `.env.example`, `scripts/generate-vapid-keys.mjs` | **changed to `info@policywallet.gr`** — a second support address no one reads |
+| `support@policywallet.com` | a comment in `lib/email/templates/agent-emails.ts:4` and `tests/unit/contact-surface-integrity.test.ts` (both describe the removed dead mailbox) | no live use; `contact-surface-integrity` bans any `policywallet.com` in source |
+| `dpo@policywallet.gr` | privacy/DSR copy: `lib/legal/legal-content.ts`, `lib/legal/entity-placeholders.ts`, `lib/i18n/translations/{el,en}.ts`, `lib/email/templates/dsr-emails.ts`, `lib/compliance/ropa-report.ts` | kept: a data-protection contact is a different function from support, not a second support address. Say if you want it merged. |
+| `careers@policywallet.gr` | `/company` (`siteConfig.careersEmail`) | kept: recruiting, not support |
+| `noreply@policywallet.gr` | sender default, `lib/email/email-service.ts:47` | kept: a From address |
+
+The optional phone field on the /contact form and the phone row on that page were removed with `siteConfig.contactPhone` / `NEXT_PUBLIC_CONTACT_PHONE`; the POST `/api/contact` schema still accepts an optional `phone` (unused, back-compatible).
+
+## H-027 — Published agent analysis counts (5 / 50 / 150 / 400) may not be reachable under the token gate · OPEN, MERGE BLOCKER (owner, 2026-10-22)
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 3) · blocks: nothing in the build; **needs Eli + production data**
+
+`/pricing` and `/agent/pricing` state 50 / 150 / 400 analyses a month for Agent Starter / Pro / Agency (`aiAnalysesPerMonth`). The orchestrator also gates every run on the monthly token budget: `lib/token-tracking.ts:398` allows a run only while `used + estimate <= limit`, and the estimate for a document run is about 142k–154k tokens (`token-budget-estimator.ts`). With the code-default budgets (1.6M / 4.5M / 12M) the full count is reachable only if the average RECORDED usage per run stays under roughly 29–30k tokens; the estimator's own extraction step is 85k. For Agent Free the same arithmetic made the count unstatable, so the count was removed there (`plan-claims.ts`, `UNSTATED`). I could not measure real per-run usage (no production `policy_analysis_steps`), so this is a bound, not a finding of falsehood.
+
+**Ask:** paste, for production, the agent plan rows' `monthly_token_budget` and the 30-day distribution of `tokens_used` per completed run (or approve removing the counts for the paid agent tiers the way Agent Free was handled). Until then the counts are published as the entitlement field states them.
+
+## Notes from the same review, not decided here
+- The in-app `TokenUsageCard` («Χρήση tokens AI», «Μηνιαία χρήση X / Y») is still shown on `/account` for Family, and `upgrade-copy` names «Εξαντλήθηκαν τα AI tokens του μήνα». `plan-defaults.ts` says the token budget "must never be shown, named, or implied in any UI". The card also sells the token top-up, so removing it is a product decision, not a copy fix: **ask whether to hide the meter** (H-020 wording only removed the cap SENTENCE from /account).
+- In-app prices still render «€4.99» (`formatEur`) while the public site renders «4,99 €»: queued as a formatting follow-up (authenticated surfaces were out of the A4 scope).
+
+## H-024 residue (2026-10-22) — the boat-liability claim inside the in-app domain model
+
+The unsourced sentence «Η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα» is removed from every PUBLIC surface and from the policyholder-facing boat copy found by the reviews (`lib/insurance/content/boat.ts`, `risk-catalog.ts` explanation and detail, `life-events/registry.ts`). It still underlies the in-app **domain model**, which treats a marine third-party-liability policy as "the compulsory cover": `lib/insurance/taxonomy.ts:172-179` (a code comment cites ν. 4926/2022 and ΓΚΛ 20), `lib/insurance/content/boat-tpl.ts:44,87`, `risk-catalog.ts:84,791`, `lib/needs/questions.ts:182`, `translations` `why:` strings (`el.ts:2227`, `en.ts:2201`). Rewording those is a product/legal decision about how the engine frames boat cover, not a copy fix: **Ask:** cite the article of ν. 4926/2022 from the official text (then the model can stay and the public sentence can return, worded to its actual scope), or tell me to neutralise the remaining strings.
+
+## H-028 — The LIVE checkout grants the free trial to every checkout, including lapsed subscribers · CLOSED 2026-10-22 for copy (PW-C02-D10); code fix queued as PW-ENTITLE-01 item 1
+
+date: 2026-10-22 · raised_by: PW-CONTENT-02 fresh review (pass 8) · blocks: nothing in the build
+
+`createCheckoutSession` (`lib/billing.ts:90-116`) passes `subscription_data.trial_period_days` whenever the plan row has `trial_days > 0`, with no check that the customer ever subscribed before. The only checkout route that tested `hasPriorSubscription` (`app/api/stripe/checkout/route.ts:52,79`) is deprecated and has no callers. So a Family subscriber who lapses can start another 14-day trial. (An earlier edit of mine wrote «ΝΕΟΙ ΣΥΝΔΡΟΜΗΤΕΣ» on the `/upgrade` badge from that deprecated route; it was wrong and has been reverted: the badge now states the plan row's `trial_days` for everyone, which is what the live code does.)
+**Ask:** is repeated trial intended? If not, the fix is a prior-subscription check in `createCheckoutSession` (a billing change, outside this series), after which the badge should say «νέοι συνδρομητές».
+
+## H-027 addendum (2026-10-22, pass 8)
+B2C in-app copy that names the AI token budget, besides the `TokenUsageCard`: `lib/monetization/upgrade-copy.{el,en}.ts` `token_topup` («Εξαντλήθηκαν τα AI tokens του μήνα», «Μηνιαία tokens που ανανεώνονται αυτόματα»), `lib/i18n/translations/el.ts` (~1335, 1377, 2594: «όριο AI tokens», «αγοράστε credits»), `app/api/v1/tokens/purchase/route.ts`. Reached from `AnalysisCard` on `TOKEN_LIMIT_BLOCKED`. They are one feature with the meter and its top-up; hiding or rewording them is the same owner decision as H-027.
+
+
+## PW-CONTENT-02 — owner round 3 (2026-10-22)
+
+### H-027 — status
+Owner decision: the published agent caps ARE the analysis counts (5 / 50 / 150 / 400); tokens are an internal unit. Done: Agent Free's 5 is published again; the token meter and all customer-facing token copy are gone (guard `no-token-copy-customer-facing.test.ts`). **Still OPEN and a merge blocker** until the owner runs `docs/series/PW-CONTENT-02/evidence/h027-token-per-analysis-prod.sql` (read-only) on production and resizes `monthlyTokenBudget` in /admin/plans. Local arithmetic, for orientation only (not production data): a deep run estimates 142,800–151,200 tokens (`token-budget-estimator.ts`); Agent Free's 150,000 budget therefore cannot be guaranteed to allow even one run at the high estimate, let alone 5.
+
+### H-029 — Stripe-side and plan-row names to review (listed for the owner; none changed)
+- The Family plan row is named «Pro» (`tier_key pro`, `display_name Family`). No customer-facing in-app or email string uses «Pro» for it (checked: translations, `subscription-copy`, `monetization`, `email`, guides, help). Where the row name still surfaces: `app/api/v1/me/subscription/route.ts:34-35` (`name: plan.name`, beside a correct `display_name`; fallback «PRO» at `:42-43`), the admin plan list, and the activity-log line (now `displayName`, `lib/billing.ts:575`).
+- Stripe product names created by code: `plan.displayName` → «Family» (`lib/billing.ts:102`); description «PolicyWallet monthly|annual subscription» (`:103`); token top-up «PolicyWallet AI tokens — {label}» (`:179`, a customer-visible Stripe/receipt name that says «tokens»; see QUEUE TOKEN-TOPUP-UI-REMOVED); report unlock «PolicyWallet — Πλήρης αναφορά κενών κάλυψης» (`:282`).
+- Not in the live path: `scripts/setup-billing-catalog.ts:42-43` would create «PolicyWallet Pro» at 7.99/79 and «ph-plus» at 2.99/29 (stale); the deprecated `app/api/stripe/checkout/route.ts:36-41` reads Stripe price ids from `STRIPE_PREMIUM_PRICE_ID` / `STRIPE_PLUS_PRICE_ID` (product names live in the Stripe dashboard, unverified).
+- Owner: check the Stripe dashboard product list and receipts for «Pro» / «PolicyWallet Pro».
+
+### H-030 — Cancellation: trace and every claim (no claim changed; not merge-blocking because a working path exists)
+**Test-mode trace.** (1) In-app cancel works without a portal configuration: `PlanSection.tsx:329-359` shows «Διακοπή αυτόματης ανανέωσης» → confirm → `cancelSubscription` (`app/(protected)/account/actions.ts:92-135`) sets `cancel_at_period_end` on the Stripe subscription, then `autoRenew:false`. (2) `customer.subscription.updated` mirrors it (`lib/services/billing/stripe-lifecycle.ts:56-65`). (3) At period end `customer.subscription.deleted` marks the row `expired` and the user resumes on Free (`:200-220`). (4) The billing portal (`createBillingPortalSession`, `account/actions.ts:71-90`; `/api/v1/billing/portal`) needs a Stripe portal configuration; test mode has 0 (inferred from this series' earlier check), so it fails with the «portalFailed» toast. (5) There is NO immediate downgrade to Free. (6) Cancelling during a trial holds until trial end (no charge); no surface states it. Not verified: the webhook endpoint registration on the test and live Stripe accounts.
+**Owner to verify in live mode:** the portal configuration exists and the cancel path completes; this is on the GO checklist.
+**Claims (file:line, current text):**
+- `lib/subscription-copy.ts:327-330` «Ακύρωση ανά πάσα στιγμή» / "Cancel anytime" (used by /upgrade, `upgrade/page.tsx:98,168`)
+- `app/(protected)/upgrade/success/page.tsx:41-42` «Ασφαλής πληρωμή με Stripe · Ακύρωση ανά πάσα στιγμή»
+- `lib/monetization/upgrade-copy.el.ts:20` / `.en.ts:8` (`TRUST`) «… Ακύρωση ανά πάσα στιγμή · Χωρίς κρυφές χρεώσεις» / "Cancel anytime · No hidden fees"
+- `app/(public)/pricing/PricingPageClient.tsx:116-118,417` «Ακύρωση ανανέωσης όποτε θέλετε» / "Cancel renewal at any time"
+- `components/landing/LoBPageShell.tsx:88-95` four strings ending «Ακύρωση όποτε θέλετε.» / "Cancel anytime." (agent and policyholder, el and en)
+- `lib/subscription-copy.ts:268-275` and `lib/pricing/public-pricing-content.ts:317-324` «Τι γίνεται αν ακυρώσω;» → access kept until the end of the paid period
+- `lib/legal/legal-content.ts:127` (el) / `:612` (en) terms §5: «Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας … Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.»
+- `lib/legal/legal-content.ts:187` (el): account deletion cancels active subscriptions; `:672` (en): the active subscription «remains in force until the end of the current billing period, in accordance with section 4» — **the two language versions disagree and the section number is wrong (subscriptions are §5)**; flagged for legal review, not changed.
+- `app/(protected)/agent/pricing/AgentPricingClient.tsx:133,148` «Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας» / "Cancel anytime from your account"
+- In-app cancel flow copy (describes the working path): `el.ts:3297-3300,3432-3433`, `en.ts:3240-3243,3375-3376`; `subscription-copy.ts:241-244` `cancelSuccess`; `account/actions.ts:124` (error text pointing to «την πύλη χρεώσεων»).
+- The new trial sentence (PW-C02-D10) also says «εκτός αν ακυρώσετε πριν λήξει».
+
+### H-031 — Annual billing: verified, no halt needed
+`createCheckoutSession` ignores `plans.stripe_price_id`; it builds an inline Stripe price from the plan row: monthly = `price`, annual = `annual_price` (fallback `DEFAULT_ANNUAL_PRICE_BY_PLAN`, 39 / 79), `recurring.interval = "year"` (`lib/billing.ts:65-75,96-111`). The toggle reaches it as `billingPeriod` in the request body (`app/api/v1/billing/checkout/route.ts:11,36-37`). So annual checkout charges the annual price (39 € / 79 €). The annual checkout also grants the trial (`:90,116`). Not verified: a live Stripe session (no Stripe access this session).
+
+### H-032 — No subscription-start email; no trial-ending webhook
+There is no confirmation email at subscription start (`handleSubscriptionSuccess`, `lib/billing.ts:569-580`, writes an admin activity row only), and `customer.subscription.trial_will_end` is not handled (`stripe-lifecycle.ts:19-24`). The sign-up "confirmation" is a page (`app/auth/signup/confirmation/page.tsx`), and it now carries the trial sentence. Owner: enable Stripe's trial-ending reminder email (GO checklist); an app-side confirmation email is queued as PW-ENTITLE-01-adjacent work (QUEUE: SUBSCRIPTION-START-EMAIL).
+
+### H-027 — reviewer arithmetic (pass 10, 2026-10-22)
+A document run reserves `ceil(85_000×1.2) + ceil(18_000×1.2) + ceil((15_000 + G×1_000)×1.2) = 141,600 + 1,200·G` tokens (`token-budget-estimator.ts:29-41`; G = active gap rules of the branch). Agent Free's budget is 150,000. With the authored rule counts (home 8, renters 8 → 151,200) a run is **refused at zero usage**; motor 7 → exactly 150,000, allowed once and then refused; health/motorbike 4 and life 1 → allowed once. Five runs need about 708,000 tokens. The gate applies to agent initiators on both paths (`app/(protected)/agent/actions.ts:1322-1331`, orchestrator `:708`). The 5 is published by owner decision; this is why H-027 is a merge blocker, and why the fix is a budget resize from config (`monthlyTokenBudget` for `agent_free` ≥ ~5 × p95), not rewording.
+
+
+## PW-CONTENT-02 — owner round 4 (2026-10-22)
+
+### H-030 — CLOSED for copy (PW-C02-D15)
+Cancel claims state their consequence from one source; no downgrade claim remains (guard). Still the owner's: verify the live-mode portal and cancel path (GO checklist). QUEUE: self-serve downgrade; payment-method update. **Payment method, recorded:** the only in-app path is «Άνοιγμα σελίδας χρέωσης» → `createBillingPortalSession` (`PlanSection.tsx:121-129`, `account/actions.ts:71-90`), which needs a Stripe portal configuration (0 in test mode); there is no in-app card form, no `setup` Checkout session and no payment-method API. The help article «Ενημέρωση μεθόδου πληρωμής» described an «Add Payment Method / Set as Default» flow that does not exist; it is rewritten to the real path (COPY R5-8, pending your re-approval).
+
+### H-033 — Token reservation vs what each plan is sold (extends H-027) · OPEN, not GA-blocking by the owner's criterion
+Formula (`token-budget-estimator.ts:11-45`, SAFETY_BUFFER 1.2): reservation R(g) = ceil(85,000×1.2) + ceil(18,000×1.2) + ceil((15,000 + max(g,1)×1,000)×1.2) = 142,800 for g ≤ 1, +1,200 per extra active rule of the branch (home 8, renters 8 → 151,200; motor 7 → 150,000; motorbike, health 4 → 146,400; pension, travel, pet, boat, group_health 3 → 145,200; personal_accident 2 → 144,000; life 1 → 142,800; the catalogue has 56 authored rules, production's count may differ). The gate `canUserUseTokens` allows a run iff `used + R ≤ budget` (`token-tracking.ts:398`); reservations are released after each step and only recorded actuals persist.
+**Minimum budget for N runs in one period:** B_min(N) = (N−1)·A + R, where A = recorded tokens per run; worst case A = R gives **B_min(N) = N·R**. At R = 150,000: N=1 150k, N=3 450k, N=5 750k, N=10 1.5M. (A ≈ 56k appears only in an archived status note and is unverified; the p95 query measures it.)
+| Plan (production budget) | Pipeline it runs | Gate in production | Runs/month at reservation (home / motor / other) |
+|---|---|---|---|
+| Free (150,000) | upload-time extraction only | not token-gated (personalization flag 0) | not applicable |
+| Plus (600,000) | same | same | not applicable (theoretical 3 / 4 / 4) |
+| Family (1,500,000) | full pipeline | gated | 9 / 10 / 10; passes at zero usage for every branch |
+So: nothing Free or Plus is sold is refused by the budget; «Δωρεάν για 3 ασφαλιστήρια» rests on the policy cap and the 30-a-day spend cap (`app/api/policies/extract/route.ts:234-251`), not on tokens. Family is sold with 25 policies and full analysis, but at the reservation rule only about 9–10 first-time deep runs fit a month (re-analysis consumes budget too); whether that is enough is answered by the p95 query (H-027). If `PREVENTION_PERSONALIZATION_ENABLED` is ever set to 1 in production, Free's basic path reserves ≤102,000 and 150,000 binds (about one scan a month): GA-blocking, hence the condition in D17.
+Agent plans at reservation (production Agent Free 150,000; others are the code defaults, production unknown): Agent Free 0 (home/renters) or 1 run against a published 5; Starter 1.6M → 10–11 against 50; Pro 4.5M → 29–31 against 150; Agency 12M → 79–84 against 400. At a hypothetical A = 56k the budgets that would honour the published counts are about 374k / 2.9M / 8.5M / 22.5M. Stale comments fixed: `run-preflight.ts`, `token-tracking.ts`, `plan-defaults.ts`.
+
+### H-034 — Renewal reminders: what is proven and what is not (conditional rows)
+Code-proven: Free (`notifications` false) gets ONE email once the policy is within 30 days (`BASIC_MILESTONES`, `renewal.service.ts:288-296`; no gate removes it; a policy first seen at 10 days gets it at 10); Plus and Family get the 90/60/30/15/7/3 ladder, one email per rung reached, one per run at most; `notifications` is the only discriminator and the production rows (free false, plus true, pro true) match the code defaults. Scheduler: `vercel.json` registers `/api/v1/jobs/renewal-check` daily at 05:00 UTC; `proxy.ts:304-310` allowlists `/api/v1/jobs/`; the route authorises `CRON_SECRET` or an admin session (`app/api/v1/jobs/renewal-check/route.ts:8-26`). Provider: Brevo's transactional API only (`lib/email/email-service.ts:32,62-153`, env `BREVO_API_KEY`); unconfigured it records a failed notification and a Sentry message and retries via the notification-retry cron, it does not silently skip.
+**Not provable from the repo (owner to verify, GO checklist):** that `BREVO_API_KEY` and the verified sender domain are set in production (Sentry POLICYWALLET-3, a Brevo IP-allowlist 401, has no closure evidence in the repo); that the renewal cron has produced `job_runs` / sent `notification_events` rows; that `JobSchedule` and `automation.paused` are not pausing it; that the production plan rows parse into the entitlement schema (otherwise the code defaults apply); that the plan is not on Hobby (daily-only crons; all 20 schedules are daily).
+Other conditions on a reminder: policy status not in the non-live set, a resolvable end date within 90 days, no `renewed/lapsed/cancelled` renewal row, the user's `policy_expiring` preference on, global outbound on. Quiet hours do not defer it.
+
+
+## PW-CONTENT-02 — owner round 5 (2026-10-22)
+
+### H-027 — status after the rule (PW-C02-D19)
+**Agent plans: sized in config (a conservative bound, not a measurement).** The owner sets agent_free 850,000 · agent_starter 8,400,000 · agent_pro 25,000,000 · agency 67,000,000 in /admin/plans; the code defaults now equal them and `budget-reaches-published-count.test.ts` proves budget ≥ published count × 151,200 for all four, i.e. reachable at the ESTIMATE; whether recorded actuals keep to ≈ 174,700 per run (Agent Free) is what the p95 SQL measures. Other draws on the agent budget (MEDIC, review workspace, agent Q&A, translation, independent verification) are listed in D19. Remaining for the owner: confirm the production rows saved (update the fixture), then Agent Free's «5» is honourable. **Family: still OPEN** — waits for the p95 SQL (`evidence/h027-token-per-analysis-prod.sql`); at the reservation rule 1,500,000 fits 9–10 first-time deep runs a month, and Family's Q&A draws from the same budget (QUEUE QA-BUDGET-SPLIT: the gate checks 15,000 per question, actuals recorded as `qa_session`).
+
+### H-030 residue — Terms §5 for agents (PW-C02-D20)
+Drafted, not applied: `docs/series/PW-CONTENT-02/TERMS-5-DRAFT.md`. Version bump: `LEGAL_CONTENT_VERSION` is shared by Terms and Privacy; existing accounts are not re-prompted (no consumer compares versions). Awaiting the owner's approval of the text.
+
+
+## PW-CONTENT-02 — owner round 6 (2026-10-22)
+
+### H-035 — Terms §12: the Greek and English versions disagree · OPEN · **GA BLOCKER** (not a merge blocker for this series; pre-existing)
+Rule (owner): **the Greek text governs**; the fix ships as a separate legal commit, NOT applied here. What is wrong today (`lib/legal/legal-content.ts`):
+1. The GREEK §12 (`:187-193`) contains an English paragraph (`:191`), a leaked `en` string.
+2. The ENGLISH §12 (`:673-678`) says «Any active subscription remains in force until the end of the current billing period, in accordance with section 4» — the Greek says account deletion CANCELS the active subscriptions, and subscriptions are §5, not §4.
+3. The ENGLISH §12 has a suspension sentence («serious or repeated violation») and a data-handling sentence that the Greek §12 does not have; the suspension rule is in §7 of both versions with different wording (Greek `:149` «Σε περίπτωση παραβίασης…», English `:635` "In case of violation…").
+**Drafted fix (old → new)**
+- Greek §12, paragraph 2 (`:191`) — OLD: «You can request account deletion through the application. Active subscriptions are cancelled during the erasure process to stop billing. Deleting an account and cancelling the next renewal are different actions. Any refund entitlement is assessed under the law and section 6.» → NEW: **delete the paragraph** (paragraph 1, the Greek text, already says it).
+- English §12, paragraph 1 (`:676`) — OLD: «You can delete your account at any time from within the app. Any active subscription remains in force until the end of the current billing period, in accordance with section 4.» → NEW (the leaked paragraph above, which is the faithful translation of the Greek): «You can request account deletion through the application. Active subscriptions are cancelled during the erasure process to stop billing. Deleting an account and cancelling the next renewal are different actions. Any refund entitlement is assessed under the law and section 6.»
+- English §12, paragraph 2 (`:677`) — OLD: «We may suspend or terminate access in case of serious or repeated violation of these terms. After termination, your data is handled in accordance with the Privacy Policy.» → NEW: «After termination, your data is handled in accordance with the Privacy Policy.» (the suspension sentence is deleted: §7 already covers suspension, in the Greek wording).
+- **Owner decision, round 7 (2026-10-23): add the Greek counterpart.** Greek §12, paragraph 2 (`:191`, the leaked English paragraph, deleted above) is REPLACED, not just deleted, by: NEW: «Μετά τον τερματισμό, τα δεδομένα σας διαχειρίζονται σύμφωνα με την Πολιτική Απορρήτου.» So the Greek §12 ends with two Greek paragraphs (deletion; data after termination) and the English §12 with their two faithful translations. Greek governs. Drafting note (round-7 review): after these edits §12 speaks only of deletion, so «Μετά τον τερματισμό…» has its antecedent in §7; legal may prefer «Μετά τη διαγραφή ή τον τερματισμό της πρόσβασης…» or a cross-reference before applying it.
+Then bump `LEGAL_CONTENT_VERSION` and the four `LEGAL_DOC_META` literals together (`tests/unit/legal-content-parity.test.ts` pins section ids, non-emptiness and table shapes (not paragraph counts): nothing there needs updating for this fix). Account deletion's effect on subscriptions should also be checked against `lib/services/gdpr-erasure.service.ts` before the text is fixed.
+
+### H-027 — status after round 7 (PW-C02-D25): FINAL interim budgets
+WRITTEN to production on 2026-10-24 through the Supabase MCP and confirmed by a re-SELECT (GO-CHECKLIST item 1, DECISIONS D30); production enforces the plan ROW for users with a live subscription whenever it parses; a user with NO live subscription (every Free and Agent Free user) is gated by the code default, which today equals the row). Aligned in `plan-defaults.ts`, the fixture and the guard (red first, `evidence/d25-final-budgets-guard-red.txt`): Family `pro` **8,700,000** = (25 × 253,200 batch path + 100 × 15,000 Q&A) × 1.1 (8,613,000 rounded up); agent_free **2,000,000** · agent_starter **19,600,000** · agent_pro **58,700,000** · agency **156,300,000** = N × 355,200 (cache-miss path: R_max 151,200 + ungated scan/upload extraction 102,000 + verification 102,000) × 1.1. Budget sizing ENDS here: further budget findings go to BUDGET-MEASURE, not this series. The round-6 paragraph below is superseded by these figures.
+
+### H-027 — status after round 6 (PW-C02-D21) — SUPERSEDED by round 7
+INTERIM budgets, set by the owner in /admin/plans: Family 5,700,000 (25 × 151,200 × 1.1 for analyses ≈ 4,158,000 + 1,500,000 for ~100 questions at the 15,000 unit); agents 1,700,000 / 16,800,000 / 50,000,000 / 134,000,000 because production runs `AGENT_INDEPENDENT_VERIFICATION=1` (each agent run reserves a second extraction of 102,000: R_agent = 253,200). Defaults, fixture and guard aligned (red first). They are ESTIMATE-based. **BUDGET-MEASURE (QUEUE) is a GA blocker**: measure actual tokens per analysis (all branches, verification on) and per question on fixtures, then replace the interim budgets with ((N−1)·A_p95 + R)·1.1. The production SQL stays a cross-check only (no users, sample too small).

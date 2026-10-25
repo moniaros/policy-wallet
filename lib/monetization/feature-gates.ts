@@ -23,7 +23,6 @@ export type FeatureKey =
     | "advanced_renewal_reminders"
     | "pdf_preview"
     | "token_topup"
-    | "claims_preparation_assistant"
     | "partner_offers"
     | "protection_monitoring"
 
@@ -63,6 +62,10 @@ export interface FeatureGate {
  * The copy was unreachable, so it was never shown — but a single
  * `<UpgradePrompt featureKey="family_portfolio">` would have rendered a paid
  * promise for a feature that does not exist. Removed rather than left loaded.
+ *
+ * `claims_preparation_assistant` was removed 2026-10-22 the same way: the claims guide
+ * (ClaimsGuidanceCard) renders for EVERY plan, the `pro` declaration had no enforcement site, and an
+ * upsell card sold it as a Family feature (PW-CONTENT-02 review, pass 4).
  *
  * `duplicate_coverage_detection` sat here from then until 2026-08-30 with the
  * note that whether it should be gated "is a pricing decision, not a cleanup".
@@ -126,7 +129,10 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     advanced_renewal_reminders: {
         featureKey: "advanced_renewal_reminders",
-        requiredPlan: "pro",
+        // The full 90…3-day ladder is the `notifications` entitlement, true on Plus and
+        // Family (renewal.service.ts `ownerHasFullReminders`); this display gate said
+        // `pro`, so Free users were told Family was needed (PW-CONTENT-02 review I2).
+        requiredPlan: "plus",
         upgradeReason: "notifications_disabled",
         lockedViewedEvent: "feature_locked_viewed",
     },
@@ -140,12 +146,6 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
         featureKey: "token_topup",
         requiredPlan: "plus",
         upgradeReason: "token_limit",
-        lockedViewedEvent: "feature_locked_viewed",
-    },
-    claims_preparation_assistant: {
-        featureKey: "claims_preparation_assistant",
-        requiredPlan: "pro",
-        upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
     // Partner-benefits program: the full active catalog unlocks at Plus (code
@@ -189,19 +189,16 @@ export interface PlanPricing {
     monthlyEur: number
     annualEur: number
     /** Months effectively free when paying annually. */
-    annualSavingsMonths: number
     trialDays?: number
 }
 
-// Code key `plus` = displayed "Starter" (€2.99); code key `pro` = displayed
-// "Plus" (€7.99, the recommended AI tier). See PlanBadge / public pricing for
-// the display labels.
+// Code key `plus` = displayed "Plus" (€4.99); code key `pro` = displayed "Family" (€8.99, the
+// recommended tier). See PlanBadge / public pricing for the display labels.
 export const PLAN_PRICING: Record<Exclude<PlanTier, "free">, PlanPricing> = {
-    // Pricing v2: annual-first. €39/yr vs €4.99/mo is ~4 months free, and
-    // €79/yr vs €8.99/mo is ~3 — so annualSavingsMonths is computed, not
-    // asserted, by round(12 - annual / monthly).
-    plus: { planId: "ph-plus", monthlyEur: 4.99, annualEur: 39, annualSavingsMonths: 4 },
-    pro: { planId: "ph-pro", monthlyEur: 8.99, annualEur: 79, annualSavingsMonths: 3, trialDays: 14 },
+    // Pricing v2: annual-first. The saving is never stored here: it is derived from these two
+    // prices by lib/pricing/annual-savings.ts (a typed month count was false by up to a month).
+    plus: { planId: "ph-plus", monthlyEur: 4.99, annualEur: 39 },
+    pro: { planId: "ph-pro", monthlyEur: 8.99, annualEur: 79, trialDays: 14 },
 }
 
 const TIER_RANK: Record<PlanTier, number> = { free: 0, plus: 1, pro: 2 }
