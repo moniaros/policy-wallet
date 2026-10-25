@@ -909,3 +909,109 @@ indistinguishable from an oversight, which is why this is a halt rather than a b
 **No test pins "consent is checked before the request body is read."** The ordering in
 `extract/route.ts` is correct today and held only by a comment at `:124`. A guard that enumerates
 every path reaching a provider — rather than the two currently known — would have caught this one.
+
+
+---
+
+# PW-ENTITLE-01 — Step 0 halts (2026-10-24, step0-investigator)
+
+> **Porting note.** This block was appended on worktree `pw-entitle` (`25f3ff41` = NEW-UI), whose copy of this file ends at
+> the OLD H-011 and lacks H-012…H-035. The live file is on `pw-customer` (PR #410). Port this block onto that file at build
+> time; do not renumber. Report: `docs/series/PW-ENTITLE-01/STEP0.md`.
+
+## H-050 — This tree cannot host the build; the series has no file and no acceptance criteria · run-plan: none
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: starting the build
+
+`docs/series/PW-ENTITLE-01.md` does not exist on any branch; the series is the QUEUE.md stub (`:1824-1834`) which says «do not
+start until [acceptance criteria] are [written]». Every artefact the stub names (`trial-disclosure.ts`, `plan-claims.ts`, the
+round-7 budgets, the PW-CONTENT-02 guards, HALTS H-012…H-035) exists only on `pw-customer` (159 non-doc files ahead of this
+tree). This worktree has no `node_modules` and no `.env`.
+**Ask:** (a) confirm the build starts from `pw-customer` (or NEW-UI after #410 merges) and this STEP0 is carried over; (b) write
+the acceptance criteria — the STEP0 §3.5 build order and §5 M-T1…M-T7 are proposed as the list.
+
+## H-051 — Item 1: what «one trial per customer, lifetime» means for a trialing subscriber who switches billing period · run-plan: none
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: item 1 build
+
+Proposed rule: eligible iff NO `subscriptions` row of the same `planType` exists for the user, any status (`expired`/`past_due`
+rows are a consumed trial or a paid period; `handleSubscriptionSuccess` never creates a row for a checkout that died
+`incomplete_expired`, `lib/billing.ts:497-503`). Under that rule a Family-monthly subscriber still IN the trial who switches to
+annual (`PlanSection.tsx:111` → `upgradeSubscription(plan.id,"annual")`; QUEUE ANNUAL-SWITCH-RETRIAL) gets no trial on the
+new subscription and is charged the annual price at once, while `expireAndCancelPriorSubscriptions` cancels the trial sub.
+**Ask:** (a) carry the remaining trial days across the switch (Stripe `subscription_data.trial_end` read from the live sub — no
+DDL) or charge immediately; (b) confirm the «any prior row» rule; (c) confirm passing `customer: user.stripeCustomerId` (one
+Stripe Customer per person) instead of `customer_email` when the id exists.
+
+## H-052 — Item 2: the share bypass is two paths, not one, and three product choices follow · run-plan: none · **security-reviewer**
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: item 2 build
+
+`sharePolicy` (`app/(protected)/wallet/actions.ts:1127-1270`, the UI's path via `CollaborationPanel.tsx:97`) has no
+`agentCollaboration` check either; only `PolicyDetailsClientView.tsx:260-263` hides the panel. `POST /api/v1/policies/share`
+(`route.ts:107-134`) has no caller in the repo and, unlike the action, mints a grant with NO `CustomerRelationship` — nothing the
+«access dies with the relationship» invariant can end. `redeemInvite` (`lib/invites/redeem-invite.ts:210`) mints at redemption
+without re-checking the inviter. A roles-aware gate already exists (`lib/api-entitlements.ts:29-52`) and is unused here.
+**Ask:** (a) retire the POST (keep GET/DELETE) or route it through the one service; (b) grants already minted by Free/Plus
+owners: keep (the owner consented) or revoke at deploy (recommended: keep — reversible, zero real users); (c) inviter lapsed
+between invite and redemption: mint anyway, or refuse and tell both.
+
+## H-053 — Item 3: which policy consumes the one free analysis, and whether a failed run gives it back · **run-plan H3**
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: item 3 build
+
+`canRunDeepAnalysis` is also read by `app/onboarding/actions.ts` and `lib/services/policy.service.ts` (post-upload
+auto-trigger). If the predicate becomes true for a Free user with an unused grant, the first upload consumes it without a choice.
+**Ask:** (a) the Free customer starts the one analysis explicitly from the policy page, and auto-triggers never consume the grant
+(recommended); (b) on a TECHNICAL failure (provider, missing document, discard) the claim is released — quota/consent blocks are
+keep-and-inform and never consume it (recommended).
+
+## H-054 — Item 3: Free's token budget refuses the free analysis before the paywall is reached · run-plan: none (plan-row write)
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: item 3 shipping (production row)
+
+Free `monthlyTokenBudget` = 150,000 (`plan-defaults.ts:98`, production equal). A run reserves 142,800–151,200 (H-033) and the
+upload-time extraction records ~102,000 against the same monthly row without a gate (QUEUE BUDGET-DRAW-SCAN-UPLOAD). So a Free
+user who uploaded this month is `TOKEN_LIMIT_BLOCKED` («μηνιαίο όριο ανάλυσης») on the one analysis they were promised; home and
+renters are refused even at zero usage. D19's «the budget never binds first» rule needs ≥ 253,200 × 1.1 ≈ 280,000 for Free.
+**Ask:** approve the production plan-row write (`ph-free.monthlyTokenBudget` 150,000 → 280,000, one guarded statement, archived,
+AFTER the code deploys — catalogue coupling), or decide that upload-time extraction stops drawing on Free's row.
+
+## H-055 — Plus gets the full analysis: scope and budget · **run-plan H3**
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: the Plus half of item 3; the public table
+
+PW-C02-H019 states the intended policy (Plus + Family = full analysis on all policies) but `advanced_gap_detection`,
+`multi_insurer_insights`, `export_report`, `unlimited_ai_questions`, `protection_monitoring`, `partner_offers`,
+`agent_collaboration` stay `pro` (`feature-gates.ts:100-168`); PW-C02-H023 deferred exclusions/gaps packaging to H3. Plus's
+600,000 budget funds ≈2 batch-path runs of a 10-policy plan (needs ≈ 2,785,200 under D19).
+**Ask:** (a) which of those gates move to `plus` with the analysis; (b) approve the Plus row write (600,000 → 2,800,000) after the
+code; (c) confirm the public table and `analysisBlockedUpgradeHint` («…στο Family») change WITH that deploy, never before.
+
+## H-056 — The online withdrawal function vs the 14-day trial · run-plan: none (legal)
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: nothing in the build; the live-Stripe gate
+
+Read from ΦΕΚ Α' 108/10.07.2026 pp. 5205–5206 (art. 69 of ν. 5317/2026 → new art. 3ζα ν. 2251/1994; accessed 2026-10-24): a
+distance contract via an online interface must offer «Πατήστε εδώ για υπαναχώρηση» → «Επιβεβαίωση υπαναχώρησης» → receipt on a
+durable medium with content, date and time. STATUS.md risk #2 already withholds paid checkout until this exists. The trial
+sentence (PW-C02-D10) describes CANCELLATION («εκτός αν ακυρώσετε»), not withdrawal. I found no official source on how a free
+trial interacts with the 14-day period (Directive 2011/83/EU art. 9(1), 9(2)(a)) and assert nothing about it.
+**Ask:** (a) does PW-ENTITLE-01 own the withdrawal function, or a separate series; (b) should the trial sentence carry a
+withdrawal counterpart — legal review, not copy.
+
+## H-057 — The one free analysis on an expired policy · run-plan: none
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: item 3 copy
+
+F2 (all-expired, `dashboard-fixtures.ts` state) renders the offer on dead cover. **Ask:** allow (the customer's choice), warn
+(«Αυτό το ασφαλιστήριο έχει λήξει» before the run), or refuse. Recommended: warn, never refuse — refusing decides for the customer.
+
+## H-058 — QA-BUDGET-SPLIT: in or out of this series · **run-plan H4** · `[MIGRATION → PW-STAGING-01]`
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: scope
+
+QUEUE files QA-BUDGET-SPLIT and BUDGET-MEASURE «under PW-ENTITLE-01». The split needs a `monthly_token_usage.qa_tokens` column
+(DDL — waits for staging previews) and a measured tokens-per-question; BUDGET-MEASURE needs measured actuals on fixtures with
+real providers. Neither can be rehearsed from this worktree. **Ask:** keep both OUT of this series' acceptance (recommended) or
+pull the split in and sequence it after PW-STAGING-01.
