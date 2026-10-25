@@ -909,3 +909,72 @@ indistinguishable from an oversight, which is why this is a halt rather than a b
 **No test pins "consent is checked before the request body is read."** The ordering in
 `extract/route.ts` is correct today and held only by a comment at `:124`. A guard that enumerates
 every path reaching a provider — rather than the two currently known — would have caught this one.
+
+---
+
+# PW-STAGING-01 — Step 0 halts (2026-10-24)
+
+Source: `docs/series/PW-STAGING-01/STEP0.md`. Investigation only; nothing below has been acted on.
+
+## H-040 — The series file docs/series/PW-STAGING-01.md does not exist · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 approval] · run-plan decision: none
+
+context: Not in this worktree, any git ref, the `pw-customer` checkout's `docs/series/` (13 other series files), or the usual local folders. Step 0 was scoped from `docs/transformation/QUEUE.md:1852` (PREVIEW-USES-STAGING-SUPABASE, on `pw-customer`) and run plan §3 step 5. Acceptance criteria were inferred (STEP0 §3.7), not read.
+options: confirm the STEP0 §0 scope: build proceeds against it · supply the file: STEP0 is re-checked against its items (the caller's "item 6, counts only" was applied to the whole report).
+
+## H-041 — Which database backs Preview deployments? · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 build, PW-ASSET-01 build] · run-plan decision: none fits; nearest H6
+
+context: No staging Supabase project is known to the repo (only prod `cquudefwfwrmvpftuhyl` and dev `lzqvtvjggylcujenlelh` appear). Supabase grants "two free projects", and prod plus dev already exist. Supabase branches start with no data or storage objects. Supabase existence and billing could not be checked in this run (no Supabase access).
+options:
+- (A) new project `policywallet-staging` in prod's region (recommended): clean, prod-shaped; adds one project's compute cost.
+- (B) Supabase branch of prod: migrations from the repo; plan and billing not verified; tied to the GitHub integration.
+- (C) re-use dev: free today; shares the 15-slot session pooler with local tooling and E2E, and 413 unmerged-branch previews would write into the database local work depends on.
+
+## H-042 — Must a non-production deployment never send real email, push or Brevo contact writes? · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 build item "outbound by tier"] · run-plan decision: H1 (in part)
+
+context: `lib/outbound/dispatch-guard.ts:75-77,94` treats `NODE_ENV === "production"` as production. Next.js sets that for every command except `next dev`, so all preview deployments send real mail and push today; Preview has its own `BREVO_API_KEY` row. `lib/brevo.ts:24,54` (`/v3/contacts`, used by the auth callback, contact form, newsletter and erasure) bypasses the guard entirely, and the enumeration guard (`tests/unit/outbound-dispatch-stub.test.ts:42-46`) cannot see it. The run plan's deploy gate assumes "the email/push stub is in place so no real message can go out".
+options:
+- never off production (recommended; journeys assert on the skip log): simplest, no recipient can be reached.
+- allowlisted test inbox on staging: lets a human see rendered mail, but adds a recipient allowlist that must itself be guarded.
+
+## H-043 — The 887 live preview deployments, and Vercel's production branch `main` · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 close-out] · run-plan decision: none
+
+context: Vercel applies env changes only to new deployments. There are 887 READY previews (458 NEW-UI, 413 from 206 other branches, 16 CLI; 2026-07-10 → 2026-10-24), each keeping the env it was built with. They are SSO-protected (`all_except_custom_domains`, 1 bypass entry) but live. Separately, the project's Git production branch is `main` (tip 2026-02-16) with Git deployments enabled, while production ships from NEW-UI via `deploy.yml`. A push to `main` would build a production-target deployment of February code.
+options:
+- previews: delete all pre-switch previews (irreversible on Vercel; nothing depends on old preview URLs as far as the repo shows) · keep them and accept they stay production-wired behind SSO · delete only the 413 non-NEW-UI ones.
+- production branch: set it to a branch nobody pushes, or add an Ignored Build Step for the Git production target, so `deploy.yml` stays the only production path · leave as is.
+
+## H-044 — Staging in the promotion chain; fixtures on staging; how future migrations reach production · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 build, PW-ASSET-01 build] · run-plan decision: H4
+
+context:
+- CLAUDE.md's "DEV FIRST, then PROD" has no staging step.
+- Transformation doc §5.3 (line 475) says fixtures "live in the local dev database only"; the fixture guards are denylists of the prod ref, so they would already run on staging.
+- `scripts/release-prevention-schema.ts:39` (run by every production build) refuses any pending migration outside two reviewed prevention migrations, and `:9` knows only two project refs. A rehearsed `insured_assets` migration would therefore still fail the production build.
+- The proposed database identity label needs one `COMMENT ON DATABASE` statement on production.
+options:
+- (a) dev → staging → prod by `migrate deploy`, CLAUDE.md amended by the owner.
+- (b) fixtures allowed on dev and staging by an allowlist module.
+- (c) a release-script change, decided with PW-ASSET-01's H4.
+- (d) approve or decline the production label: declining leaves "which database did this deployment reach" unmeasurable.
+
+## H-045 — Owner-only actions to wire staging · OPEN
+
+date: 2026-10-24 · raised_by: step0-investigator · blocks: [PW-STAGING-01 journey check] · run-plan decision: H6
+
+context: Preview Secret rows are write-only, and this run's constraints forbid reading or writing env values. Needed, per STEP0 §3.4:
+- create the staging project, an Upstash DB (or `RATELIMIT_ALLOW_LOCAL=1`) and a capped AI key (or `AI_SERVICE_TYPE=mock`);
+- **split** the 11 environment-bound rows shared by Preview and Production (`SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY` test-only, QStash ×4 removed from Preview, Upstash ×2, `GEMINI_API_KEY`, `BREVO_LIST_ID_NEWSLETTER`, `ADMIN_NOTIFICATION_EMAIL`);
+- **re-set** the Preview DB, Supabase, auth-secret and URL rows, and `ALLOW_REGISTRATIONS` explicitly;
+- **add** `POOLED_DATABASE_URL` and production's feature flags to Preview;
+- set staging Auth's site URL, redirect allowlist and SMTP;
+- redeploy.
+options: owner performs these (the agent then verifies by the database-sourced label route) · owner grants a scoped Vercel write for the split only.
